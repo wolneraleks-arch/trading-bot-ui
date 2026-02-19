@@ -413,20 +413,46 @@
     //     vkBridge.send("VKWebAppOpenURL", {"url": "https://tribute.tg/ts"});
     // }
 
-    async function openTribute() {
-    const url = "https://tribute.tg/ts";
-    addLog("Нажата кнопка Оплатить");
+    // async function openTribute() {
+    // const url = "https://tribute.tg/ts";
+    // addLog("Нажата кнопка Оплатить");
 
-    try {
-        addLog("Попытка через VKWebAppOpenURL...");
-        const result = await vkBridge.send("VKWebAppOpenURL", { "url": url });
-        addLog("Результат моста: " + JSON.stringify(result));
-    } catch (err) {
-        addLog("Ошибка моста: " + err.message);
-        addLog("Пробую прямой переход window.open...");
-        window.open(url, "_blank");
-    }
+    // try {
+    //     addLog("Попытка через VKWebAppOpenURL...");
+    //     const result = await vkBridge.send("VKWebAppOpenURL", { "url": url });
+    //     addLog("Результат моста: " + JSON.stringify(result));
+    // } catch (err) {
+    //     addLog("Ошибка моста: " + err.message);
+    //     addLog("Пробую прямой переход window.open...");
+    //     window.open(url, "_blank");
+    // }
+// }
+
+
+    function openTribute() {
+    const url = "https://tribute.tg";
+    addLog("📱 Мобильный запуск оплаты...");
+
+    // 1. Попытка через мост (для Android/iOS VK App)
+    vkBridge.send("VKWebAppOpenURL", { "url": url })
+    .then(data => {
+        addLog("✅ Мост открыл: " + JSON.stringify(data));
+        // Если открылось - супер
+    })
+    .catch(err => {
+        addLog("⚠️ Мост не смог, пробуем Redirect...");
+        // 2. ЖЕСТКИЙ МЕТОД для мобилок:
+        // Выбрасываем пользователя из фрейма прямо на сайт
+        window.top.location.href = url;
+    });
+
+    // 3. Резервный тайм-аут (если мост "завис" и не выдал ни success ни catch)
+    setTimeout(() => {
+        addLog("⏳ Тайм-аут моста, форсируем переход...");
+        window.top.location.href = url;
+    }, 800);
 }
+
 
    function addLog(msg) {
     const logEl = document.getElementById('debug-log');
