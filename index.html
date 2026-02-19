@@ -1,70 +1,35 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Подключаем официальную библиотеку ВК -->
     <script src="https://unpkg.com"></script>
-    <title>Настройки Бота</title>
-    <style>
-        body { font-family: -apple-system, system-ui, "Helvetica Neue", Roboto, sans-serif; background: #ebedf0; padding: 20px; text-align: center; }
-        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); max-width: 400px; margin: 0 auto; }
-        h3 { color: #4682b4; margin-bottom: 10px; }
-        #user-info { font-size: 14px; color: #818c99; margin-bottom: 20px; }
-        .btn { background: #4986cc; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 500; cursor: pointer; width: 100%; }
-        .btn:active { opacity: 0.8; }
-    </style>
 </head>
 <body>
-
-    <div class="card">
+    <div style="padding: 20px; font-family: sans-serif;">
         <h3 id="status">Инициализация...</h3>
-        <p id="user-info">Связываемся с ВКонтакте...</p>
-        <button class="btn" onclick="testGoogleConnection()">Проверить связь с Google</button>
+        <p id="info">Ожидание ответа от ВКонтакте</p>
     </div>
 
     <script>
-        // 1. Инициализируем мост (на GitHub это сработает сразу)
-        vkBridge.send("VKWebAppInit", {})
-            .then(data => {
-                document.getElementById('status').innerText = "✅ Приложение запущено";
-                
-                // Получаем ID пользователя из параметров запуска ВК
-                const urlParams = new URLSearchParams(window.location.search);
-                const vkId = urlParams.get('vk_user_id');
-                
-                if (vkId) {
-                    document.getElementById('user-info').innerText = "Ваш VK ID: " + vkId;
-                } else {
-                    document.getElementById('user-info').innerText = "Запустите через интерфейс ВК";
-                }
-            })
-            .catch(error => {
-                document.getElementById('status').innerText = "❌ Ошибка инициализации";
-                console.error(error);
-            });
-
-        // 2. Тестовая функция для связи с твоим Google Script
-        function testGoogleConnection() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const vkId = urlParams.get('vk_user_id') || "test_user";
-            
-            // ВСТАВЬ СЮДА СВОЮ ССЫЛКУ ИЗ GOOGLE SCRIPT (заканчивается на /exec)
-            const googleUrl = "https://script.google.com/macros/s/AKfycbx1RtFb9o-XMooNAFgD-tnnDeprncLYvSzfxveWmsFa9H2-ZXUo4Gp6G10i9BvpHd6cgA/exec";
-
-            document.getElementById('status').innerText = "⌛ Отправка в Google...";
-
-            // Отправляем GET-запрос в Google Таблицу
-            fetch(googleUrl + "?type=test_from_github&vk_id=" + vkId)
-                .then(response => {
-                    document.getElementById('status').innerText = "🚀 Ответ получен!";
-                    alert("Данные ушли в Google! Проверь лист Debug_Log");
+        function start() {
+            // Принудительно вызываем Init
+            vkBridge.send("VKWebAppInit", {})
+                .then(data => {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const vkId = urlParams.get('vk_user_id');
+                    
+                    document.getElementById('status').innerText = "✅ ВК ПОДКЛЮЧЕН!";
+                    document.getElementById('info').innerText = "Ваш ID: " + (vkId || "Запустите из приложения");
                 })
                 .catch(err => {
-                    document.getElementById('status').innerText = "❌ Ошибка Google";
-                    alert("Ошибка связи: " + err);
+                    document.getElementById('status').innerText = "❌ Ошибка Bridge";
+                    document.getElementById('info').innerText = JSON.stringify(err);
                 });
         }
+
+        // Ждем загрузки окна
+        window.onload = start;
     </script>
 </body>
 </html>
+
