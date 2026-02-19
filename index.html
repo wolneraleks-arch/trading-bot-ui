@@ -45,37 +45,49 @@
 </div>
 
 <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbx1RtFb9o-XMooNAFgD-tnnDeprncLYvSzfxveWmsFa9H2-ZXUo4Gp6G10i9BvpHd6cgA/exe"; 
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbx1RtFb9o-XMooNAFgD-tnnDeprncLYvSzfxveWmsFa9H2-ZXUo4Gp6G10i9BvpHd6cgA/exec"; 
 
     async function start() {
-        await vkBridge.send("VKWebAppInit");
-        const urlParams = new URLSearchParams(window.location.search);
-        const vkId = urlParams.get('vk_user_id');
+        const title = document.getElementById('title');
+        const statusText = document.getElementById('status');
 
-        if (!vkId) {
-            document.getElementById('title').innerText = "Ошибка запуска";
-            return;
+        try {
+            await vkBridge.send("VKWebAppInit");
+            const urlParams = new URLSearchParams(window.location.search);
+            const vkId = urlParams.get('vk_user_id');
+
+            if (!vkId) {
+                title.innerText = "Ошибка";
+                statusText.innerText = "Запустите из ВК";
+                return;
+            }
+
+            // Имитируем статус из Трибута (позже заменим на реальную проверку)
+            const tributeStatus = "active"; 
+
+            // Запрос к GAS
+            const requestUrl = `${GAS_URL}?action=check_or_register&vk_id=${vkId}&tribute_status=${tributeStatus}`;
+            
+            const response = await fetch(requestUrl);
+            if (!response.ok) throw new Error("Сеть не ответила");
+            
+            const result = await response.json();
+
+            if (result.status === "guest") {
+                title.innerText = "Доступ ограничен";
+                statusText.innerText = "Оплатите подписку, чтобы бот начал работать.";
+            } else {
+                title.innerText = "Настройки";
+                statusText.innerText = "Подписка: " + (result.data.active === "Да" ? "Активна ✅" : "Истекла ❌");
+                document.getElementById('tickers').innerText = result.data.tickers;
+                document.getElementById('content').style.display = "block";
+            }
+
+        } catch (err) {
+            title.innerText = "Ошибка связи";
+            statusText.innerText = "Не удалось соединиться с таблицей. Проверьте деплой GAS.";
+            console.error(err);
         }
-
-        // 1. Стучимся в таблицу через fetch
-        // Имитируем, что узнали статус оплаты из Трибута (допустим пока "active")
-        const response = await fetch(`${GAS_URL}?action=check_or_register&vk_id=${vkId}&tribute_status=active`);
-        const result = await response.json();
-
-        if (result.status === "guest") {
-            document.getElementById('title').innerText = "Привет!";
-            document.getElementById('status').innerText = "Оплатите подписку в Трибут, чтобы пользоваться ботом.";
-        } else {
-            document.getElementById('title').innerText = "Настройки бота";
-            document.getElementById('status').innerText = "Подписка активна ✅";
-            document.getElementById('tickers').innerText = result.data.tickers;
-            document.getElementById('content').style.display = "block";
-        }
-    }
-
-    function buySubscription() {
-        // Здесь будет вызов платежки или переход в бота Трибут
-        vkBridge.send("VKWebAppOpenURL", {"url": "https://wiki.tribute.tg/ru"});
     }
 
     start();
