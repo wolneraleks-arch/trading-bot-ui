@@ -410,25 +410,30 @@
     }
 
     // function openTribute() {
-    //     vkBridge.send("VKWebAppOpenURL", {"url": "https://www.vedomosti.ru/investments"});
+    //     vkBridge.send("VKWebAppOpenURL", {"url": "https://tribute.tg/ts"});
     // }
 
     function openTribute() {
-    // 1. Сначала пробуем через официальный метод ВК (самый надежный для приложений)
-    vkBridge.send("VKWebAppOpenURL", {
-        "url": "https://www.vedomosti.ru/investments" // ЗАМЕНИ НА СВОЮ ССЫЛКУ
-    })
+    const url = "https://tribute.tg"; // ТВОЯ ССЫЛКА
+    
+    console.log("Попытка открыть ссылку:", url);
+
+    // Способ 1: Официальный метод ВК (для мобилок)
+    vkBridge.send("VKWebAppOpenURL", { "url": url })
     .then((data) => {
-        if (data.result) {
-            console.log("Ссылка открыта успешно");
+        if (!data.result) {
+            // Если ВК прислал ответ, но пустой — пробуем способ 2
+            window.open(url, "_blank");
         }
     })
-    .catch((error) => {
-        // 2. Если ВК почему-то отказал (например, десктоп), пробуем обычное открытие
-        console.error("Ошибка моста, пробуем прямой переход", error);
-        window.open("https://www.vedomosti.ru/investments", "_blank");
+    .catch(() => {
+        // Способ 2: Если мост выдал ошибку (например, на десктопе)
+        window.open(url, "_blank");
+        // Способ 3: Прямой переход, если всё остальное заблокировано
+        window.location.href = url;
     });
-    }
+}
+
 
 
     init();
