@@ -413,31 +413,31 @@
     //     vkBridge.send("VKWebAppOpenURL", {"url": "https://tribute.tg/ts"});
     // }
 
-    function openTribute() {
-    const url = "https://tribute.tg"; // ТВОЯ ССЫЛКА
-    
-    console.log("Попытка открыть ссылку:", url);
+    async function openTribute() {
+    const url = "https://tribute.tg/ts";
+    addLog("Нажата кнопка Оплатить");
 
-    // Способ 1: Официальный метод ВК (для мобилок)
-    vkBridge.send("VKWebAppOpenURL", { "url": url })
-    .then((data) => {
-        if (!data.result) {
-            // Если ВК прислал ответ, но пустой — пробуем способ 2
-            window.open(url, "_blank");
-        }
-    })
-    .catch(() => {
-        // Способ 2: Если мост выдал ошибку (например, на десктопе)
+    try {
+        addLog("Попытка через VKWebAppOpenURL...");
+        const result = await vkBridge.send("VKWebAppOpenURL", { "url": url });
+        addLog("Результат моста: " + JSON.stringify(result));
+    } catch (err) {
+        addLog("Ошибка моста: " + err.message);
+        addLog("Пробую прямой переход window.open...");
         window.open(url, "_blank");
-        // Способ 3: Прямой переход, если всё остальное заблокировано
-        window.location.href = url;
-    });
+    }
 }
 
+   function addLog(msg) {
+    const logEl = document.getElementById('debug-log');
+    logEl.innerText += "\n> " + msg;
+    console.log(msg);
+  }
 
 
     init();
 </script>
+<div id="debug-log" style="font-size: 10px; color: #666; padding: 10px; background: #eee; margin-top: 20px; white-space: pre-wrap; border-radius: 8px;">Логи событий:</div>
 
 </body>
 </html>
