@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Redirecting...</title>
-    <script src="https://unpkg.com"></script>
+    <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
 </head>
 <body>
     <script>
@@ -11,7 +11,7 @@
         vkBridge.send("VKWebAppInit", {});
 
         // 2. Ссылка на ваше развернутое веб-приложение Google Apps Script
-        const GAS_URL = "ССЫЛКА_ИЗ_GOOGLE_DEPLOY_НОВОЕ_РАЗВЕРТЫВАНИЕ";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbx1RtFb9o-XMooNAFgD-tnnDeprncLYvSzfxveWmsFa9H2-ZXUo4Gp6G10i9BvpHd6cgA/exec";
 
         // 3. Перенаправление со всеми параметрами (vk_user_id и т.д.)
         const currentParams = window.location.search;
