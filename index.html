@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -18,5 +18,77 @@
         window.location.href = GAS_URL + currentParams;
     </script>
 </body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="https://unpkg.com"></script>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; color: #444; }
+        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        button { background: #0077ff; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h3 id="title">Загрузка...</h3>
+    <p id="status">Проверяем доступ</p>
+    <div id="content" style="display:none">
+        <p>Ваши тикеры: <b id="tickers"></b></p>
+        <button onclick="buySubscription()">Продлить подписку</button>
+    </div>
+</div>
+
+<script>
+    const GAS_URL = "ТВОЙ_URL_GOOGLE_SCRIPT"; 
+
+    async function start() {
+        await vkBridge.send("VKWebAppInit");
+        const urlParams = new URLSearchParams(window.location.search);
+        const vkId = urlParams.get('vk_user_id');
+
+        if (!vkId) {
+            document.getElementById('title').innerText = "Ошибка запуска";
+            return;
+        }
+
+        // 1. Стучимся в таблицу через fetch
+        // Имитируем, что узнали статус оплаты из Трибута (допустим пока "active")
+        const response = await fetch(`${GAS_URL}?action=check_or_register&vk_id=${vkId}&tribute_status=active`);
+        const result = await response.json();
+
+        if (result.status === "guest") {
+            document.getElementById('title').innerText = "Привет!";
+            document.getElementById('status').innerText = "Оплатите подписку в Трибут, чтобы пользоваться ботом.";
+        } else {
+            document.getElementById('title').innerText = "Настройки бота";
+            document.getElementById('status').innerText = "Подписка активна ✅";
+            document.getElementById('tickers').innerText = result.data.tickers;
+            document.getElementById('content').style.display = "block";
+        }
+    }
+
+    function buySubscription() {
+        // Здесь будет вызов платежки или переход в бота Трибут
+        vkBridge.send("VKWebAppOpenURL", {"url": "https://t.me"});
+    }
+
+    start();
+</script>
+
+</body>
 </html>
+
+
+
+
+
+
+
+
 
