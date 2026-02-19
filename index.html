@@ -2,34 +2,40 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <script src="https://unpkg.com"></script>
+    <!-- ПРАВИЛЬНАЯ ССЫЛКА НА VK BRIDGE -->
+    <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
 </head>
 <body>
-    <div style="padding: 20px; font-family: sans-serif;">
+    <div style="padding: 20px; font-family: sans-serif; text-align: center;">
         <h3 id="status">Инициализация...</h3>
         <p id="info">Ожидание ответа от ВКонтакте</p>
     </div>
 
     <script>
-        function start() {
-            // Принудительно вызываем Init
-            vkBridge.send("VKWebAppInit", {})
-                .then(data => {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const vkId = urlParams.get('vk_user_id');
-                    
-                    document.getElementById('status').innerText = "✅ ВК ПОДКЛЮЧЕН!";
-                    document.getElementById('info').innerText = "Ваш ID: " + (vkId || "Запустите из приложения");
-                })
-                .catch(err => {
-                    document.getElementById('status').innerText = "❌ Ошибка Bridge";
-                    document.getElementById('info').innerText = JSON.stringify(err);
-                });
+        async function start() {
+            try {
+                // Инициализация Bridge
+                await vkBridge.send("VKWebAppInit");
+                
+                // Получаем параметры запуска (ID пользователя и т.д.)
+                const urlParams = new URLSearchParams(window.location.search);
+                const vkId = urlParams.get('vk_user_id');
+                
+                document.getElementById('status').innerText = "✅ ВК ПОДКЛЮЧЕН!";
+                document.getElementById('info').innerText = vkId 
+                    ? "Ваш ID: " + vkId 
+                    : "Запущено вне ВК (ID не найден)";
+                
+                console.log("Приложение успешно инициализировано");
+            } catch (err) {
+                document.getElementById('status').innerText = "❌ Ошибка инициализации";
+                document.getElementById('info').innerText = "Проверьте запуск внутри VK";
+                console.error("Ошибка Bridge:", err);
+            }
         }
 
-        // Ждем загрузки окна
+        // Запуск после загрузки страницы
         window.onload = start;
     </script>
 </body>
 </html>
-
