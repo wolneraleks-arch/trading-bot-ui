@@ -207,41 +207,105 @@
         document.getElementById(viewId).classList.add('active');
     }
 
-    async function init() {
-        try {
-            await vkBridge.send("VKWebAppInit");
-            const urlParams = new URLSearchParams(window.location.search);
-            currentVkId = urlParams.get('vk_user_id');
+    // async function init() {
+    //     try {
+    //         await vkBridge.send("VKWebAppInit");
+    //         const urlParams = new URLSearchParams(window.location.search);
+    //         currentVkId = urlParams.get('vk_user_id');
 
-            if (!currentVkId) {
-                document.getElementById('loading-text').innerText = "Ошибка: Запустите из ВК";
-                return;
-            }
+    //         if (!currentVkId) {
+    //             document.getElementById('loading-text').innerText = "Ошибка: Запустите из ВК";
+    //             return;
+    //         }
 
-            document.getElementById('display-id').innerText = currentVkId;
+    //         document.getElementById('display-id').innerText = currentVkId;
 
-            // Запрос данных (здесь ставим статус из Трибута, пока для теста 'active')
-            // const response = await fetch(`${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=active`);
+    //         // Запрос данных (здесь ставим статус из Трибута, пока для теста 'active')
+    //         // const response = await fetch(`${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=active`);
            
-       const response = await fetch(`${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=none`, {
-    method: 'GET',
-    redirect: 'follow' 
-     });
-       // const response = await fetch(`${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=none`);
+    //    const response = await fetch(`${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=none`, {
+    // method: 'GET',
+    // redirect: 'follow' 
+    //  });
+    //    // const response = await fetch(`${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=none`);
 
             
-            const res = await response.json();
+    //         const res = await response.json();
 
-            if (res.status === "guest") {
-                showView('view-paywall');
-            } else {
-                fillForm(res.data); // Заполняем форму и сохраняем "слепок"
-                showView('view-main');
-            }
-        } catch (e) {
-            document.getElementById('loading-text').innerText = "Ошибка связи с сервером";
+    //         if (res.status === "guest") {
+    //             showView('view-paywall');
+    //         } else {
+    //             fillForm(res.data); // Заполняем форму и сохраняем "слепок"
+    //             showView('view-main');
+    //         }
+    //     } catch (e) {
+    //         document.getElementById('loading-text').innerText = "Ошибка связи с сервером";
+    //     }
+    // }
+
+      async function init() {
+    const statusEl = document.getElementById('loading-text');
+    
+    const logStatus = (msg) => {
+        statusEl.innerText = msg;
+        console.log(msg);
+    };
+
+    try {
+        logStatus("🔌 Подключение к VK Bridge...");
+        await vkBridge.send("VKWebAppInit");
+        
+        logStatus("🆔 Получение ID пользователя...");
+        const urlParams = new URLSearchParams(window.location.search);
+        currentVkId = urlParams.get('vk_user_id');
+
+        if (!currentVkId) {
+            logStatus("❌ Ошибка: ID не найден. Запустите из ВК.");
+            return;
+        }
+        document.getElementById('display-id').innerText = currentVkId;
+
+        // ВНИМАНИЕ: СТАВИМ status=none ЧТОБЫ ПРОВЕРИТЬ ЭКРАН ОПЛАТЫ
+        const testStatus = "none"; 
+        const fetchUrl = `${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=${testStatus}`;
+        
+        logStatus("☁️ Запрос к серверу (GAS)...");
+        
+        // Добавляем таймаут, чтобы не ждать вечно
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 секунд
+
+        const response = await fetch(fetchUrl, {
+            method: 'GET',
+            mode: 'cors',
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        logStatus("📦 Обработка ответа от сервера...");
+        const res = await response.json();
+
+        logStatus("✨ Проверка статуса доступа...");
+        if (res.status === "guest") {
+            showView('view-paywall');
+        } else if (res.data) {
+            fillForm(res.data);
+            showView('view-main');
+        } else {
+            throw new Error("Сервер прислал пустые данные");
+        }
+
+    } catch (e) {
+        logStatus("❌ Ошибка: " + e.message);
+        console.error("Full error:", e);
+        
+        // Если ошибка в fetch, проверим Debug_Log в таблице
+        if (e.message.includes("fetch") || e.name === "AbortError") {
+            statusEl.innerHTML += "<br><small>Проверьте Debug_Log в таблице и Deployment ID</small>";
         }
     }
+}
+
 
     // 1. ЗАПОЛНЕНИЕ ФОРМЫ И ЗАПОМИНАНИЕ СОСТОЯНИЯ
     function fillForm(data) {
