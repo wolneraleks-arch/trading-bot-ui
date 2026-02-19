@@ -245,6 +245,12 @@
 
       async function init() {
     const statusEl = document.getElementById('loading-text');
+
+          // Проверка: загрузился ли скрипт Bridge вообще
+    if (typeof vkBridge === 'undefined') {
+        statusEl.innerText = "❌ Ошибка: VK Bridge не загружен. Проверьте интернет.";
+        return;
+    }
     
     const logStatus = (msg) => {
         statusEl.innerText = msg;
@@ -253,6 +259,11 @@
 
     try {
         logStatus("🔌 Подключение к VK Bridge...");
+        // Добавляем таймаут для инициализации
+        await Promise.race([
+            vkBridge.send("VKWebAppInit"),
+            new Promise((_, reject) => setTimeout(() => reject(new Error("Тайм-аут Bridge")), 5000))
+        ]);
         await vkBridge.send("VKWebAppInit");
         
         logStatus("🆔 Получение ID пользователя...");
