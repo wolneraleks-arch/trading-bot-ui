@@ -264,7 +264,8 @@
             vkBridge.send("VKWebAppInit"),
             new Promise((_, reject) => setTimeout(() => reject(new Error("Тайм-аут Bridge")), 5000))
         ]);
-        await vkBridge.send("VKWebAppInit");
+        // await vkBridge.send("VKWebAppInit");
+        vkBridge.send("VKWebAppInit", {});
         
         logStatus("🆔 Получение ID пользователя...");
         const urlParams = new URLSearchParams(window.location.search);
