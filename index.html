@@ -409,9 +409,27 @@
         }
     }
 
+    // function openTribute() {
+    //     vkBridge.send("VKWebAppOpenURL", {"url": "https://www.vedomosti.ru/investments"});
+    // }
+
     function openTribute() {
-        vkBridge.send("VKWebAppOpenURL", {"url": "https://www.vedomosti.ru/investments"});
+    // 1. Сначала пробуем через официальный метод ВК (самый надежный для приложений)
+    vkBridge.send("VKWebAppOpenURL", {
+        "url": "https://www.vedomosti.ru/investments" // ЗАМЕНИ НА СВОЮ ССЫЛКУ
+    })
+    .then((data) => {
+        if (data.result) {
+            console.log("Ссылка открыта успешно");
+        }
+    })
+    .catch((error) => {
+        // 2. Если ВК почему-то отказал (например, десктоп), пробуем обычное открытие
+        console.error("Ошибка моста, пробуем прямой переход", error);
+        window.open("https://www.vedomosti.ru/investments", "_blank");
+    });
     }
+
 
     init();
 </script>
