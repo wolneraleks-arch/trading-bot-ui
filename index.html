@@ -198,8 +198,9 @@
     </div>
 
 <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbx1RtFb9o-XMooNAFgD-tnnDeprncLYvSzfxveWmsFa9H2-ZXUo4Gp6G10i9BvpHd6cgA/exec"; 
+    const GAS_URL = "ТВОЙ_URL_GAS"; 
     let currentVkId = "";
+    let initialData = {}; // Объект для хранения исходных данных из БД
 
     function showView(viewId) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -219,14 +220,14 @@
 
             document.getElementById('display-id').innerText = currentVkId;
 
-            // Запрос данных. tribute_status="none" для теста, чтобы увидеть проверку
-            const response = await fetch(`${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=none`);
+            // Запрос данных (здесь ставим статус из Трибута, пока для теста 'active')
+            const response = await fetch(`${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=active`);
             const res = await response.json();
 
             if (res.status === "guest") {
                 showView('view-paywall');
             } else {
-                fillForm(res.data);
+                fillForm(res.data); // Заполняем форму и сохраняем "слепок"
                 showView('view-main');
             }
         } catch (e) {
@@ -234,20 +235,66 @@
         }
     }
 
+    // 1. ЗАПОЛНЕНИЕ ФОРМЫ И ЗАПОМИНАНИЕ СОСТОЯНИЯ
     function fillForm(data) {
-        document.getElementById('user-level').innerText = data.level + " доступ";
-        document.getElementById('in_tickers_stocks').value = data.tickers_stocks || "";
-        document.getElementById('in_adr_days').value = data.adr || "20";
-        document.getElementById('sw_vk_on').checked = (data.vk_on === "Вкл");
-        // Остальные поля заполняются аналогично
+        // Сохраняем "слепок" данных для сравнения
+        initialData = {
+            tickers: data.tickers_stocks || "",
+            adr: String(data.adr || "20"),
+            vk_on: data.vk_on === "Вкл"
+        };
+
+        // Устанавливаем значения в поля
+        document.getElementById('user-level').innerText = (data.level || "Базовый") + " доступ";
+        document.getElementById('in_tickers_stocks').value = initialData.tickers;
+        document.getElementById('in_adr_days').value = initialData.adr;
+        document.getElementById('sw_vk_on').checked = initialData.vk_on;
+
+        // Вешаем "слушателей" на все изменения
+        ['in_tickers_stocks', 'in_adr_days', 'sw_vk_on'].forEach(id => {
+            const el = document.getElementById(id);
+            el.addEventListener('input', checkChanges);
+            el.addEventListener('change', checkChanges);
+        });
+
+        checkChanges(); // Сразу проверяем состояние кнопки
     }
 
+    // 2. ФУНКЦИЯ ПРОВЕРКИ ИЗМЕНЕНИЙ (УМНАЯ КНОПКА)
+    function checkChanges() {
+        const currentData = {
+            tickers: document.getElementById('in_tickers_stocks').value,
+            adr: document.getElementById('in_adr_days').value,
+            vk_on: document.getElementById('sw_vk_on').checked
+        };
+
+        // Сравниваем текущее с тем, что было в БД
+        const hasChanged = 
+            currentData.tickers !== initialData.tickers ||
+            currentData.adr !== initialData.adr ||
+            currentData.vk_on !== initialData.vk_on;
+
+        const btn = document.getElementById('save-btn');
+        btn.disabled = !hasChanged;
+        
+        if (hasChanged) {
+            btn.innerText = "Сохранить изменения";
+            btn.style.opacity = "1";
+            btn.style.background = "#0077ff";
+        } else {
+            btn.innerText = "Изменений нет";
+            btn.style.opacity = "0.5";
+            btn.style.background = "#818c99";
+        }
+    }
+
+    // 3. СОХРАНЕНИЕ
     async function saveData() {
         const btn = document.getElementById('save-btn');
         btn.disabled = true;
-        btn.innerText = "Сохранение...";
+        btn.innerText = "⏳ Сохранение...";
 
-        const payload = {
+        const currentData = {
             vk_id: currentVkId,
             tickers: document.getElementById('in_tickers_stocks').value,
             adr: document.getElementById('in_adr_days').value,
@@ -255,22 +302,34 @@
         };
 
         try {
-            const url = `${GAS_URL}?action=update_settings&` + new URLSearchParams(payload);
-            await fetch(url);
-            btn.innerText = "✅ Успешно сохранено";
-            setTimeout(() => { btn.disabled = false; btn.innerText = "Сохранить настройки"; }, 2000);
+            const url = `${GAS_URL}?action=update_settings&` + new URLSearchParams(currentData);
+            const response = await fetch(url);
+            const res = await response.json();
+
+            if (res.status === "success") {
+                // Обновляем initialData, чтобы кнопка снова стала серой
+                initialData = {
+                    tickers: currentData.tickers,
+                    adr: currentData.adr,
+                    vk_on: currentData.vk_on === "Вкл"
+                };
+                btn.innerText = "✅ Сохранено успешно!";
+                setTimeout(checkChanges, 2000);
+            }
         } catch (e) {
-            alert("Ошибка при сохранении");
+            alert("Ошибка сохранения");
             btn.disabled = false;
+            checkChanges();
         }
     }
 
     function openTribute() {
-        vkBridge.send("VKWebAppOpenURL", {"url": "https://wiki.tribute.tg/ru"});
+        vkBridge.send("VKWebAppOpenURL", {"url": "https://t.me"});
     }
 
     init();
 </script>
+
 </body>
 </html>
 
