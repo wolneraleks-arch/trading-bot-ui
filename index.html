@@ -318,9 +318,12 @@
                 setTimeout(checkChanges, 2000);
             }
         } catch (e) {
-            alert("Ошибка сохранения");
-            btn.disabled = false;
-            checkChanges();
+            // alert("Ошибка сохранения");
+            // btn.disabled = false;
+            // checkChanges();
+            document.getElementById('loading-text').innerHTML = 
+        "❌ Ошибка связи<br><small style='font-size:10px'>" + e.message + "</small>";
+    console.error(e);
         }
     }
 
