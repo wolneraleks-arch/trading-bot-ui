@@ -2,40 +2,21 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <!-- ПРАВИЛЬНАЯ ССЫЛКА НА VK BRIDGE -->
-    <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+    <title>Redirecting...</title>
+    <script src="https://unpkg.com"></script>
 </head>
 <body>
-    <div style="padding: 20px; font-family: sans-serif; text-align: center;">
-        <h3 id="status">Инициализация...</h3>
-        <p id="info">Ожидание ответа от ВКонтакте</p>
-    </div>
-
     <script>
-        async function start() {
-            try {
-                // Инициализация Bridge
-                await vkBridge.send("VKWebAppInit");
-                
-                // Получаем параметры запуска (ID пользователя и т.д.)
-                const urlParams = new URLSearchParams(window.location.search);
-                const vkId = urlParams.get('vk_user_id');
-                
-                document.getElementById('status').innerText = "✅ ВК ПОДКЛЮЧЕН!";
-                document.getElementById('info').innerText = vkId 
-                    ? "Ваш ID: " + vkId 
-                    : "Запущено вне ВК (ID не найден)";
-                
-                console.log("Приложение успешно инициализировано");
-            } catch (err) {
-                document.getElementById('status').innerText = "❌ Ошибка инициализации";
-                document.getElementById('info').innerText = "Проверьте запуск внутри VK";
-                console.error("Ошибка Bridge:", err);
-            }
-        }
+        // 1. Инициализация ВК
+        vkBridge.send("VKWebAppInit", {});
 
-        // Запуск после загрузки страницы
-        window.onload = start;
+        // 2. Ссылка на ваше развернутое веб-приложение Google Apps Script
+        const GAS_URL = "ССЫЛКА_ИЗ_GOOGLE_DEPLOY_НОВОЕ_РАЗВЕРТЫВАНИЕ";
+
+        // 3. Перенаправление со всеми параметрами (vk_user_id и т.д.)
+        const currentParams = window.location.search;
+        window.location.href = GAS_URL + currentParams;
     </script>
 </body>
 </html>
+
