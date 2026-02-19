@@ -259,22 +259,21 @@
 
     try {
         logStatus("🔌 Подключение к VK Bridge...");
-        // Добавляем таймаут для инициализации
-        await Promise.race([
-            vkBridge.send("VKWebAppInit"),
-            new Promise((_, reject) => setTimeout(() => reject(new Error("Тайм-аут Bridge")), 5000))
-        ]);
-        // await vkBridge.send("VKWebAppInit");
+        
+        // Просто отправляем сигнал инициализации без ожидания ответа
         vkBridge.send("VKWebAppInit", {});
         
+        // Сразу переходим к получению ID
         logStatus("🆔 Получение ID пользователя...");
         const urlParams = new URLSearchParams(window.location.search);
         currentVkId = urlParams.get('vk_user_id');
 
         if (!currentVkId) {
-            logStatus("❌ Ошибка: ID не найден. Запустите из ВК.");
+            // Если мы здесь, значит в URL нет параметров запуска (vk_user_id)
+            logStatus("❌ Ошибка: ID не найден. Вы запустили сайт просто по ссылке, а не внутри ВК.");
             return;
         }
+
         document.getElementById('display-id').innerText = currentVkId;
 
         // ВНИМАНИЕ: СТАВИМ status=none ЧТОБЫ ПРОВЕРИТЬ ЭКРАН ОПЛАТЫ
