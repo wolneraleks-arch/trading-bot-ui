@@ -45,7 +45,7 @@
 </div>
 
 <script>
-    const GAS_URL = "ТВОЙ_URL_GOOGLE_SCRIPT"; 
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbx1RtFb9o-XMooNAFgD-tnnDeprncLYvSzfxveWmsFa9H2-ZXUo4Gp6G10i9BvpHd6cgA/exe"; 
 
     async function start() {
         await vkBridge.send("VKWebAppInit");
@@ -75,7 +75,7 @@
 
     function buySubscription() {
         // Здесь будет вызов платежки или переход в бота Трибут
-        vkBridge.send("VKWebAppOpenURL", {"url": "https://t.me"});
+        vkBridge.send("VKWebAppOpenURL", {"url": "https://wiki.tribute.tg/ru"});
     }
 
     start();
