@@ -222,7 +222,14 @@
 
             // Запрос данных (здесь ставим статус из Трибута, пока для теста 'active')
             // const response = await fetch(`${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=active`);
-            const response = await fetch(`${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=none`);
+           
+       const response = await fetch(`${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=none`, {
+    method: 'GET',
+    redirect: 'follow' 
+     });
+       // const response = await fetch(`${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=none`);
+
+            
             const res = await response.json();
 
             if (res.status === "guest") {
