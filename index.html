@@ -100,7 +100,7 @@
 
 <!-- Версия 3 с дизайном -->
 <!DOCTYPE html>
-<html>
+<!-- <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
@@ -144,25 +144,25 @@
 <body>
 
     <!-- ЭКРАН 1: ЗАГРУЗКА -->
-    <div id="view-loading" class="view active">
+    <!-- <div id="view-loading" class="view active">
         <div class="loader">
             <div style="font-size: 24px; margin-bottom: 10px;">⌛</div>
             <div id="loading-text">Синхронизация с базой...</div>
-        </div>
+        <!-- </div>
     </div>
 
     <!-- ЭКРАН 2: ПЕЙВОЛЛ (Новый юзер) -->
-    <div id="view-paywall" class="view">
+    <!-- <div id="view-paywall" class="view">
         <div class="card" style="text-align: center;">
             <div style="font-size: 48px; margin-bottom: 16px;">💎</div>
             <h2>Доступ ограничен</h2>
             <p style="color: #626d7a;">Для использования торгового ассистента необходимо оформить подписку в Tribute.</p>
             <button class="btn btn-pay" onclick="openTribute()">Оплатить через Tribute</button>
         </div>
-    </div>
+    </div>  -->
 
     <!-- ЭКРАН 3: ГЛАВНАЯ (Настройки) -->
-    <div id="view-main" class="view">
+    <!-- <div id="view-main" class="view">
         <div class="section-title">Статус аккаунта</div>
         <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -195,6 +195,145 @@
         </div>
 
         <button class="btn" id="save-btn" onclick="saveData()">Сохранить настройки</button>
+    </div>  -->
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no, viewport-fit=cover">
+    <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+    <style>
+        :root { --vk-blue: #0077ff; --bg-gray: #f0f2f5; --tab-border: #dce1e6; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg-gray); margin: 0; padding: 0; color: #000; padding-bottom: 80px; }
+        
+        .view { display: none; padding: 16px; animation: fadeIn 0.2s ease; }
+        .active { display: block; }
+
+        /* Внутренние вкладки */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .section-title { font-size: 13px; color: #818c99; text-transform: uppercase; margin: 16px 0 8px 4px; letter-spacing: 0.3px; }
+        
+        /* Стили таббара */
+        .tabbar {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 60px;
+            background: white; border-top: 1px solid var(--tab-border);
+            display: flex; justify-content: space-around; align-items: center;
+            padding-bottom: env(safe-area-inset-bottom); z-index: 100;
+        }
+        .tab-item { text-align: center; color: #818c99; font-size: 11px; cursor: pointer; flex: 1; padding: 8px 0; }
+        .tab-item.active { color: var(--vk-blue); }
+        .tab-icon { font-size: 20px; margin-bottom: 2px; }
+
+        /* Инпуты */
+        label { display: flex; justify-content: space-between; align-items: center; font-size: 15px; margin-bottom: 12px; }
+        input[type="text"], input[type="number"] { 
+            width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #dce1e6; 
+            border-radius: 8px; background: #f5f5f5; font-size: 16px; margin-top: 4px;
+        }
+
+        /* Кнопка сохранения (теперь фиксированная над таббаром) */
+        .save-container { position: fixed; bottom: 70px; left: 16px; right: 16px; z-index: 90; }
+        .btn { background: var(--vk-blue); color: white; border: none; padding: 14px; border-radius: 10px; width: 100%; font-size: 16px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,119,255,0.3); }
+        .btn:disabled { background: #818c99; box-shadow: none; opacity: 0.6; }
+
+        /* Свитч */
+        .switch { position: relative; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ced4da; transition: .4s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--vk-blue); }
+        input:checked + .slider:before { transform: translateX(20px); }
+    </style>
+</head>
+<body>
+
+    <!-- ЭКРАН 1: ЗАГРУЗКА -->
+    <div id="view-loading" class="view active">
+        <div style="text-align: center; margin-top: 40vh;">
+            <div id="loading-text">⌛ Синхронизация...</div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН 2: ПЕЙВОЛЛ -->
+    <div id="view-paywall" class="view">
+        <div class="card" style="text-align: center; margin-top: 20vh;">
+            <div style="font-size: 48px;">💎</div>
+            <h2>Доступ ограничен</h2>
+            <p>Оформите подписку в Tribute для доступа к боту.</p>
+            <button class="btn" style="background:#4bb34b" onclick="openTribute()">Оплатить доступ</button>
+        </div>
+    </div>
+
+    <!-- ЭКРАН 3: ГЛАВНОЕ МЕНЮ -->
+    <div id="view-main" class="view">
+        
+        <!-- Вкладка 1: ПРОФИЛЬ -->
+        <div id="tab-home" class="tab-content active">
+            <div class="section-title">Аккаунт</div>
+            <div class="card">
+                <div style="font-weight: 600;" id="user-level">Загрузка...</div>
+                <div style="font-size: 12px; color: #818c99; margin-top: 4px;">ID: <span id="display-id"></span></div>
+            </div>
+            <div class="section-title">Уведомления</div>
+            <div class="card">
+                <label>Бот ВК <div class="switch"><input type="checkbox" id="sw_vk_on"><span class="slider"></span></div></label>
+                <label>Бот ТГ <div class="switch"><input type="checkbox" id="sw_tg_on"><span class="slider"></span></div></label>
+            </div>
+        </div>
+
+        <!-- Вкладка 2: АКТИВЫ -->
+        <div id="tab-assets" class="tab-content">
+            <div class="section-title">Список тикеров</div>
+            <div class="card">
+                <label style="flex-direction: column; align-items: flex-start;">
+                    Акции
+                    <input type="text" id="in_tickers_stocks" placeholder="SBER, GAZP">
+                </label>
+                <label style="flex-direction: column; align-items: flex-start; margin-top: 12px;">
+                    Облигации
+                    <input type="text" id="in_tickers_bonds" placeholder="SU26238">
+                </label>
+                <label style="flex-direction: column; align-items: flex-start; margin-top: 12px;">
+                    Фьючерсы
+                    <input type="text" id="in_tickers_fut" placeholder="RIZ3">
+                </label>
+            </div>
+        </div>
+
+        <!-- Вкладка 3: РОБОТ -->
+        <div id="tab-bot" class="tab-content">
+            <div class="section-title">Технические параметры</div>
+            <div class="card">
+                <label>Период ADR (дн) <input type="number" id="in_adr_days" style="width: 80px;"></label>
+                <label>Период RSI <input type="number" id="in_rsi_period" style="width: 80px;"></label>
+            </div>
+            <div class="section-title">Фильтры</div>
+            <div class="card">
+                <label>Аномальный объем <div class="switch"><input type="checkbox" id="sw_vol_on"><span class="slider"></span></div></label>
+                <label>Сделки ADR <div class="switch"><input type="checkbox" id="sw_adr_on"><span class="slider"></span></div></label>
+            </div>
+        </div>
+
+        <!-- Кнопка сохранения -->
+        <div class="save-container">
+            <button class="btn" id="save-btn" onclick="saveData()">Изменений нет</button>
+        </div>
+
+        <!-- Нижнее меню -->
+        <div class="tabbar">
+            <div class="tab-item active" onclick="switchTab('home', this)">
+                <div class="tab-icon">👤</div><div>Главная</div>
+            </div>
+            <div class="tab-item" onclick="switchTab('assets', this)">
+                <div class="tab-icon">📊</div><div>Активы</div>
+            </div>
+            <div class="tab-item" onclick="switchTab('bot', this)">
+                <div class="tab-icon">⚙️</div><div>Робот</div>
+            </div>
+        </div>
     </div>
 
 <script>
@@ -202,6 +341,15 @@
     let currentVkId = "";
     let initialData = {}; // Объект для хранения исходных данных из БД
 
+        function switchTab(tabId, el) {
+            // Переключаем контент
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            // Переключаем иконки
+            document.querySelectorAll('.tab-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+        }
+        
     function showView(viewId) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
@@ -467,6 +615,9 @@
 
 </body>
 </html>
+
+
+
 
 
 
