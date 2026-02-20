@@ -86,14 +86,14 @@
     </div>
 
     <!-- ЭКРАН 2: ПЕЙВОЛЛ -->
-    <div id="view-paywall" class="view">
+    <!-- <div id="view-paywall" class="view">
         <div class="card" style="text-align: center; margin-top: 20vh;">
             <div style="font-size: 48px;">💎</div>
             <h2>Доступ ограничен</h2>
             <p>Оформите подписку в Tribute для доступа к боту.</p>
             <button class="btn" style="background:#4bb34b" onclick="openTribute()">Оплатить доступ</button>
         </div>
-    </div>
+    </div> -->
 
     <!-- ЭКРАН 3: ГЛАВНОЕ МЕНЮ -->
     <div id="view-main" class="view">
@@ -213,41 +213,6 @@
         document.getElementById(viewId).classList.add('active');
     }
 
-    // async function init() {
-    //     try {
-    //         await vkBridge.send("VKWebAppInit");
-    //         const urlParams = new URLSearchParams(window.location.search);
-    //         currentVkId = urlParams.get('vk_user_id');
-
-    //         if (!currentVkId) {
-    //             document.getElementById('loading-text').innerText = "Ошибка: Запустите из ВК";
-    //             return;
-    //         }
-
-    //         document.getElementById('display-id').innerText = currentVkId;
-
-    //         // Запрос данных (здесь ставим статус из Трибута, пока для теста 'active')
-    //         // const response = await fetch(`${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=active`);
-           
-    //    const response = await fetch(`${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=none`, {
-    // method: 'GET',
-    // redirect: 'follow' 
-    //  });
-    //    // const response = await fetch(`${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=none`);
-
-            
-    //         const res = await response.json();
-
-    //         if (res.status === "guest") {
-    //             showView('view-paywall');
-    //         } else {
-    //             fillForm(res.data); // Заполняем форму и сохраняем "слепок"
-    //             showView('view-main');
-    //         }
-    //     } catch (e) {
-    //         document.getElementById('loading-text').innerText = "Ошибка связи с сервером";
-    //     }
-    // }
 
       async function init() {
     const statusEl = document.getElementById('loading-text');
@@ -491,7 +456,7 @@ if (!window.isPremium) {
         } else {
             showToast("❌ Ошибка сервера", true);
             btn.disabled = false;
-        }
+        }}
     } catch (e) {
         showToast("❌ Ошибка связи", true);
         console.error(e);
