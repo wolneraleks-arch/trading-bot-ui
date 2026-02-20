@@ -453,10 +453,11 @@ if (!window.isPremium) {
             
             // Ждем немного и возвращаем кнопку в исходное состояние (серый цвет)
             setTimeout(checkChanges, 1500);
-        } else {
+        } 
+        else {
             showToast("❌ Ошибка сервера", true);
             btn.disabled = false;
-        }}
+        }
     } catch (e) {
         showToast("❌ Ошибка связи", true);
         console.error(e);
