@@ -99,7 +99,7 @@
 
 
 <!-- Версия 3 с дизайном -->
-<!DOCTYPE html>
+
 <!-- <html>
 <head>
     <meta charset="UTF-8">
@@ -196,7 +196,7 @@
 
         <button class="btn" id="save-btn" onclick="saveData()">Сохранить настройки</button>
     </div>  -->
-
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -497,6 +497,19 @@
     }
 }
 
+function showToast(message, isError = false) {
+    const x = document.getElementById("snackbar");
+    x.innerText = message;
+    x.style.backgroundColor = isError ? "#E64646" : "#4BB34B"; // Красный для ошибок, зеленый для успеха
+    x.style.visibility = "visible";
+    
+    // Плавное появление (опционально)
+    x.style.opacity = "1";
+    
+    setTimeout(() => { 
+        x.style.visibility = "hidden"; 
+    }, 3000);
+}
 
     // 1. ЗАПОЛНЕНИЕ ФОРМЫ И ЗАПОМИНАНИЕ СОСТОЯНИЯ
     function fillForm(data) {
@@ -567,10 +580,18 @@
     const bonds = document.getElementById('in_tickers_bonds').value;
     const futs = document.getElementById('in_tickers_fut').value;
 
-    if (!validateTickers(stocks, 6) || !validateTickers(bonds, 14) || !validateTickers(futs, 8)) {
-        alert("Один из тикеров слишком длинный! Проверьте ввод.");
-        return;
-    }
+    
+        if (!validateTickers(stocks, 6) || !validateTickers(bonds, 14) || !validateTickers(futs, 8)) {
+    showToast("⚠️ Один из тикеров слишком длинный!", true);
+    return;
+}
+
+        if (res.status === "success") {
+    showToast("✅ Настройки сохранены");
+    // ... остальной код
+}
+
+  
 
         const btn = document.getElementById('save-btn');
         btn.disabled = true;
@@ -663,6 +684,7 @@
     init();
 </script>
 <div id="debug-log" style="font-size: 10px; color: #666; padding: 10px; background: #eee; margin-top: 20px; white-space: pre-wrap; border-radius: 8px;">Логи событий:</div>
+<div id="snackbar" style="visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 10px; padding: 16px; position: fixed; z-index: 200; left: 50%; bottom: 100px; transform: translateX(-50%); font-size: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">Текст уведомления</div>
 
 </body>
 </html>
