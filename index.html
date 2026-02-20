@@ -438,8 +438,11 @@ async function saveData() {
     const currentData = {
         vk_id: currentVkId,
         tickers: stocks,
+        bonds: document.getElementById('in_tickers_bonds').value, // ДОБАВИЛИ
+        futs: document.getElementById('in_tickers_fut').value, 
         adr: adr,
-        vk_on: vk_on
+        vk_on: vk_on,
+        tg_on: document.getElementById('sw_tg_on').checked ? "Вкл" : "Выкл"
     };
 
     try {
@@ -452,8 +455,11 @@ async function saveData() {
             // Обновляем "фотографию" данных для кнопки
             initialData = {
                 tickers: currentData.tickers,
+                bonds: currentData.bonds, // ДОБАВИЛИ
+                futs: currentData.futs,
                 adr: currentData.adr,
-                vk_on: currentData.vk_on === "Вкл"
+                vk_on: currentData.vk_on === "Вкл",
+                tg_on: currentData.tg_on === "Вкл"
             };
             
             showToast("✅ Настройки сохранены");
