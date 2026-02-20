@@ -303,15 +303,23 @@
         const res = await response.json();
 
         logStatus("✨ Проверка статуса доступа...");
-        if (res.status === "guest") {
-            showView('view-paywall');
-        } else if (res.data) {
-            fillForm(res.data);
-            showView('view-main');
+    // 1. Сохраняем статус подписки в глобальную переменную
+        // Если в таблице стоит "Да", значит Премиум активен
+        window.isPremium = (res.data && res.data.active === "Да");
+
+        // 2. Всегда показываем главный экран (view-main)
+        showView('view-main');
+
+        // 3. Заполняем форму данными (если их нет, подставятся пустые поля)
+        fillForm(res.data || { tickers_stocks: "", adr: "20" });
+
+        // 4. Если подписки нет — меняем текст уровня пользователя на предупреждение
+        if (!window.isPremium) {
+            document.getElementById('user-level').innerHTML = "<span style='color:#E64646'>Демо-режим (Без подписки)</span>";
+            document.getElementById('user-level').style.fontWeight = "bold";
         } else {
-            throw new Error("Сервер прислал пустые данные");
+            document.getElementById('user-level').innerText = (res.data.level || "Премиум") + " доступ";
         }
-    } 
 
     
     catch (e) {
@@ -416,6 +424,20 @@ function showToast(message, isError = false) {
 
 async function saveData() {
     const btn = document.getElementById('save-btn');
+
+
+if (!window.isPremium) {
+        showToast("❌ Сохранение доступно только с подпиской", true);
+        
+        // Через 1.5 секунды предлагаем оплатить (открываем модалку или редирект)
+        setTimeout(() => {
+            if (confirm("Хотите оформить подписку Tribute, чтобы сохранять настройки?")) {
+                openTribute();
+            }
+        }, 1500);
+        
+        return; // Прерываем выполнение функции, данные в GAS не полетят
+    }
     
     // 1. Сначала собираем данные из полей
     const stocks = document.getElementById('in_tickers_stocks').value;
