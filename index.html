@@ -290,15 +290,15 @@
             <div class="card">
                 <label style="flex-direction: column; align-items: flex-start;">
                     Акции
-                    <input type="text" id="in_tickers_stocks" placeholder="SBER, GAZP">
+                    <input type="text" id="in_tickers_stocks" maxlength="6" placeholder="SBER, GAZP">
                 </label>
                 <label style="flex-direction: column; align-items: flex-start; margin-top: 12px;">
                     Облигации
-                    <input type="text" id="in_tickers_bonds" placeholder="SU26238">
+                    <input type="text" id="in_tickers_bonds" maxlength="13" placeholder="SU26207RMFS9">
                 </label>
                 <label style="flex-direction: column; align-items: flex-start; margin-top: 12px;">
                     Фьючерсы
-                    <input type="text" id="in_tickers_fut" placeholder="RIZ3">
+                    <input type="text" id="in_tickers_fut" maxlength="8" placeholder="RIZ6">
                 </label>
             </div>
         </div>
@@ -453,8 +453,10 @@
         } else {
             throw new Error("Сервер прислал пустые данные");
         }
+    } 
 
-    } catch (e) {
+    
+    catch (e) {
         logStatus("❌ Ошибка: " + e.message);
         console.error("Full error:", e);
         
@@ -480,6 +482,15 @@
         document.getElementById('in_tickers_stocks').value = initialData.tickers;
         document.getElementById('in_adr_days').value = initialData.adr;
         document.getElementById('sw_vk_on').checked = initialData.vk_on;
+
+        ['in_tickers_stocks', 'in_tickers_bonds', 'in_tickers_fut'].forEach(id => {
+    const input = document.getElementById(id);
+    input.addEventListener('input', () => {
+        // Разрешаем только буквы, цифры и запятую, удаляем пробелы
+        input.value = input.value.replace(/[^a-zA-Z0-9,]/g, '').toUpperCase();
+        checkChanges(); // Вызываем проверку изменений для активации кнопки
+    });
+});
 
         // Вешаем "слушателей" на все изменения
         ['in_tickers_stocks', 'in_adr_days', 'sw_vk_on'].forEach(id => {
@@ -521,6 +532,12 @@
 
     // 3. СОХРАНЕНИЕ
     async function saveData() {
+
+     if (document.getElementById('in_tickers_stocks').value.length < 2) {
+    alert("Тикер акции слишком короткий");
+    return;
+     }
+
         const btn = document.getElementById('save-btn');
         btn.disabled = true;
         btn.innerText = "⏳ Сохранение...";
