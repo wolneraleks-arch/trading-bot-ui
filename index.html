@@ -290,15 +290,15 @@
             <div class="card">
                 <label style="flex-direction: column; align-items: flex-start;">
                     Акции
-                    <input type="text" id="in_tickers_stocks" maxlength="6" placeholder="SBER, GAZP">
+                    <input type="text" id="in_tickers_stocks" placeholder="SBER, GAZP">
                 </label>
                 <label style="flex-direction: column; align-items: flex-start; margin-top: 12px;">
                     Облигации
-                    <input type="text" id="in_tickers_bonds" maxlength="13" placeholder="SU26207RMFS9">
+                    <input type="text" id="in_tickers_bonds" placeholder="SU26207RMFS9">
                 </label>
                 <label style="flex-direction: column; align-items: flex-start; margin-top: 12px;">
                     Фьючерсы
-                    <input type="text" id="in_tickers_fut" maxlength="8" placeholder="RIZ6">
+                    <input type="text" id="in_tickers_fut" placeholder="RIZ6">
                 </label>
             </div>
         </div>
@@ -340,6 +340,36 @@
     const GAS_URL = "https://script.google.com/macros/s/AKfycbx1RtFb9o-XMooNAFgD-tnnDeprncLYvSzfxveWmsFa9H2-ZXUo4Gp6G10i9BvpHd6cgA/exec"; 
     let currentVkId = "";
     let initialData = {}; // Объект для хранения исходных данных из БД
+
+    function validateTickers(value, limit) {
+    // Разделяем строку по запятым, убираем пробелы
+    const parts = value.split(',');
+    // Проверяем, есть ли хоть один тикер длиннее лимита
+    const hasError = parts.some(part => part.trim().length > limit);
+    return !hasError;
+}
+
+// Привязываем к инпутам (добавь это в init или в блок где вешаешь события)
+['in_tickers_stocks', 'in_tickers_bonds', 'in_tickers_fut'].forEach(id => {
+    const input = document.getElementById(id);
+    const limits = { 'in_tickers_stocks': 6, 'in_tickers_bonds': 14, 'in_tickers_fut': 8 };
+
+    input.addEventListener('input', () => {
+        // Очистка: только латиница, цифры и запятая
+        input.value = input.value.replace(/[^a-zA-Z0-9,]/g, '').toUpperCase();
+        
+        // Визуальная проверка
+        if (!validateTickers(input.value, limits[id])) {
+            input.style.border = "1px solid red";
+            input.style.backgroundColor = "#ffebee";
+        } else {
+            input.style.border = "1px solid #dce1e6";
+            input.style.backgroundColor = "#f5f5f5";
+        }
+        checkChanges();
+    });
+});
+
 
         function switchTab(tabId, el) {
             // Переключаем контент
@@ -533,10 +563,14 @@
     // 3. СОХРАНЕНИЕ
     async function saveData() {
 
-     if (document.getElementById('in_tickers_stocks').value.length < 2) {
-    alert("Тикер акции слишком короткий");
-    return;
-     }
+     const stocks = document.getElementById('in_tickers_stocks').value;
+    const bonds = document.getElementById('in_tickers_bonds').value;
+    const futs = document.getElementById('in_tickers_fut').value;
+
+    if (!validateTickers(stocks, 6) || !validateTickers(bonds, 14) || !validateTickers(futs, 8)) {
+        alert("Один из тикеров слишком длинный! Проверьте ввод.");
+        return;
+    }
 
         const btn = document.getElementById('save-btn');
         btn.disabled = true;
