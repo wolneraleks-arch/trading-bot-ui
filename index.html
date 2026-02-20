@@ -601,61 +601,124 @@ function showToast(message, isError = false) {
         }
     }
 
-    // 3. СОХРАНЕНИЕ
-    async function saveData() {
 
-     const stocks = document.getElementById('in_tickers_stocks').value;
+async function saveData() {
+    const btn = document.getElementById('save-btn');
+    
+    // 1. Сначала собираем данные из полей
+    const stocks = document.getElementById('in_tickers_stocks').value;
     const bonds = document.getElementById('in_tickers_bonds').value;
     const futs = document.getElementById('in_tickers_fut').value;
+    const adr = document.getElementById('in_adr_days').value;
+    const vk_on = document.getElementById('sw_vk_on').checked ? "Вкл" : "Выкл";
+
+    // 2. Валидация (проверка длины)
+    if (!validateTickers(stocks, 6) || !validateTickers(bonds, 14) || !validateTickers(futs, 8)) {
+        showToast("⚠️ Один из тикеров слишком длинный!", true);
+        return;
+    }
+
+    // 3. Если всё ок, блокируем кнопку и начинаем отправку
+    btn.disabled = true;
+    btn.innerText = "⏳ Сохранение...";
+
+    const currentData = {
+        vk_id: currentVkId,
+        tickers: stocks,
+        adr: adr,
+        vk_on: vk_on
+    };
+
+    try {
+        const url = `${GAS_URL}?action=update_settings&` + new URLSearchParams(currentData);
+        const response = await fetch(url);
+        const res = await response.json();
+
+        // 4. ТЕПЕРЬ проверяем ответ от сервера
+        if (res.status === "success") {
+            // Обновляем "фотографию" данных для кнопки
+            initialData = {
+                tickers: currentData.tickers,
+                adr: currentData.adr,
+                vk_on: currentData.vk_on === "Вкл"
+            };
+            
+            showToast("✅ Настройки сохранены");
+            
+            // Ждем немного и возвращаем кнопку в исходное состояние (серый цвет)
+            setTimeout(checkChanges, 1500);
+        } else {
+            showToast("❌ Ошибка сервера", true);
+            btn.disabled = false;
+        }
+    } catch (e) {
+        showToast("❌ Ошибка связи", true);
+        console.error(e);
+        btn.disabled = false;
+    }
+}
+
+
+
+
+
 
     
-        if (!validateTickers(stocks, 6) || !validateTickers(bonds, 14) || !validateTickers(futs, 8)) {
-    showToast("⚠️ Один из тикеров слишком длинный!", true);
-    return;
-}
+//     // 3. СОХРАНЕНИЕ
+//     async function saveData() {
 
-        if (res.status === "success") {
-    showToast("✅ Настройки сохранены");
-    // ... остальной код
-}
+//      const stocks = document.getElementById('in_tickers_stocks').value;
+//     const bonds = document.getElementById('in_tickers_bonds').value;
+//     const futs = document.getElementById('in_tickers_fut').value;
+
+    
+//         if (!validateTickers(stocks, 6) || !validateTickers(bonds, 14) || !validateTickers(futs, 8)) {
+//     showToast("⚠️ Один из тикеров слишком длинный!", true);
+//     return;
+// }
+
+//         if (res.status === "success") {
+//     showToast("✅ Настройки сохранены");
+//     // ... остальной код
+// }
 
   
 
-        const btn = document.getElementById('save-btn');
-        btn.disabled = true;
-        btn.innerText = "⏳ Сохранение...";
+//         const btn = document.getElementById('save-btn');
+//         btn.disabled = true;
+//         btn.innerText = "⏳ Сохранение...";
 
-        const currentData = {
-            vk_id: currentVkId,
-            tickers: document.getElementById('in_tickers_stocks').value,
-            adr: document.getElementById('in_adr_days').value,
-            vk_on: document.getElementById('sw_vk_on').checked ? "Вкл" : "Выкл"
-        };
+//         const currentData = {
+//             vk_id: currentVkId,
+//             tickers: document.getElementById('in_tickers_stocks').value,
+//             adr: document.getElementById('in_adr_days').value,
+//             vk_on: document.getElementById('sw_vk_on').checked ? "Вкл" : "Выкл"
+//         };
 
-        try {
-            const url = `${GAS_URL}?action=update_settings&` + new URLSearchParams(currentData);
-            const response = await fetch(url);
-            const res = await response.json();
+//         try {
+//             const url = `${GAS_URL}?action=update_settings&` + new URLSearchParams(currentData);
+//             const response = await fetch(url);
+//             const res = await response.json();
 
-            if (res.status === "success") {
-                // Обновляем initialData, чтобы кнопка снова стала серой
-                initialData = {
-                    tickers: currentData.tickers,
-                    adr: currentData.adr,
-                    vk_on: currentData.vk_on === "Вкл"
-                };
-                btn.innerText = "✅ Сохранено успешно!";
-                setTimeout(checkChanges, 2000);
-            }
-        } catch (e) {
-            // alert("Ошибка сохранения");
-            // btn.disabled = false;
-            // checkChanges();
-            document.getElementById('loading-text').innerHTML = 
-        "❌ Ошибка связи<br><small style='font-size:10px'>" + e.message + "</small>";
-    console.error(e);
-        }
-    }
+//             if (res.status === "success") {
+//                 // Обновляем initialData, чтобы кнопка снова стала серой
+//                 initialData = {
+//                     tickers: currentData.tickers,
+//                     adr: currentData.adr,
+//                     vk_on: currentData.vk_on === "Вкл"
+//                 };
+//                 btn.innerText = "✅ Сохранено успешно!";
+//                 setTimeout(checkChanges, 2000);
+//             }
+//         } catch (e) {
+//             // alert("Ошибка сохранения");
+//             // btn.disabled = false;
+//             // checkChanges();
+//             document.getElementById('loading-text').innerHTML = 
+//         "❌ Ошибка связи<br><small style='font-size:10px'>" + e.message + "</small>";
+//     console.error(e);
+//         }
+//     }
 
     // function openTribute() {
     //     vkBridge.send("VKWebAppOpenURL", {"url": "https://tribute.tg/ts"});
