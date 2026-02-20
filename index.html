@@ -530,8 +530,8 @@ function showToast(message, isError = false) {
     x.className = "show"; // Добавляем класс для анимации
     
     // Вибрация (если хочешь добавить "премиальности")
-    if (isError) vkBridge.send("VKWebAppTapticNotificationOccurred", {"type": "error"});
-    else vkBridge.send("VKWebAppTapticNotificationOccurred", {"type": "success"});
+    // if (isError) vkBridge.send("VKWebAppTapticNotificationOccurred", {"type": "error"});
+    // else vkBridge.send("VKWebAppTapticNotificationOccurred", {"type": "success"});
 
     setTimeout(() => { 
         x.className = x.className.replace("show", ""); 
