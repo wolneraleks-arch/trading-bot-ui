@@ -108,6 +108,9 @@
         <div id="user-photo" style="width: 80px; height: 80px; border-radius: 50%; background: #e1e3e6; margin: 0 auto 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 32px;">👤</div>
         <div id="user-name" style="font-size: 18px; font-weight: 700;">Пользователь VK</div>
         <div id="user-level" style="margin-top: 8px;">...</div>
+        <div style="font-size: 12px; color: #818c99; margin-top: 8px;">
+        ID: <span id="display-id">Загрузка...</span>
+    </div>
         
         <!-- Кнопка подписки (показывается, если нет Premium) -->
         <button id="buy-btn-profile" class="btn btn-pay" style="margin-top: 16px; display: none;" onclick="openTribute()">✨ Оформить подписку</button>
@@ -308,7 +311,21 @@
         // Сразу переходим к получению ID
         logStatus("🆔 Получение ID пользователя...");
         const urlParams = new URLSearchParams(window.location.search);
-        currentVkId = urlParams.get('vk_user_id');
+
+        // Получаем ID из параметров ВК
+currentVkId = urlParams.get('vk_user_id');
+
+if (currentVkId) {
+    const displayIdEl = document.getElementById('display-id');
+    if (displayIdEl) {
+        displayIdEl.innerText = currentVkId; // Теперь он точно впишется в Профиль
+    }
+}
+
+
+
+
+
 
         if (!currentVkId) {
             // Если мы здесь, значит в URL нет параметров запуска (vk_user_id)
@@ -467,7 +484,7 @@ function showToast(message, isError = false) {
             currentData.futs !== initialData.futs || 
             currentData.adr !== initialData.adr ||
             currentData.vk_on !== initialData.vk_on ||
-            currentData.tg_on !== initialData.tg_on;;
+            currentData.tg_on !== initialData.tg_on;
 
         const btn = document.getElementById('save-btn');
         btn.disabled = !hasChanged;
