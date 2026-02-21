@@ -220,14 +220,33 @@
 
     <div class="section-title">Технические параметры</div>
     <div class="card">
-        <label>Период ADR (дн) <input type="number" id="in_adr_days" style="width: 80px;"></label>
-        <label>Период RSI <input type="number" id="in_rsi_period" style="width: 80px;"></label>
+        <label>Период расчёта ADR <input type="number" id="in_adr_days" style="width: 80px;"></label>
+        <label style="flex-direction: column; align-items: flex-start; margin-top: 12px;">
+    Исключить тип АДР
+    <select id="in_adr_exclude" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #dce1e6; background: #f5f5f5; margin-top: 4px;">
+        <option value="">-- Не исключать (все типы) --</option>
+        <option value="дневной">Дневной</option>
+        <option value="повышенный">Повышенный</option>
+        <option value="аномальный">Аномальный</option>
+    </select>
+</label>
+        <label>Период расчета RSI <input type="number" id="in_rsi_period" style="width: 80px;"></label>
+        <label>Период расчёта для Объёма <input type="number" id="in_volume_days" style="width: 80px;"></label>
+        <label>Период расчёта для ср и макс суммы сделок <input type="number" id="in_trades_days" style="width: 80px;"></label>
+    
     </div>
 
-    <div class="section-title">Фильтры</div>
+    <div class="section-title">Основной Функционал</div>
     <div class="card">
+        <label>ADR <div class="switch"><input type="checkbox" id="sw_adr_on"><span class="slider"></span></div></label>
+        <label>Сделки <div class="switch"><input type="checkbox" id="sw_vol_on"><span class="slider"></span></div></label>
         <label>Аномальный объем <div class="switch"><input type="checkbox" id="sw_vol_on"><span class="slider"></span></div></label>
-        <label>Сделки ADR <div class="switch"><input type="checkbox" id="sw_adr_on"><span class="slider"></span></div></label>
+        <label>Заявки <div class="switch"><input type="checkbox" id="sw_adr_on"><span class="slider"></span></div></label>
+        <label>Индикатор RSI <div class="switch"><input type="checkbox" id="sw_adr_on"><span class="slider"></span></div></label>
+        <label>Облигации <div class="switch"><input type="checkbox" id="sw_adr_on"><span class="slider"></span></div></label>
+        <label>Фьючерсы <div class="switch"><input type="checkbox" id="sw_adr_on"><span class="slider"></span></div></label>
+        
+        
     </div>
 
     <div class="section-title">Формат уведомлений</div>
@@ -535,8 +554,12 @@ function showToast(message, isError = false) {
         document.getElementById('in_tickers_stocks').value = initialData.tickers;
         document.getElementById('in_adr_days').value = initialData.adr;
         document.getElementById('sw_vk_on').checked = initialData.vk_on;
+        document.getElementById('in_currency').value = data.currency || "RUB";
+        document.getElementById('in_adr_exclude').value = data.adr_exclude || "";
+         initialData.adr_exclude = data.adr_exclude || "";
 
-        ['in_tickers_stocks', 'in_tickers_bonds', 'in_tickers_fut', 'in_adr_days', 'sw_vk_on', 'sw_tg_on'].forEach(id => {
+
+        ['in_tickers_stocks', 'in_tickers_bonds', 'in_tickers_fut', 'in_adr_days', 'sw_vk_on', 'sw_tg_on', 'in_currency', 'in_adr_exclude'].forEach(id => {
     const input = document.getElementById(id);
     input.addEventListener('input', () => {
         // Разрешаем только буквы, цифры и запятую, удаляем пробелы
@@ -566,7 +589,9 @@ function showToast(message, isError = false) {
             futs: document.getElementById('in_tickers_fut').value, 
             adr: document.getElementById('in_adr_days').value,
             vk_on: document.getElementById('sw_vk_on').checked,
-            tg_on: document.getElementById('sw_tg_on').checked
+            tg_on: document.getElementById('sw_tg_on').checked,
+            adr_exclude = document.getElementById('in_adr_exclude').value;
+        
         };
 
         // Сравниваем текущее с тем, что было в БД
@@ -576,7 +601,9 @@ function showToast(message, isError = false) {
             currentData.futs !== initialData.futs || 
             currentData.adr !== initialData.adr ||
             currentData.vk_on !== initialData.vk_on ||
-            currentData.tg_on !== initialData.tg_on;
+            currentData.tg_on !== initialData.tg_on ||
+            currentData.currency || 
+            currentData.adr_exclude !== initialData.adr_exclude;
 
         const btn = document.getElementById('save-btn');
         btn.disabled = !hasChanged;
@@ -616,6 +643,7 @@ if (!window.isPremium) {
     const adr = document.getElementById('in_adr_days').value;
     const vk_on = document.getElementById('sw_vk_on').checked ? "Вкл" : "Выкл";
     const tg_on = document.getElementById('sw_tg_on').checked ? "Вкл" : "Выкл";
+    
 
     // 2. Валидация (проверка длины)
     if (!validateTickers(stocks, 6) || !validateTickers(bonds, 14) || !validateTickers(futs, 8)) {
@@ -634,7 +662,9 @@ if (!window.isPremium) {
         futs: document.getElementById('in_tickers_fut').value, 
         adr: adr,
         vk_on: vk_on,
-        tg_on: document.getElementById('sw_tg_on').checked ? "Вкл" : "Выкл"
+        tg_on: document.getElementById('sw_tg_on').checked ? "Вкл" : "Выкл",
+        currency: document.getElementById('in_currency').value
+        adr_exclude = document.getElementById('in_adr_exclude').value;
     };
 
     try {
@@ -651,7 +681,8 @@ if (!window.isPremium) {
                 futs: currentData.futs,
                 adr: currentData.adr,
                 vk_on: currentData.vk_on === "Вкл",
-                tg_on: currentData.tg_on === "Вкл"
+                tg_on: currentData.tg_on === "Вкл",
+                currency: currentData.currency
             };
             
             showToast("✅ Настройки сохранены");
