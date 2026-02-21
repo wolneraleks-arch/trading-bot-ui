@@ -542,11 +542,13 @@ function showToast(message, isError = false) {
         // Сохраняем "слепок" данных для сравнения
         initialData = {
             tickers: data.tickers_stocks || "",
-            bonds: data.tickers_bonds || "", // ДОБАВИТЬ
+            bonds: data.tickers_bonds || "", 
             futs: data.tickers_fut || "",
             adr: String(data.adr || "20"),
             vk_on: data.vk_on === "Вкл",
-            tg_on: data.tg_on === "Вкл"
+            tg_on: data.tg_on === "Вкл",
+            currency: data.currency || "RUB",
+            adr_exclude: data.adr_exclude || ""   
         };
 
         // Устанавливаем значения в поля
@@ -554,12 +556,12 @@ function showToast(message, isError = false) {
         document.getElementById('in_tickers_stocks').value = initialData.tickers;
         document.getElementById('in_adr_days').value = initialData.adr;
         document.getElementById('sw_vk_on').checked = initialData.vk_on;
-        document.getElementById('in_currency').value = data.currency || "RUB";
-        document.getElementById('in_adr_exclude').value = data.adr_exclude || "";
-         initialData.adr_exclude = data.adr_exclude || "";
+        document.getElementById('sw_tg_on').checked = initialData.tg_on;
+       document.getElementById('in_currency').value = initialData.currency;
+       document.getElementById('in_adr_exclude').value = initialData.adr_exclude;
 
 
-        ['in_tickers_stocks', 'in_tickers_bonds', 'in_tickers_fut', 'in_adr_days', 'sw_vk_on', 'sw_tg_on', 'in_currency', 'in_adr_exclude'].forEach(id => {
+        ['in_tickers_stocks', 'in_tickers_bonds', 'in_tickers_fut'].forEach(id => {
     const input = document.getElementById(id);
     input.addEventListener('input', () => {
         // Разрешаем только буквы, цифры и запятую, удаляем пробелы
@@ -569,10 +571,12 @@ function showToast(message, isError = false) {
 });
 
         // Вешаем "слушателей" на все изменения
-        ['in_tickers_stocks', 'in_adr_days', 'sw_vk_on'].forEach(id => {
+        ['in_adr_days', 'sw_vk_on', 'sw_tg_on', 'in_currency', 'in_adr_exclude'].forEach(id => {
             const el = document.getElementById(id);
-            el.addEventListener('input', checkChanges);
-            el.addEventListener('change', checkChanges);
+            if (el) {
+        el.addEventListener('change', checkChanges);
+        el.addEventListener('input', checkChanges);
+    }
         });
         if (!window.isPremium) {
     document.getElementById('buy-btn-profile').style.display = "block";
