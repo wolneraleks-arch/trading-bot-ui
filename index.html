@@ -323,7 +323,11 @@
 } catch (e) { console.log("Профиль не загружен"); }
 
         
-        document.getElementById('display-id').innerText = currentVkId;
+        const displayIdEl = document.getElementById('display-id');
+    if (displayIdEl) {
+    displayIdEl.innerText = currentVkId;
+    }
+
 
         // ВНИМАНИЕ: СТАВИМ status=none ЧТОБЫ ПРОВЕРИТЬ ЭКРАН ОПЛАТЫ
         const testStatus = "none"; 
@@ -375,6 +379,10 @@
             statusEl.innerHTML += "<br><small>Проверьте Debug_Log в таблице и Deployment ID</small>";
         }
     }
+          if (!window.isPremium) {
+    document.getElementById('user-level').innerHTML = "...";
+}
+
 }
 
 function showToast(message, isError = false) {
