@@ -309,15 +309,18 @@
             return;
         }
         try {
-        const userInfo = await vkBridge.send("VKWebAppGetUserInfo");
-        if (userInfo) {
-            document.getElementById('user-name').innerText = userInfo.first_name + " " + userInfo.last_name;
-            if (userInfo.photo_100) {
-                document.getElementById('user-photo').innerHTML = `<img src="${userInfo.photo_100}" width="100%">`;
-            }
+    const userInfo = await vkBridge.send("VKWebAppGetUserInfo");
+    if (userInfo) {
+        const nameEl = document.getElementById('user-name');
+        const photoEl = document.getElementById('user-photo');
+        
+        // Только если элементы ФИЗИЧЕСКИ есть в HTML
+        if (nameEl) nameEl.innerText = userInfo.first_name + " " + userInfo.last_name;
+        if (photoEl && userInfo.photo_100) {
+            photoEl.innerHTML = `<img src="${userInfo.photo_100}" style="width:100%; border-radius:50%;">`;
         }
-        } 
-        catch (e) { console.log("Инфо не получено"); }
+    }
+} catch (e) { console.log("Профиль не загружен"); }
 
         
         document.getElementById('display-id').innerText = currentVkId;
