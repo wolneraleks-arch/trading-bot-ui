@@ -170,7 +170,7 @@
         </div> -->
 
         <!-- Вкладка 2: АКТИВЫ -->
-        <div id="tab-assets" class="tab-content">
+        <!-- <div id="tab-assets" class="tab-content">
             <div class="section-title">Список тикеров</div>
             <div class="card">
                 <label style="flex-direction: column; align-items: flex-start;">
@@ -186,10 +186,10 @@
                     <input type="text" id="in_tickers_fut" placeholder="RIZ6">
                 </label>
             </div>
-        </div>
+        </div> -->
 
         <!-- Вкладка 3: РОБОТ -->
-        <div id="tab-bot" class="tab-content">
+        <!-- <div id="tab-bot" class="tab-content">
             <div class="section-title">Технические параметры</div>
             <div class="card">
                 <label>Период ADR (дн) <input type="number" id="in_adr_days" style="width: 80px;"></label>
@@ -200,8 +200,39 @@
                 <label>Аномальный объем <div class="switch"><input type="checkbox" id="sw_vol_on"><span class="slider"></span></div></label>
                 <label>Сделки ADR <div class="switch"><input type="checkbox" id="sw_adr_on"><span class="slider"></span></div></label>
             </div>
-        </div>
+        </div> -->
 
+
+<!-- Объединенная вкладка: НАСТРОЙКИ -->
+<div id="tab-settings" class="tab-content">
+    <div class="section-title">Список тикеров</div>
+    <div class="card">
+        <label style="flex-direction: column; align-items: flex-start;">
+            Акции <input type="text" id="in_tickers_stocks" placeholder="SBER, GAZP">
+        </label>
+        <label style="flex-direction: column; align-items: flex-start; margin-top: 12px;">
+            Облигации <input type="text" id="in_tickers_bonds" placeholder="SU26207RMFS9">
+        </label>
+        <label style="flex-direction: column; align-items: flex-start; margin-top: 12px;">
+            Фьючерсы <input type="text" id="in_tickers_fut" placeholder="RIZ6">
+        </label>
+    </div>
+
+    <div class="section-title">Технические параметры</div>
+    <div class="card">
+        <label>Период ADR (дн) <input type="number" id="in_adr_days" style="width: 80px;"></label>
+        <label>Период RSI <input type="number" id="in_rsi_period" style="width: 80px;"></label>
+    </div>
+
+    <div class="section-title">Фильтры</div>
+    <div class="card">
+        <label>Аномальный объем <div class="switch"><input type="checkbox" id="sw_vol_on"><span class="slider"></span></div></label>
+        <label>Сделки ADR <div class="switch"><input type="checkbox" id="sw_adr_on"><span class="slider"></span></div></label>
+    </div>
+</div>
+
+
+        
 
 <!-- Вкладка 4: СПРАВКА -->
 <div id="tab-help" class="tab-content">
@@ -231,13 +262,8 @@
         <div class="tab-icon">👤</div>
         <div>Профиль</div>
     </div>
-    <div class="tab-item" onclick="switchTab('assets', this)">
-        <div class="tab-icon">📈</div>
-        <div>Активы</div>
-    </div>
-    <div class="tab-item" onclick="switchTab('bot', this)">
-        <div class="tab-icon">🤖</div>
-        <div>Робот</div>
+    <div class="tab-item" onclick="switchTab('settings', this)">
+        <div class="tab-icon">⚙️</div><div>Настройки</div>
     </div>
     <div class="tab-item" onclick="switchTab('help', this)">
         <div class="tab-icon">❓</div>
@@ -296,18 +322,39 @@
 });
 
 
-       function switchTab(tabId, el) {
-    // 1. Скрываем все вкладки
+
+
+
+    function switchTab(tabId, el) {
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    // 2. Показываем нужную
+    
+    // Пытаемся найти вкладку по ID. Если нажали 'settings', найдет 'tab-settings'
     const target = document.getElementById('tab-' + tabId);
     if (target) target.classList.add('active');
 
-    // 3. Убираем синий цвет у всех кнопок в меню
-    document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
-    // 4. Красим текущую кнопку в синий
-    el.classList.add('active'); 
+    document.querySelectorAll('.tab-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    
+    // Кнопка сохранения нужна только в Настройках
+    const saveBtn = document.querySelector('.save-container');
+    if (saveBtn) {
+        saveBtn.style.display = (tabId === 'settings') ? 'block' : 'none';
+    }
 }
+
+
+//        function switchTab(tabId, el) {
+//     // 1. Скрываем все вкладки
+//     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+//     // 2. Показываем нужную
+//     const target = document.getElementById('tab-' + tabId);
+//     if (target) target.classList.add('active');
+
+//     // 3. Убираем синий цвет у всех кнопок в меню
+//     document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
+//     // 4. Красим текущую кнопку в синий
+//     el.classList.add('active'); 
+// }
 
         
     function showView(viewId) {
