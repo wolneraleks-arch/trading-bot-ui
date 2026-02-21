@@ -28,10 +28,29 @@
             display: flex; justify-content: space-around; align-items: center;
             padding-bottom: env(safe-area-inset-bottom); z-index: 100;
         }
-        .tab-item { text-align: center; color: #818c99; font-size: 11px; cursor: pointer; flex: 1; padding: 8px 0; }
+        /* Общий вид кнопок меню */
+.tab-item {
+    text-align: center;
+    color: #818c99;
+    font-size: 11px;
+    cursor: pointer;
+    flex: 1;
+    padding: 6px 4px; /* Отступы внутри плашки */
+    margin: 4px;      /* Расстояние между плашками */
+    border-radius: 10px; /* Скругление углов плашки */
+    transition: all 0.2s ease; /* Плавность смены цвета */
+}
+
+/* Стиль для ВЫБРАННОЙ плашки (активная) */
+.tab-item.active {
+    background: #e5f2ff; /* Бледный синий фон всей плашки */
+    color: var(--vk-blue) !important; /* Синий текст */
+}
+        
+        /* .tab-item { text-align: center; color: #818c99; font-size: 11px; cursor: pointer; flex: 1; padding: 8px 0; }
         .tab-item.active { color: var(--vk-blue); }
         /* .tab-icon { font-size: 20px; margin-bottom: 2px; } */
-        .tab-item.active .tab-icon {transform: scale(1.1);transition: transform 0.2s ease;}
+       /* .tab-item.active .tab-icon {transform: scale(1.1);transition: transform 0.2s ease;} */
 
         /* Инпуты */
         label { display: flex; justify-content: space-between; align-items: center; font-size: 15px; margin-bottom: 12px; }
