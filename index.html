@@ -594,7 +594,7 @@ function showToast(message, isError = false) {
             adr: document.getElementById('in_adr_days').value,
             vk_on: document.getElementById('sw_vk_on').checked,
             tg_on: document.getElementById('sw_tg_on').checked,
-            adr_exclude = document.getElementById('in_adr_exclude').value;
+            adr_exclude = document.getElementById('in_adr_exclude').value
         
         };
 
@@ -606,7 +606,7 @@ function showToast(message, isError = false) {
             currentData.adr !== initialData.adr ||
             currentData.vk_on !== initialData.vk_on ||
             currentData.tg_on !== initialData.tg_on ||
-            currentData.currency || 
+            currentData.currency !== initialData.currency ||
             currentData.adr_exclude !== initialData.adr_exclude;
 
         const btn = document.getElementById('save-btn');
@@ -667,8 +667,8 @@ if (!window.isPremium) {
         adr: adr,
         vk_on: vk_on,
         tg_on: document.getElementById('sw_tg_on').checked ? "Вкл" : "Выкл",
-        currency: document.getElementById('in_currency').value
-        adr_exclude = document.getElementById('in_adr_exclude').value;
+        currency: document.getElementById('in_currency').value,
+        adr_exclude: document.getElementById('in_adr_exclude').value
     };
 
     try {
