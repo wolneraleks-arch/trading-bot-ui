@@ -399,12 +399,10 @@
     }
 
 
-      async function init() {
+async function init() {
     const statusEl = document.getElementById('loading-text');
-
-          // Проверка: загрузился ли скрипт Bridge вообще
     if (typeof vkBridge === 'undefined') {
-        statusEl.innerText = "❌ Ошибка: VK Bridge не загружен. Проверьте интернет.";
+        statusEl.innerText = "❌ Ошибка: VK Bridge не загружен.";
         return;
     }
     
@@ -415,110 +413,194 @@
 
     try {
         logStatus("🔌 Подключение к VK Bridge...");
-        
-        // Просто отправляем сигнал инициализации без ожидания ответа
         vkBridge.send("VKWebAppInit", {});
         
-        // Сразу переходим к получению ID
         logStatus("🆔 Получение ID пользователя...");
         const urlParams = new URLSearchParams(window.location.search);
-
-        // Получаем ID из параметров ВК
-currentVkId = urlParams.get('vk_user_id');
-
-if (currentVkId) {
-    const displayIdEl = document.getElementById('display-id');
-    if (displayIdEl) {
-        displayIdEl.innerText = currentVkId; // Теперь он точно впишется в Профиль
-    }
-}
-
-
-
-
-
+        currentVkId = urlParams.get('vk_user_id');
 
         if (!currentVkId) {
-            // Если мы здесь, значит в URL нет параметров запуска (vk_user_id)
-            logStatus("❌ Ошибка: ID не найден. Вы запустили сайт просто по ссылке, а не внутри ВК.");
+            logStatus("❌ Ошибка: ID не найден. Запустите из ВК.");
             return;
         }
-        try {
-    const userInfo = await vkBridge.send("VKWebAppGetUserInfo");
-    if (userInfo) {
-        const nameEl = document.getElementById('user-name');
-        const photoEl = document.getElementById('user-photo');
-        
-        // Только если элементы ФИЗИЧЕСКИ есть в HTML
-        if (nameEl) nameEl.innerText = userInfo.first_name + " " + userInfo.last_name;
-        if (photoEl && userInfo.photo_100) {
-            photoEl.innerHTML = `<img src="${userInfo.photo_100}" style="width:100%; border-radius:50%;">`;
-        }
-    }
-} catch (e) { console.log("Профиль не загружен"); }
 
-        
+        // Заполняем ID в профиле сразу
         const displayIdEl = document.getElementById('display-id');
-    if (displayIdEl) {
-    displayIdEl.innerText = currentVkId;
-    }
+        if (displayIdEl) displayIdEl.innerText = currentVkId;
 
+        // Получаем инфо профиля
+        try {
+            const userInfo = await vkBridge.send("VKWebAppGetUserInfo");
+            if (userInfo) {
+                const nameEl = document.getElementById('user-name');
+                const photoEl = document.getElementById('user-photo');
+                if (nameEl) nameEl.innerText = userInfo.first_name + " " + userInfo.last_name;
+                if (photoEl && userInfo.photo_100) {
+                    photoEl.innerHTML = `<img src="${userInfo.photo_100}" style="width:100%; border-radius:50%;">`;
+                }
+            }
+        } catch (e) { console.log("Профиль не загружен"); }
 
-        // ВНИМАНИЕ: СТАВИМ status=none ЧТОБЫ ПРОВЕРИТЬ ЭКРАН ОПЛАТЫ
-        const testStatus = "none"; 
-        const fetchUrl = `${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=${testStatus}`;
-        
         logStatus("☁️ Запрос к серверу (GAS)...");
+        const fetchUrl = `${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=none`;
         
-        // Добавляем таймаут, чтобы не ждать вечно
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 секунд
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-        const response = await fetch(fetchUrl, {
-            method: 'GET',
-            mode: 'cors',
-            signal: controller.signal
-        });
+        const response = await fetch(fetchUrl, { method: 'GET', mode: 'cors', signal: controller.signal });
         clearTimeout(timeoutId);
 
-        logStatus("📦 Обработка ответа от сервера...");
+        logStatus("📦 Обработка ответа...");
         const res = await response.json();
 
-        logStatus("✨ Проверка статуса доступа...");
-    // 1. Сохраняем статус подписки в глобальную переменную
-        // Если в таблице стоит "Да", значит Премиум активен
+        // Логика доступа
         window.isPremium = (res.data && res.data.active === "Да");
-
-        // 2. Всегда показываем главный экран (view-main)
         showView('view-main');
-
-        // 3. Заполняем форму данными (если их нет, подставятся пустые поля)
+        
+        // Заполняем форму (с защитой от пустых данных)
         fillForm(res.data || { tickers_stocks: "", adr: "20" });
 
-        // 4. Если подписки нет — меняем текст уровня пользователя на предупреждение
-        if (!window.isPremium) {
-            document.getElementById('user-level').innerHTML = "<span style='color:#E64646'>Демо-режим (Без подписки)</span>";
-            document.getElementById('user-level').style.fontWeight = "bold";
-        } else {
-            document.getElementById('user-level').innerText = (res.data.level || "Премиум") + " доступ";
+        const levelEl = document.getElementById('user-level');
+        if (levelEl) {
+            if (!window.isPremium) {
+                levelEl.innerHTML = "<span style='color:#E64646'>Демо-режим (Без подписки)</span>";
+                levelEl.style.fontWeight = "bold";
+            } else {
+                levelEl.innerText = (res.data.level || "Премиум") + " доступ";
+            }
         }
-    }
 
-    
-    catch (e) {
+    } catch (e) {
         logStatus("❌ Ошибка: " + e.message);
         console.error("Full error:", e);
-        
-        // Если ошибка в fetch, проверим Debug_Log в таблице
-        if (e.message.includes("fetch") || e.name === "AbortError") {
-            statusEl.innerHTML += "<br><small>Проверьте Debug_Log в таблице и Deployment ID</small>";
-        }
     }
-          if (!window.isPremium) {
-    document.getElementById('user-level').innerHTML = "...";
 }
 
-}
+
+
+
+
+
+
+
+
+
+
+    
+//       async function init() {
+//     const statusEl = document.getElementById('loading-text');
+
+//           // Проверка: загрузился ли скрипт Bridge вообще
+//     if (typeof vkBridge === 'undefined') {
+//         statusEl.innerText = "❌ Ошибка: VK Bridge не загружен. Проверьте интернет.";
+//         return;
+//     }
+    
+//     const logStatus = (msg) => {
+//         statusEl.innerText = msg;
+//         console.log(msg);
+//     };
+
+//     try {
+//         logStatus("🔌 Подключение к VK Bridge...");
+        
+//         // Просто отправляем сигнал инициализации без ожидания ответа
+//         vkBridge.send("VKWebAppInit", {});
+        
+//         // Сразу переходим к получению ID
+//         logStatus("🆔 Получение ID пользователя...");
+//         const urlParams = new URLSearchParams(window.location.search);
+
+//         // Получаем ID из параметров ВК
+// currentVkId = urlParams.get('vk_user_id');
+
+// if (currentVkId) {
+//     const displayIdEl = document.getElementById('display-id');
+//     if (displayIdEl) {
+//         displayIdEl.innerText = currentVkId; // Теперь он точно впишется в Профиль
+//     }
+// }
+//         if (!currentVkId) {
+//             // Если мы здесь, значит в URL нет параметров запуска (vk_user_id)
+//             logStatus("❌ Ошибка: ID не найден. Вы запустили сайт просто по ссылке, а не внутри ВК.");
+//             return;
+//         }
+//         try {
+//     const userInfo = await vkBridge.send("VKWebAppGetUserInfo");
+//     if (userInfo) {
+//         const nameEl = document.getElementById('user-name');
+//         const photoEl = document.getElementById('user-photo');
+        
+//         // Только если элементы ФИЗИЧЕСКИ есть в HTML
+//         if (nameEl) nameEl.innerText = userInfo.first_name + " " + userInfo.last_name;
+//         if (photoEl && userInfo.photo_100) {
+//             photoEl.innerHTML = `<img src="${userInfo.photo_100}" style="width:100%; border-radius:50%;">`;
+//         }
+//     }
+//      } catch (e) { console.log("Профиль не загружен"); }
+
+        
+//         const displayIdEl = document.getElementById('display-id');
+//     if (displayIdEl) {
+//     displayIdEl.innerText = currentVkId;
+//     }
+
+
+//         // ВНИМАНИЕ: СТАВИМ status=none ЧТОБЫ ПРОВЕРИТЬ ЭКРАН ОПЛАТЫ
+//         const testStatus = "none"; 
+//         const fetchUrl = `${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=${testStatus}`;
+        
+//         logStatus("☁️ Запрос к серверу (GAS)...");
+        
+//         // Добавляем таймаут, чтобы не ждать вечно
+//         const controller = new AbortController();
+//         const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 секунд
+
+//         const response = await fetch(fetchUrl, {
+//             method: 'GET',
+//             mode: 'cors',
+//             signal: controller.signal
+//         });
+//         clearTimeout(timeoutId);
+
+//         logStatus("📦 Обработка ответа от сервера...");
+//         const res = await response.json();
+
+//         logStatus("✨ Проверка статуса доступа...");
+//     // 1. Сохраняем статус подписки в глобальную переменную
+//         // Если в таблице стоит "Да", значит Премиум активен
+//         window.isPremium = (res.data && res.data.active === "Да");
+
+//         // 2. Всегда показываем главный экран (view-main)
+//         showView('view-main');
+
+//         // 3. Заполняем форму данными (если их нет, подставятся пустые поля)
+//         fillForm(res.data || { tickers_stocks: "", adr: "20" });
+
+//         // 4. Если подписки нет — меняем текст уровня пользователя на предупреждение
+//         if (!window.isPremium) {
+//             document.getElementById('user-level').innerHTML = "<span style='color:#E64646'>Демо-режим (Без подписки)</span>";
+//             document.getElementById('user-level').style.fontWeight = "bold";
+//         } else {
+//             document.getElementById('user-level').innerText = (res.data.level || "Премиум") + " доступ";
+//         }
+//     }
+
+    
+//     catch (e) {
+//         logStatus("❌ Ошибка: " + e.message);
+//         console.error("Full error:", e);
+        
+//         // Если ошибка в fetch, проверим Debug_Log в таблице
+//         if (e.message.includes("fetch") || e.name === "AbortError") {
+//             statusEl.innerHTML += "<br><small>Проверьте Debug_Log в таблице и Deployment ID</small>";
+//         }
+//     }
+// //           if (!window.isPremium) {
+// //     document.getElementById('user-level').innerHTML = "...";
+// // }
+
+// }
 
 function showToast(message, isError = false) {
     const x = document.getElementById("snackbar");
