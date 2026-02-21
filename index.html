@@ -587,14 +587,17 @@ function showToast(message, isError = false) {
 
     // 2. ФУНКЦИЯ ПРОВЕРКИ ИЗМЕНЕНИЙ (УМНАЯ КНОПКА)
     function checkChanges() {
+        const elStocks = document.getElementById('in_tickers_stocks');
+    if (!elStocks) return;
         const currentData = {
-            tickers: document.getElementById('in_tickers_stocks').value,
-            bonds: document.getElementById('in_tickers_bonds').value, // ДОБАВИТЬ
-            futs: document.getElementById('in_tickers_fut').value, 
-            adr: document.getElementById('in_adr_days').value,
-            vk_on: document.getElementById('sw_vk_on').checked,
-            tg_on: document.getElementById('sw_tg_on').checked,
-            adr_exclude = document.getElementById('in_adr_exclude').value
+            tickers: elStocks.value,
+        bonds: document.getElementById('in_tickers_bonds').value,
+        futs: document.getElementById('in_tickers_fut').value, 
+        adr: document.getElementById('in_adr_days').value,
+        vk_on: document.getElementById('sw_vk_on').checked,
+        tg_on: document.getElementById('sw_tg_on').checked,
+        currency: document.getElementById('in_currency').value,
+        adr_exclude: document.getElementById('in_adr_exclude').value
         
         };
 
@@ -660,13 +663,23 @@ if (!window.isPremium) {
     btn.innerText = "⏳ Сохранение...";
 
     const currentData = {
-        vk_id: currentVkId,
+        // vk_id: currentVkId,
+        // tickers: stocks,
+        // bonds: document.getElementById('in_tickers_bonds').value, // ДОБАВИЛИ
+        // futs: document.getElementById('in_tickers_fut').value, 
+        // adr: adr,
+        // vk_on: vk_on,
+        // tg_on: document.getElementById('sw_tg_on').checked ? "Вкл" : "Выкл",
+        // currency: document.getElementById('in_currency').value,
+        // adr_exclude: document.getElementById('in_adr_exclude').value
+
+         vk_id: currentVkId,
         tickers: stocks,
-        bonds: document.getElementById('in_tickers_bonds').value, // ДОБАВИЛИ
-        futs: document.getElementById('in_tickers_fut').value, 
+        bonds: bonds,
+        futs: futs, 
         adr: adr,
         vk_on: vk_on,
-        tg_on: document.getElementById('sw_tg_on').checked ? "Вкл" : "Выкл",
+        tg_on: tg_on,
         currency: document.getElementById('in_currency').value,
         adr_exclude: document.getElementById('in_adr_exclude').value
     };
@@ -686,7 +699,8 @@ if (!window.isPremium) {
                 adr: currentData.adr,
                 vk_on: currentData.vk_on === "Вкл",
                 tg_on: currentData.tg_on === "Вкл",
-                currency: currentData.currency
+                currency: currentData.currency,
+                adr_exclude: currentData.adr_exclude
             };
             
             showToast("✅ Настройки сохранены");
