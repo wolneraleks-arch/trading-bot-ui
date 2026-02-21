@@ -273,14 +273,19 @@
 });
 
 
-        function switchTab(tabId, el) {
-            // Переключаем контент
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active');
-            // Переключаем иконки
-            document.querySelectorAll('.tab-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
-        }
+       function switchTab(tabId, el) {
+    // 1. Скрываем все вкладки
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    // 2. Показываем нужную
+    const target = document.getElementById('tab-' + tabId);
+    if (target) target.classList.add('active');
+
+    // 3. Убираем синий цвет у всех кнопок в меню
+    document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
+    // 4. Красим текущую кнопку в синий
+    el.classList.add('active'); 
+}
+
         
     function showView(viewId) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
