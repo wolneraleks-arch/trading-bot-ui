@@ -20,6 +20,8 @@
         .section-title { font-size: 13px; color: #818c99; text-transform: uppercase; margin: 16px 0 8px 4px; letter-spacing: 0.3px; }
         
         /* Стили таббара */
+        
+        
         .tabbar {
             position: fixed; bottom: 0; left: 0; right: 0; height: 60px;
             background: white; border-top: 1px solid var(--tab-border);
@@ -28,7 +30,8 @@
         }
         .tab-item { text-align: center; color: #818c99; font-size: 11px; cursor: pointer; flex: 1; padding: 8px 0; }
         .tab-item.active { color: var(--vk-blue); }
-        .tab-icon { font-size: 20px; margin-bottom: 2px; }
+        /* .tab-icon { font-size: 20px; margin-bottom: 2px; } */
+        .tab-item.active .tab-icon {transform: scale(1.1);transition: transform 0.2s ease;}
 
         /* Инпуты */
         label { display: flex; justify-content: space-between; align-items: center; font-size: 15px; margin-bottom: 12px; }
@@ -97,9 +100,49 @@
 
     <!-- ЭКРАН 3: ГЛАВНОЕ МЕНЮ -->
     <div id="view-main" class="view">
+
+<!-- Вкладка 1: ПРОФИЛЬ -->
+<div id="tab-profile" class="tab-content active">
+    <div class="section-title">Ваш профиль</div>
+    <div class="card" style="text-align: center; padding: 24px;">
+        <div id="user-photo" style="width: 80px; height: 80px; border-radius: 50%; background: #e1e3e6; margin: 0 auto 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 32px;">👤</div>
+        <div id="user-name" style="font-size: 18px; font-weight: 700;">Пользователь VK</div>
+        <div id="user-level" style="margin-top: 8px;">...</div>
+        
+        <!-- Кнопка подписки (показывается, если нет Premium) -->
+        <button id="buy-btn-profile" class="btn btn-pay" style="margin-top: 16px; display: none;" onclick="openTribute()">✨ Оформить подписку</button>
+    </div>
+
+    <div class="section-title">Интерфейс</div>
+    <div class="card">
+        <label>Темная тема (в разработке)
+            <div class="switch"><input type="checkbox" id="sw_dark_mode" disabled><span class="slider"></span></div>
+        </label>
+    </div>
+</div>
+
+<!-- Вкладка 4: СПРАВКА -->
+<div id="tab-help" class="tab-content">
+    <div class="section-title">О приложении</div>
+    <div class="card">
+        <p><b>WiseInvest Bot</b> — ваш персональный ассистент для мониторинга аномалий на рынке.</p>
+        <hr style="border: 0; border-top: 1px solid #f0f2f5;">
+        <p><b>RSI</b> — индекс относительной силы. Позволяет находить зоны перекупленности и перепроданности.</p>
+        <p><b>ADR</b> — средний дневной диапазон хода цены. Помогает понять, не "выдохлась" ли акция.</p>
+        <p><b>Аномальные объемы</b> — резкий всплеск активности покупателей или продавцов.</p>
+    </div>
+    <div class="card" style="font-size: 13px; color: #818c99;">
+        Версия приложения: 1.0.4<br>
+        Поддержка: @wolneraleks
+    </div>
+</div>
+
+
+
+
         
         <!-- Вкладка 1: ПРОФИЛЬ -->
-        <div id="tab-home" class="tab-content active">
+        <!-- <div id="tab-home" class="tab-content active">
             <div class="section-title">Аккаунт</div>
             <div class="card">
                 <div style="font-weight: 600;" id="user-level">Загрузка...</div>
@@ -110,7 +153,7 @@
                 <label>Бот ВК <div class="switch"><input type="checkbox" id="sw_vk_on"><span class="slider"></span></div></label>
                 <label>Бот ТГ <div class="switch"><input type="checkbox" id="sw_tg_on"><span class="slider"></span></div></label>
             </div>
-        </div>
+        </div> -->
 
         <!-- Вкладка 2: АКТИВЫ -->
         <div id="tab-assets" class="tab-content">
@@ -152,6 +195,28 @@
 
         <!-- Нижнее меню -->
         <div class="tabbar">
+    <div class="tab-item active" onclick="switchTab('profile', this)">
+        <div class="tab-icon">👤</div>
+        <div>Профиль</div>
+    </div>
+    <div class="tab-item" onclick="switchTab('assets', this)">
+        <div class="tab-icon">📈</div>
+        <div>Активы</div>
+    </div>
+    <div class="tab-item" onclick="switchTab('bot', this)">
+        <div class="tab-icon">🤖</div>
+        <div>Робот</div>
+    </div>
+    <div class="tab-item" onclick="switchTab('help', this)">
+        <div class="tab-icon">❓</div>
+        <div>Справка</div>
+    </div>
+</div>
+
+        
+        
+        
+        <!-- <div class="tabbar">
             <div class="tab-item active" onclick="switchTab('home', this)">
                 <div class="tab-icon">👤</div><div>Главная</div>
             </div>
@@ -162,7 +227,7 @@
                 <div class="tab-icon">⚙️</div><div>Робот</div>
             </div>
         </div>
-    </div>
+    </div> -->
 
 <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycbx1RtFb9o-XMooNAFgD-tnnDeprncLYvSzfxveWmsFa9H2-ZXUo4Gp6G10i9BvpHd6cgA/exec"; 
@@ -244,7 +309,18 @@
             logStatus("❌ Ошибка: ID не найден. Вы запустили сайт просто по ссылке, а не внутри ВК.");
             return;
         }
+        try {
+        const userInfo = await vkBridge.send("VKWebAppGetUserInfo");
+        if (userInfo) {
+            document.getElementById('user-name').innerText = userInfo.first_name + " " + userInfo.last_name;
+            if (userInfo.photo_100) {
+                document.getElementById('user-photo').innerHTML = `<img src="${userInfo.photo_100}" width="100%">`;
+            }
+        }
+        } 
+        catch (e) { console.log("Инфо не получено"); }
 
+        
         document.getElementById('display-id').innerText = currentVkId;
 
         // ВНИМАНИЕ: СТАВИМ status=none ЧТОБЫ ПРОВЕРИТЬ ЭКРАН ОПЛАТЫ
@@ -349,8 +425,11 @@ function showToast(message, isError = false) {
             el.addEventListener('input', checkChanges);
             el.addEventListener('change', checkChanges);
         });
-
+        if (!window.isPremium) {
+    document.getElementById('buy-btn-profile').style.display = "block";
+}
         checkChanges(); // Сразу проверяем состояние кнопки
+       
     }
 
     // 2. ФУНКЦИЯ ПРОВЕРКИ ИЗМЕНЕНИЙ (УМНАЯ КНОПКА)
