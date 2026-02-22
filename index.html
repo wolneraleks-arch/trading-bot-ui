@@ -907,9 +907,9 @@ async function saveData() {
     };
 
     // 1. Собираем данные (БЕЗОПАСНО)
-    const stocks = getV('in_tickers_stocks', 'tickers');
-    const bonds = getV('in_tickers_bonds', 'bonds');
-    const futs = getV('in_tickers_fut', 'futs');
+    const rawstocks = getV('in_tickers_stocks', 'tickers');
+    const rawbonds = getV('in_tickers_bonds', 'bonds');
+    const rawfuts = getV('in_tickers_fut', 'futs');
     const adr = getV('in_adr_days', 'adr');
     const rsi = getV('in_rsi_period', 'rsi');
     const vol = getV('in_volume_days', 'volume');
@@ -926,9 +926,9 @@ async function saveData() {
   };
 
    // Применяем очистку к твоим переменным:
-    const stocks = cleanDuplicates(stocks);
-    const bonds = cleanDuplicates(bonds);
-    const futs = cleanDuplicates(futs);
+    const stocks = cleanDuplicates(rawstocks);
+    const bonds = cleanDuplicates(rawbonds);
+    const futs = cleanDuplicates(rawfuts);
     
     if (!validateNumbers(adr) || !validateNumbers(rsi) || !validateNumbers(vol) || !validateNumbers(trd)) {
         showToast("⚠️ Период не может быть больше 30 дней!", true);
