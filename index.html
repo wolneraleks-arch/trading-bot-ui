@@ -433,6 +433,13 @@
     return !hasError;
 }
 
+    function validateNumbers(value, limit = 30) {
+    const num = parseInt(value);
+    if (isNaN(num)) return true; // Если пусто, не считаем ошибкой
+    return num <= limit && num > 0;
+}
+
+
 // Привязываем к инпутам (добавь это в init или в блок где вешаешь события)
 ['in_tickers_stocks', 'in_tickers_bonds', 'in_tickers_fut'].forEach(id => {
     const input = document.getElementById(id);
@@ -824,8 +831,29 @@ function showToast(message, isError = false) {
     });
 });
 
+        // 2. ЧИСЛОВЫЕ ПОЛЯ (Периоды): Проверка на лимит 30
+['in_adr_days', 'in_rsi_period', 'in_volume_days', 'in_trades_days'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+        el.addEventListener('input', () => {
+            const val = parseInt(el.value);
+            // Если число больше 30 или меньше 1 — красим в красный
+            if (val > 30 || val < 1) {
+                el.style.border = "1px solid #E64646";
+                el.style.backgroundColor = "#FFF1F1";
+            } else {
+                el.style.border = "1px solid #dce1e6";
+                el.style.backgroundColor = "#f5f5f5";
+            }
+            checkChanges();
+        });
+    }
+});
+
+// 3. ОСТАЛЬНЫЕ (Свитчи и списки): Просто следим за изменениями
+
         // Вешаем "слушателей" на все изменения
-        ['in_adr_days', 'sw_vk_on', 'sw_tg_on', 'in_currency', 'in_adr_exclude'].forEach(id => {
+        [ 'sw_vk_on', 'sw_tg_on', 'in_currency', 'in_adr_exclude'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
         el.addEventListener('change', checkChanges);
@@ -855,6 +883,12 @@ function showToast(message, isError = false) {
         
         };
 
+        const isNumbersValid = 
+        parseInt(document.getElementById('in_adr_days').value) <= 30 &&
+        parseInt(document.getElementById('in_rsi_period').value) <= 30 &&
+        parseInt(document.getElementById('in_volume_days').value) <= 30 &&
+        parseInt(document.getElementById('in_trades_days').value) <= 30;
+
         // Сравниваем текущее с тем, что было в БД
         const hasChanged = 
             currentData.tickers !== initialData.tickers ||
@@ -867,7 +901,8 @@ function showToast(message, isError = false) {
             currentData.adr_exclude !== initialData.adr_exclude;
 
         const btn = document.getElementById('save-btn');
-        btn.disabled = !hasChanged;
+        btn.disabled = !hasChanged || !isNumbersValid;
+        btn.style.opacity = (hasChanged && isNumbersValid) ? "1" : "0.5";
         
         if (hasChanged) {
             btn.innerText = "Сохранить изменения";
@@ -904,8 +939,17 @@ if (!window.isPremium) {
     const adr = document.getElementById('in_adr_days').value;
     const vk_on = document.getElementById('sw_vk_on').checked ? "Вкл" : "Выкл";
     const tg_on = document.getElementById('sw_tg_on').checked ? "Вкл" : "Выкл";
-    
 
+    const rsi = document.getElementById('in_rsi_period').value;
+    const vol = document.getElementById('in_volume_days').value;
+    const trd = document.getElementById('in_trades_days').value;
+
+    if (!validateNumbers(adr) || !validateNumbers(rsi) || !validateNumbers(vol) || !validateNumbers(trd)) {
+        showToast("⚠️ Период не может быть больше 30 дней!", true);
+        return;
+    }
+
+    
     // 2. Валидация (проверка длины)
     if (!validateTickers(stocks, 6) || !validateTickers(bonds, 14) || !validateTickers(futs, 8)) {
         showToast("⚠️ Один из тикеров слишком длинный!", true);
