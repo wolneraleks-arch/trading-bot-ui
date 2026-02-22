@@ -711,7 +711,7 @@ function showToast(message, isError = false) {
         // Устанавливаем значения в поля
         document.getElementById('user-level').innerText = (data.level || "Базовый") + " доступ";
         document.getElementById('in_tickers_stocks').value = initialData.tickers;
-       //  document.getElementById('in_tickers_bonds').value = initialData.bonds; // ДОБАВИТЬ ЭТО
+     document.getElementById('in_tickers_bonds').value = initialData.bonds; // ДОБАВИТЬ ЭТО
        //  document.getElementById('in_tickers_fut').value = initialData.futs;
         document.getElementById('in_adr_days').value = initialData.adr;
         document.getElementById('sw_vk_on').checked = initialData.vk_on;
