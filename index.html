@@ -802,18 +802,18 @@ function showToast(message, isError = false) {
     function fillForm(data) {
         // Сохраняем "слепок" данных для сравнения
         initialData = {
-            tickers: data.tickers_stocks || "",
-            bonds: data.tickers_bonds || "", 
-            futs: data.tickers_fut || "",
-            adr: String(data.adr || "20"),
-            vk_on: data.vk_on === "Вкл",
-            tg_on: data.tg_on === "Вкл",
-            currency: data.currency || "RUB",
-            rsi: String(data.rsi_period || "14"),
-            volume: String(data.volume_days || "10"),
-            trades: String(data.trades_days || "10"),
-            adr_exclude: data.adr_exclude || ""   
-        };
+    tickers: data.tickers_stocks || "",
+    bonds: data.tickers_bonds || "",
+    futs: data.tickers_fut || "",
+    adr: String(data.adr || "20"),
+    rsi: String(data.rsi_period || "14"), // Имя 'rsi'
+    volume: String(data.volume_days || "10"), // Имя 'volume'
+    trades: String(data.trades_days || "10"), // Имя 'trades'
+    vk_on: data.vk_on === "Вкл",
+    tg_on: data.tg_on === "Вкл",
+    currency: data.currency || "RUB",
+    adr_exclude: data.adr_exclude || ""
+};
 
         // Устанавливаем значения в поля
         document.getElementById('user-level').innerText = (data.level || "Базовый") + " доступ";
