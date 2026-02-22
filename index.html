@@ -920,6 +920,16 @@ async function saveData() {
     const excl = getV('in_adr_exclude', 'adr_exclude');
 
     // 2. Валидация
+
+   const cleanDuplicates = (str) => {
+    return [...new Set(str.split(',').map(s => s.trim().toUpperCase()))].filter(s => s).join(',');
+  };
+
+   // Применяем очистку к твоим переменным:
+    const stocks = cleanDuplicates(rawStocks);
+    const bonds = cleanDuplicates(rawBonds);
+    const futs = cleanDuplicates(rawFuts);
+    
     if (!validateNumbers(adr) || !validateNumbers(rsi) || !validateNumbers(vol) || !validateNumbers(trd)) {
         showToast("⚠️ Период не может быть больше 30 дней!", true);
         return;
