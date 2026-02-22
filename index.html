@@ -809,6 +809,9 @@ function showToast(message, isError = false) {
             vk_on: data.vk_on === "Вкл",
             tg_on: data.tg_on === "Вкл",
             currency: data.currency || "RUB",
+            rsi: String(data.rsi_period || "14"),
+            volume: String(data.volume_days || "10"),
+            trades: String(data.trades_days || "10"),
             adr_exclude: data.adr_exclude || ""   
         };
 
@@ -892,12 +895,15 @@ function showToast(message, isError = false) {
         // Сравниваем текущее с тем, что было в БД
         const hasChanged = 
             currentData.tickers !== initialData.tickers ||
-            currentData.bonds !== initialData.bonds || // ДОБАВИТЬ
+            currentData.bonds !== initialData.bonds || 
             currentData.futs !== initialData.futs || 
             currentData.adr !== initialData.adr ||
             currentData.vk_on !== initialData.vk_on ||
             currentData.tg_on !== initialData.tg_on ||
             currentData.currency !== initialData.currency ||
+            currentData.rsi !== initialData.rsi || 
+            currentData.volume !== initialData.volume || 
+            currentData.trades !== initialData.trades || 
             currentData.adr_exclude !== initialData.adr_exclude;
 
         const btn = document.getElementById('save-btn');
@@ -978,6 +984,9 @@ if (!window.isPremium) {
         adr: adr,
         vk_on: vk_on,
         tg_on: tg_on,
+        rsi_period: rsi, 
+        volume_days: vol, 
+        trades_days: trd,
         currency: document.getElementById('in_currency').value,
         adr_exclude: document.getElementById('in_adr_exclude').value
     };
@@ -997,6 +1006,9 @@ if (!window.isPremium) {
                 adr: currentData.adr,
                 vk_on: currentData.vk_on === "Вкл",
                 tg_on: currentData.tg_on === "Вкл",
+                rsi_period: currentData.rsi_period, 
+                volume_days: currentData.volume_days, 
+                trades_days: currentData.trades_days,
                 currency: currentData.currency,
                 adr_exclude: currentData.adr_exclude
             };
