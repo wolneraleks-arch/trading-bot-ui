@@ -823,6 +823,9 @@ function showToast(message, isError = false) {
         document.getElementById('sw_tg_on').checked = initialData.tg_on;
        document.getElementById('in_currency').value = initialData.currency;
        document.getElementById('in_adr_exclude').value = initialData.adr_exclude;
+        document.getElementById('in_rsi_period').value = initialData.rsi;
+       document.getElementById('in_volume_days').value = initialData.volume;
+       document.getElementById('in_trades_days').value = initialData.trades;
 
 
         ['in_tickers_stocks', 'in_tickers_bonds', 'in_tickers_fut'].forEach(id => {
