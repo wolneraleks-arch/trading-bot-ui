@@ -50,11 +50,6 @@
 .tab-item.active .tab-icon {
     transform: scale(1.1);
 }
-        
-        /* .tab-item { text-align: center; color: #818c99; font-size: 11px; cursor: pointer; flex: 1; padding: 8px 0; }
-        .tab-item.active { color: var(--vk-blue); }
-        /* .tab-icon { font-size: 20px; margin-bottom: 2px; } */
-       /* .tab-item.active .tab-icon {transform: scale(1.1);transition: transform 0.2s ease;} */
 
         /* Инпуты */
         label { display: flex; justify-content: space-between; align-items: center; font-size: 15px; margin-bottom: 12px; }
@@ -452,13 +447,33 @@ async function init() {
 
 
         // Получаем инфо профиля с защитой от "зависания"
+        // try {
+        //     // Говорим коду: "Жди данные профиля максимум 2 секунды"
+        //     const userInfo = await Promise.race([
+        //         vkBridge.send("VKWebAppGetUserInfo"),
+        //         new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 3000))
+        //     ]);
+ 
+        //     if (userInfo) {
+        //         const nameEl = document.getElementById('user-name');
+        //         const photoEl = document.getElementById('user-photo');
+        //         if (nameEl) nameEl.innerText = userInfo.first_name + " " + userInfo.last_name;
+        //         if (photoEl && userInfo.photo_100) {
+        //             photoEl.innerHTML = `<img src="${userInfo.photo_100}" style="width:100%; border-radius:50%;">`;
+        //         }
+        //     }     
+        // } catch (e) { 
+        //     console.log("Профиль не загружен или пользователь отклонил запрос:", e.message); 
+        //     // Не выводим ошибку на экран, просто идем дальше
+        // }
+
+
         try {
-            // Говорим коду: "Жди данные профиля максимум 2 секунды"
             const userInfo = await Promise.race([
                 vkBridge.send("VKWebAppGetUserInfo"),
                 new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 3000))
             ]);
- 
+
             if (userInfo) {
                 const nameEl = document.getElementById('user-name');
                 const photoEl = document.getElementById('user-photo');
@@ -468,9 +483,14 @@ async function init() {
                 }
             }     
         } catch (e) { 
-            console.log("Профиль не загружен или пользователь отклонил запрос:", e.message); 
-            // Не выводим ошибку на экран, просто идем дальше
-        }
+            console.log("Профиль не загружен:", e.message);
+            // ПОДСТАВЛЯЕМ РАНДОМНЫЙ НОМЕР К ИМЕНИ
+            const nameEl = document.getElementById('user-name');
+            if (nameEl) {
+                //const randomNum = currentVkId ? currentVkId.toString().slice(-4) : Math.floor(1000 + Math.random() * 9000);
+                nameEl.innerText = "Инвестор #";
+            }
+        } 
 
 
         logStatus("☁️ Запрос к серверу (GAS)...");
