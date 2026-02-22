@@ -926,9 +926,9 @@ async function saveData() {
   };
 
    // Применяем очистку к твоим переменным:
-    // const stocks = cleanDuplicates(rawStocks);
-    // const bonds = cleanDuplicates(rawBonds);
-    //const futs = cleanDuplicates(rawFuts);
+    const stocks = cleanDuplicates(stocks);
+    const bonds = cleanDuplicates(bonds);
+    const futs = cleanDuplicates(futs);
     
     if (!validateNumbers(adr) || !validateNumbers(rsi) || !validateNumbers(vol) || !validateNumbers(trd)) {
         showToast("⚠️ Период не может быть больше 30 дней!", true);
