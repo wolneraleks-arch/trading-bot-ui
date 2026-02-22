@@ -974,62 +974,101 @@ function showToast(message, isError = false) {
     //     }
     // }
 
-
 function checkChanges() {
-    const elStocks = document.getElementById('in_tickers_stocks');
-    // Проверяем наличие всех ключевых элементов, чтобы не было ошибки null
-    if (!elStocks || !document.getElementById('in_adr_days')) return;
-
-    const currentData = {
-        tickers: elStocks.value,
-        bonds: document.getElementById('in_tickers_bonds').value,
-        futs: document.getElementById('in_tickers_fut').value, 
-        adr: document.getElementById('in_adr_days').value,
-        vk_on: document.getElementById('sw_vk_on').checked,
-        tg_on: document.getElementById('sw_tg_on').checked,
-        rsi: document.getElementById('in_rsi_period').value,   // Упростил имя
-        volume: document.getElementById('in_volume_days').value, // Упростил имя
-        trades: document.getElementById('in_trades_days').value, // Упростил имя
-        currency: document.getElementById('in_currency').value,
-        adr_exclude: document.getElementById('in_adr_exclude').value
+    // Безопасно берем значения. Если элемента нет на текущем экране, берем из initialData
+    const getVal = (id) => (document.getElementById(id) || {}).value;
+    const getCheck = (id) => {
+        const el = document.getElementById(id);
+        return el ? el.checked : initialData[id.replace('sw_', '')];
     };
 
-    // Валидация чисел (добавил || 0, чтобы пустые поля не блокировали всё)
-    const isNumbersValid = 
-        (parseInt(currentData.adr) || 0) <= 30 &&
-        (parseInt(currentData.rsi) || 0) <= 30 &&
-        (parseInt(currentData.volume) || 0) <= 30 &&
-        (parseInt(currentData.trades) || 0) <= 30;
+    const currentData = {
+        tickers: getVal('in_tickers_stocks') || initialData.tickers,
+        bonds: getVal('in_tickers_bonds') || initialData.bonds,
+        futs: getVal('in_tickers_fut') || initialData.futs,
+        adr: getVal('in_adr_days') || initialData.adr,
+        rsi: getVal('in_rsi_period') || initialData.rsi,
+        volume: getVal('in_volume_days') || initialData.volume,
+        trades: getVal('in_trades_days') || initialData.trades,
+        vk_on: getCheck('sw_vk_on'),
+        tg_on: getCheck('sw_tg_on'),
+        currency: getVal('in_currency') || initialData.currency,
+        adr_exclude: getVal('in_adr_exclude') || initialData.adr_exclude
+    };
 
-    // Сравнение (теперь имена в currentData и initialData совпадают)
-    const hasChanged = 
-        currentData.tickers !== initialData.tickers ||
-        currentData.bonds !== initialData.bonds || 
-        currentData.futs !== initialData.futs || 
-        currentData.adr !== initialData.adr ||
-        currentData.vk_on !== initialData.vk_on ||
-        currentData.tg_on !== initialData.tg_on ||
-        currentData.currency !== initialData.currency ||
-        currentData.rsi !== initialData.rsi || 
-        currentData.volume !== initialData.volume || 
-        currentData.trades !== initialData.trades || 
-        currentData.adr_exclude !== initialData.adr_exclude;
+    // Сравнение... (как было раньше)
+    const hasChanged = Object.keys(currentData).some(key => currentData[key] !== initialData[key]);
 
-    const btn = document.getElementById('save-btn');
-    if (!btn) return;
-
-    const canSave = hasChanged && isNumbersValid;
-    const saveContainer = document.querySelector('.save-container');
-
-    if (saveContainer) {
-        if (canSave) {
-            saveContainer.classList.add('visible'); // Показываем кнопку
-            btn.innerText = "Сохранить изменения";
-            btn.style.background = "#0077ff";
-        } else {
-            saveContainer.classList.remove('visible'); // Полностью убираем
-        }
+    // Управление контейнером
+    const container = document.querySelector('.save-container');
+    if (hasChanged) {
+        container.classList.add('visible');
+    } else {
+        container.classList.remove('visible');
     }
+}
+
+
+
+
+
+
+    
+// function checkChanges() {
+//     const elStocks = document.getElementById('in_tickers_stocks');
+//     // Проверяем наличие всех ключевых элементов, чтобы не было ошибки null
+//     if (!elStocks || !document.getElementById('in_adr_days')) return;
+
+//     const currentData = {
+//         tickers: elStocks.value,
+//         bonds: document.getElementById('in_tickers_bonds').value,
+//         futs: document.getElementById('in_tickers_fut').value, 
+//         adr: document.getElementById('in_adr_days').value,
+//         vk_on: document.getElementById('sw_vk_on').checked,
+//         tg_on: document.getElementById('sw_tg_on').checked,
+//         rsi: document.getElementById('in_rsi_period').value,   // Упростил имя
+//         volume: document.getElementById('in_volume_days').value, // Упростил имя
+//         trades: document.getElementById('in_trades_days').value, // Упростил имя
+//         currency: document.getElementById('in_currency').value,
+//         adr_exclude: document.getElementById('in_adr_exclude').value
+//     };
+
+//     // Валидация чисел (добавил || 0, чтобы пустые поля не блокировали всё)
+//     const isNumbersValid = 
+//         (parseInt(currentData.adr) || 0) <= 30 &&
+//         (parseInt(currentData.rsi) || 0) <= 30 &&
+//         (parseInt(currentData.volume) || 0) <= 30 &&
+//         (parseInt(currentData.trades) || 0) <= 30;
+
+//     // Сравнение (теперь имена в currentData и initialData совпадают)
+//     const hasChanged = 
+//         currentData.tickers !== initialData.tickers ||
+//         currentData.bonds !== initialData.bonds || 
+//         currentData.futs !== initialData.futs || 
+//         currentData.adr !== initialData.adr ||
+//         currentData.vk_on !== initialData.vk_on ||
+//         currentData.tg_on !== initialData.tg_on ||
+//         currentData.currency !== initialData.currency ||
+//         currentData.rsi !== initialData.rsi || 
+//         currentData.volume !== initialData.volume || 
+//         currentData.trades !== initialData.trades || 
+//         currentData.adr_exclude !== initialData.adr_exclude;
+
+//     const btn = document.getElementById('save-btn');
+//     if (!btn) return;
+
+//     const canSave = hasChanged && isNumbersValid;
+//     const saveContainer = document.querySelector('.save-container');
+
+//     if (saveContainer) {
+//         if (canSave) {
+//             saveContainer.classList.add('visible'); // Показываем кнопку
+//             btn.innerText = "Сохранить изменения";
+//             btn.style.background = "#0077ff";
+//         } else {
+//             saveContainer.classList.remove('visible'); // Полностью убираем
+//         }
+//     }
     
     // Итоговое состояние кнопки
     // const canSave = hasChanged && isNumbersValid;
@@ -1119,7 +1158,7 @@ if (!window.isPremium) {
             // Обновляем "фотографию" данных для кнопки
             initialData = {
                 tickers: currentData.tickers,
-                bonds: currentData.bonds, // ДОБАВИЛИ
+                bonds: currentData.bonds,
                 futs: currentData.futs,
                 adr: currentData.adr,
                 vk_on: currentData.vk_on === "Вкл",
@@ -1132,6 +1171,10 @@ if (!window.isPremium) {
             };
             
             showToast("✅ Настройки сохранены");
+
+            // 2. Сбрасываем текст кнопки обратно
+         btn.innerText = "Сохранить изменения";
+        btn.disabled = false;
             
             // Ждем немного и возвращаем кнопку в исходное состояние (серый цвет)
             setTimeout(checkChanges, 1500);
