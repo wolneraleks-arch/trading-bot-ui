@@ -975,38 +975,67 @@ function showToast(message, isError = false) {
     // }
 
 function checkChanges() {
-    // Безопасно берем значения. Если элемента нет на текущем экране, берем из initialData
-    const getVal = (id) => (document.getElementById(id) || {}).value;
-    const getCheck = (id) => {
+    // 1. Безопасное получение значений (если элемента нет на экране, берем старое из initialData)
+    const getVal = (id, key) => {
         const el = document.getElementById(id);
-        return el ? el.checked : initialData[id.replace('sw_', '')];
+        return el ? el.value : initialData[key];
+    };
+    const getCheck = (id, key) => {
+        const el = document.getElementById(id);
+        return el ? el.checked : initialData[key];
     };
 
     const currentData = {
-        tickers: getVal('in_tickers_stocks') || initialData.tickers,
-        bonds: getVal('in_tickers_bonds') || initialData.bonds,
-        futs: getVal('in_tickers_fut') || initialData.futs,
-        adr: getVal('in_adr_days') || initialData.adr,
-        rsi: getVal('in_rsi_period') || initialData.rsi,
-        volume: getVal('in_volume_days') || initialData.volume,
-        trades: getVal('in_trades_days') || initialData.trades,
-        vk_on: getCheck('sw_vk_on'),
-        tg_on: getCheck('sw_tg_on'),
-        currency: getVal('in_currency') || initialData.currency,
-        adr_exclude: getVal('in_adr_exclude') || initialData.adr_exclude
+        tickers: getVal('in_tickers_stocks', 'tickers'),
+        bonds: getVal('in_tickers_bonds', 'bonds'),
+        futs: getVal('in_tickers_fut', 'futs'), 
+        adr: getVal('in_adr_days', 'adr'),
+        vk_on: getCheck('sw_vk_on', 'vk_on'),
+        tg_on: getCheck('sw_tg_on', 'tg_on'),
+        rsi: getVal('in_rsi_period', 'rsi'),
+        volume: getVal('in_volume_days', 'volume'),
+        trades: getVal('in_trades_days', 'trades'),
+        currency: getVal('in_currency', 'currency'),
+        adr_exclude: getVal('in_adr_exclude', 'adr_exclude')
     };
 
-    // Сравнение... (как было раньше)
-    const hasChanged = Object.keys(currentData).some(key => currentData[key] !== initialData[key]);
+    // 2. Валидация чисел
+    const isNumbersValid = 
+        (parseInt(currentData.adr) || 0) <= 30 &&
+        (parseInt(currentData.rsi) || 0) <= 30 &&
+        (parseInt(currentData.volume) || 0) <= 30 &&
+        (parseInt(currentData.trades) || 0) <= 30;
 
-    // Управление контейнером
-    const container = document.querySelector('.save-container');
-    if (hasChanged) {
-        container.classList.add('visible');
-    } else {
-        container.classList.remove('visible');
+    // 3. Сравнение
+    const hasChanged = 
+        currentData.tickers !== initialData.tickers ||
+        currentData.bonds !== initialData.bonds || 
+        currentData.futs !== initialData.futs || 
+        currentData.adr !== initialData.adr ||
+        currentData.vk_on !== initialData.vk_on ||
+        currentData.tg_on !== initialData.tg_on ||
+        currentData.currency !== initialData.currency ||
+        currentData.rsi !== initialData.rsi || 
+        currentData.volume !== initialData.volume || 
+        currentData.trades !== initialData.trades || 
+        currentData.adr_exclude !== initialData.adr_exclude;
+
+    // 4. Управление кнопкой
+    const btn = document.getElementById('save-btn');
+    const saveContainer = document.querySelector('.save-container');
+
+    if (saveContainer && btn) {
+        const canSave = hasChanged && isNumbersValid;
+        if (canSave) {
+            saveContainer.classList.add('visible');
+            btn.innerText = "Сохранить изменения";
+            btn.disabled = false;
+        } else {
+            saveContainer.classList.remove('visible');
+        }
     }
-}
+} 
+
 
 
 
