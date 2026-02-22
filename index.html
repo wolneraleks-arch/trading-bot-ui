@@ -456,7 +456,7 @@ async function init() {
             // Говорим коду: "Жди данные профиля максимум 2 секунды"
             const userInfo = await Promise.race([
                 vkBridge.send("VKWebAppGetUserInfo"),
-                new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 2000))
+                new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 5000))
             ]);
 
             if (userInfo) {
