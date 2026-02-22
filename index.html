@@ -419,6 +419,13 @@ async function init() {
         const urlParams = new URLSearchParams(window.location.search);
         currentVkId = urlParams.get('vk_user_id');
 
+        // Если ID нет, пробуем достать его через метод Bridge (запасной вариант)
+        if (!currentVkId) {
+            logStatus("🔄 Пробую альтернативный метод получения ID...");
+            const launchParams = await vkBridge.send("VKWebAppGetLaunchParams");
+            currentVkId = launchParams.vk_user_id;
+        }
+
         if (!currentVkId) {
             logStatus("❌ Ошибка: ID не найден. Запустите из ВК.");
             return;
