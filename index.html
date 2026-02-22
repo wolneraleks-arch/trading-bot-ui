@@ -456,9 +456,9 @@ async function init() {
             // Говорим коду: "Жди данные профиля максимум 2 секунды"
             const userInfo = await Promise.race([
                 vkBridge.send("VKWebAppGetUserInfo"),
-                new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 5000))
+                new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 3000))
             ]);
-
+ 
             if (userInfo) {
                 const nameEl = document.getElementById('user-name');
                 const photoEl = document.getElementById('user-photo');
@@ -467,10 +467,48 @@ async function init() {
                     photoEl.innerHTML = `<img src="${userInfo.photo_100}" style="width:100%; border-radius:50%;">`;
                 }
             }
+
+          const nameEl = document.getElementById('user-name');
+            const photoEl = document.getElementById('user-photo');
+
+            if (userInfo && nameEl) {
+                nameEl.innerText = userInfo.first_name + " " + userInfo.last_name;
+                if (photoEl && userInfo.photo_100) {
+                    photoEl.innerHTML = `<img src="${userInfo.photo_100}" style="width:100%; border-radius:50%;">`;
+                }
+            }
+        } catch (e) {
+            // ЕСЛИ ВК МОЛЧИТ — ПОДСТАВЛЯЕМ РАНДОМ
+            const nameEl = document.getElementById('user-name');
+            const photoEl = document.getElementById('user-photo');
+            
+            if (nameEl) {
+                const randomName = GUEST_NAMES[Math.floor(Math.random() * GUEST_NAMES.length)];
+                nameEl.innerText = randomName;
+            }
+            if (photoEl) {
+                // Стандартное серое фото с иконкой
+                photoEl.innerHTML = `<div style="font-size:32px">👤</div>`;
+            }
+            console.log("ВК не ответил, применен демо-профиль");
+        }
+
+
+
+            
         } catch (e) { 
             console.log("Профиль не загружен или пользователь отклонил запрос:", e.message); 
             // Не выводим ошибку на экран, просто идем дальше
         }
+
+
+
+
+
+        
+
+
+        
         
         logStatus("☁️ Запрос к серверу (GAS)...");
         const fetchUrl = `${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=none`;
