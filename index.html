@@ -871,57 +871,119 @@ function showToast(message, isError = false) {
     }
 
     // 2. ФУНКЦИЯ ПРОВЕРКИ ИЗМЕНЕНИЙ (УМНАЯ КНОПКА)
-    function checkChanges() {
-        const elStocks = document.getElementById('in_tickers_stocks');
-    if (!elStocks) return;
-        const currentData = {
-            tickers: elStocks.value,
+    // function checkChanges() {
+    //     const elStocks = document.getElementById('in_tickers_stocks');
+    // if (!elStocks) return;
+    //     const currentData = {
+    //         tickers: elStocks.value,
+    //     bonds: document.getElementById('in_tickers_bonds').value,
+    //     futs: document.getElementById('in_tickers_fut').value, 
+    //     adr: document.getElementById('in_adr_days').value,
+    //     vk_on: document.getElementById('sw_vk_on').checked,
+    //     tg_on: document.getElementById('sw_tg_on').checked,
+    //     rsi_period: document.getElementById('in_rsi_period').value,
+    //     volume_days: document.getElementById('in_volume_days').value,
+    //     currency: document.getElementById('in_currency').value,
+    //     adr_exclude: document.getElementById('in_adr_exclude').value
+        
+    //     };
+
+    //     const isNumbersValid = 
+    //     parseInt(document.getElementById('in_adr_days').value) <= 30 &&
+    //     parseInt(document.getElementById('in_rsi_period').value) <= 30 &&
+    //     parseInt(document.getElementById('in_volume_days').value) <= 30 &&
+    //     parseInt(document.getElementById('in_trades_days').value) <= 30;
+
+    //     // Сравниваем текущее с тем, что было в БД
+    //     const hasChanged = 
+    //         currentData.tickers !== initialData.tickers ||
+    //         currentData.bonds !== initialData.bonds || 
+    //         currentData.futs !== initialData.futs || 
+    //         currentData.adr !== initialData.adr ||
+    //         currentData.vk_on !== initialData.vk_on ||
+    //         currentData.tg_on !== initialData.tg_on ||
+    //         currentData.currency !== initialData.currency ||
+    //         currentData.rsi !== initialData.rsi || 
+    //         currentData.volume !== initialData.volume || 
+    //         currentData.trades !== initialData.trades || 
+    //         currentData.adr_exclude !== initialData.adr_exclude;
+
+    //     const btn = document.getElementById('save-btn');
+    //     btn.disabled = !hasChanged || !isNumbersValid;
+    //     btn.style.opacity = (hasChanged && isNumbersValid) ? "1" : "0.5";
+        
+    //     if (hasChanged) {
+    //         btn.innerText = "Сохранить изменения";
+    //         btn.style.opacity = "1";
+    //         btn.style.background = "#0077ff";
+    //     } else {
+    //         btn.innerText = "Изменений нет";
+    //         btn.style.opacity = "0.5";
+    //         btn.style.background = "#818c99";
+    //     }
+    // }
+
+
+function checkChanges() {
+    const elStocks = document.getElementById('in_tickers_stocks');
+    // Проверяем наличие всех ключевых элементов, чтобы не было ошибки null
+    if (!elStocks || !document.getElementById('in_adr_days')) return;
+
+    const currentData = {
+        tickers: elStocks.value,
         bonds: document.getElementById('in_tickers_bonds').value,
         futs: document.getElementById('in_tickers_fut').value, 
         adr: document.getElementById('in_adr_days').value,
         vk_on: document.getElementById('sw_vk_on').checked,
         tg_on: document.getElementById('sw_tg_on').checked,
-        rsi_period: document.getElementById('in_rsi_period').value,
-        volume_days: document.getElementById('in_volume_days').value,
+        rsi: document.getElementById('in_rsi_period').value,   // Упростил имя
+        volume: document.getElementById('in_volume_days').value, // Упростил имя
+        trades: document.getElementById('in_trades_days').value, // Упростил имя
         currency: document.getElementById('in_currency').value,
         adr_exclude: document.getElementById('in_adr_exclude').value
-        
-        };
+    };
 
-        const isNumbersValid = 
-        parseInt(document.getElementById('in_adr_days').value) <= 30 &&
-        parseInt(document.getElementById('in_rsi_period').value) <= 30 &&
-        parseInt(document.getElementById('in_volume_days').value) <= 30 &&
-        parseInt(document.getElementById('in_trades_days').value) <= 30;
+    // Валидация чисел (добавил || 0, чтобы пустые поля не блокировали всё)
+    const isNumbersValid = 
+        (parseInt(currentData.adr) || 0) <= 30 &&
+        (parseInt(currentData.rsi) || 0) <= 30 &&
+        (parseInt(currentData.volume) || 0) <= 30 &&
+        (parseInt(currentData.trades) || 0) <= 30;
 
-        // Сравниваем текущее с тем, что было в БД
-        const hasChanged = 
-            currentData.tickers !== initialData.tickers ||
-            currentData.bonds !== initialData.bonds || 
-            currentData.futs !== initialData.futs || 
-            currentData.adr !== initialData.adr ||
-            currentData.vk_on !== initialData.vk_on ||
-            currentData.tg_on !== initialData.tg_on ||
-            currentData.currency !== initialData.currency ||
-            currentData.rsi !== initialData.rsi || 
-            currentData.volume !== initialData.volume || 
-            currentData.trades !== initialData.trades || 
-            currentData.adr_exclude !== initialData.adr_exclude;
+    // Сравнение (теперь имена в currentData и initialData совпадают)
+    const hasChanged = 
+        currentData.tickers !== initialData.tickers ||
+        currentData.bonds !== initialData.bonds || 
+        currentData.futs !== initialData.futs || 
+        currentData.adr !== initialData.adr ||
+        currentData.vk_on !== initialData.vk_on ||
+        currentData.tg_on !== initialData.tg_on ||
+        currentData.currency !== initialData.currency ||
+        currentData.rsi !== initialData.rsi || 
+        currentData.volume !== initialData.volume || 
+        currentData.trades !== initialData.trades || 
+        currentData.adr_exclude !== initialData.adr_exclude;
 
-        const btn = document.getElementById('save-btn');
-        btn.disabled = !hasChanged || !isNumbersValid;
-        btn.style.opacity = (hasChanged && isNumbersValid) ? "1" : "0.5";
-        
-        if (hasChanged) {
-            btn.innerText = "Сохранить изменения";
-            btn.style.opacity = "1";
-            btn.style.background = "#0077ff";
-        } else {
-            btn.innerText = "Изменений нет";
-            btn.style.opacity = "0.5";
-            btn.style.background = "#818c99";
-        }
+    const btn = document.getElementById('save-btn');
+    if (!btn) return;
+
+    // Итоговое состояние кнопки
+    const canSave = hasChanged && isNumbersValid;
+    btn.disabled = !canSave;
+    
+    if (canSave) {
+        btn.innerText = "Сохранить изменения";
+        btn.style.opacity = "1";
+        btn.style.background = "#0077ff";
+    } else {
+        btn.innerText = isNumbersValid ? "Изменений нет" : "⚠️ Ошибка в цифрах";
+        btn.style.opacity = "0.5";
+        btn.style.background = "#818c99";
     }
+}
+
+
+    
 
 
 async function saveData() {
@@ -969,16 +1031,6 @@ if (!window.isPremium) {
     btn.innerText = "⏳ Сохранение...";
 
     const currentData = {
-        // vk_id: currentVkId,
-        // tickers: stocks,
-        // bonds: document.getElementById('in_tickers_bonds').value, // ДОБАВИЛИ
-        // futs: document.getElementById('in_tickers_fut').value, 
-        // adr: adr,
-        // vk_on: vk_on,
-        // tg_on: document.getElementById('sw_tg_on').checked ? "Вкл" : "Выкл",
-        // currency: document.getElementById('in_currency').value,
-        // adr_exclude: document.getElementById('in_adr_exclude').value
-
          vk_id: currentVkId,
         tickers: stocks,
         bonds: bonds,
