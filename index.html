@@ -129,7 +129,7 @@
     <div class="section-title">Ваш профиль</div>
     <div class="card" style="text-align: center; padding: 24px;">
         <div id="user-photo" style="width: 80px; height: 80px; border-radius: 50%; background: #e1e3e6; margin: 0 auto 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 32px;">👤</div>
-        <div id="user-name" style="font-size: 18px; font-weight: 700;">Пользователь VK</div>
+        <div id="user-name" style="font-size: 18px; font-weight: 700;">Пользователь</div>
         <div id="user-level" style="margin-top: 8px;">...</div>
         <div style="font-size: 12px; color: #818c99; margin-top: 8px;">
         ID: <span id="display-id">Загрузка...</span>
@@ -466,50 +466,13 @@ async function init() {
                 if (photoEl && userInfo.photo_100) {
                     photoEl.innerHTML = `<img src="${userInfo.photo_100}" style="width:100%; border-radius:50%;">`;
                 }
-            }
-
-          const nameEl = document.getElementById('user-name');
-            const photoEl = document.getElementById('user-photo');
-
-            if (userInfo && nameEl) {
-                nameEl.innerText = userInfo.first_name + " " + userInfo.last_name;
-                if (photoEl && userInfo.photo_100) {
-                    photoEl.innerHTML = `<img src="${userInfo.photo_100}" style="width:100%; border-radius:50%;">`;
-                }
-            }
-        } catch (e) {
-            // ЕСЛИ ВК МОЛЧИТ — ПОДСТАВЛЯЕМ РАНДОМ
-            const nameEl = document.getElementById('user-name');
-            const photoEl = document.getElementById('user-photo');
-            
-            if (nameEl) {
-                const randomName = GUEST_NAMES[Math.floor(Math.random() * GUEST_NAMES.length)];
-                nameEl.innerText = randomName;
-            }
-            if (photoEl) {
-                // Стандартное серое фото с иконкой
-                photoEl.innerHTML = `<div style="font-size:32px">👤</div>`;
-            }
-            console.log("ВК не ответил, применен демо-профиль");
-        }
-
-
-
-            
+            }     
         } catch (e) { 
             console.log("Профиль не загружен или пользователь отклонил запрос:", e.message); 
             // Не выводим ошибку на экран, просто идем дальше
         }
 
 
-
-
-
-        
-
-
-        
-        
         logStatus("☁️ Запрос к серверу (GAS)...");
         const fetchUrl = `${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=none`;
         
