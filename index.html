@@ -112,6 +112,54 @@
 }
 
 
+        /* Контейнер для позиционирования */
+.info-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Само облачко */
+.tooltip-box {
+    visibility: hidden;
+    width: 160px;
+    background-color: rgba(50, 50, 50, 0.9);
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%; /* Показываем над иконкой */
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+    line-height: 1.4;
+    pointer-events: none; /* Чтобы не мешало кликать под ним */
+}
+
+/* Треугольник (хвостик) */
+.tooltip-box::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: rgba(50, 50, 50, 0.9) transparent transparent transparent;
+}
+
+/* Класс для показа */
+.tooltip-box.show {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+
     </style>
 </head>
 <body>
@@ -243,13 +291,25 @@
     </select>
 </label>
         
-        <label style="margin-top:12px;">
+        <!-- <label style="margin-top:12px;">
         <div style="display: flex; align-items: center;">
             Период расчета RSI 
             <span class="info-btn" onclick="showToast('Кол-во свечей для расчета индекса силы. Стандарт: 14')">i</span>
         </div>
         <input type="number" id="in_rsi_period" style="width: 80px;">
-    </label> 
+    </label>  -->
+
+        <label style="margin-top:12px;">
+    <div style="display: flex; align-items: center;">
+        Период RSI 
+        <div class="info-wrapper">
+            <span class="info-btn" onclick="showTip(this, 'Рекомендуемый период: 14 дней')">i</span>
+            <div class="tooltip-box">Подсказка</div>
+        </div>
+    </div>
+    <input type="number" id="in_rsi_period" style="width: 80px;">
+</label>
+
 
     <label style="margin-top:12px;">
         <div style="display: flex; align-items: center;">
@@ -436,6 +496,24 @@
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
     }
+
+    function showTip(el, text) {
+    // Находим соседний блок с текстом подсказки
+    const tip = el.nextElementSibling;
+    tip.innerText = text;
+    
+    // Показываем
+    tip.classList.add("show");
+    
+    // Вибрация (легкий "тык")
+    vkBridge.send("VKWebAppTapticNotificationOccurred", {"type": "success"});
+
+    // Прячем через 3 секунды
+    setTimeout(() => {
+        tip.classList.remove("show");
+    }, 3000);
+}
+
 
 
 async function init() {
