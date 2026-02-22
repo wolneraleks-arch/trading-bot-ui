@@ -437,9 +437,28 @@ async function init() {
         logStatus("этап 2.");
         if (displayIdEl) displayIdEl.innerText = currentVkId;
 
-        // Получаем инфо профиля
+        // // Получаем инфо профиля
+        // try {
+        //     const userInfo = await vkBridge.send("VKWebAppGetUserInfo");
+        //     if (userInfo) {
+        //         const nameEl = document.getElementById('user-name');
+        //         const photoEl = document.getElementById('user-photo');
+        //         if (nameEl) nameEl.innerText = userInfo.first_name + " " + userInfo.last_name;
+        //         if (photoEl && userInfo.photo_100) {
+        //             photoEl.innerHTML = `<img src="${userInfo.photo_100}" style="width:100%; border-radius:50%;">`;
+        //         }
+        //     }
+        // } catch (e) { console.log("Профиль не загружен"); }
+
+
+        // Получаем инфо профиля с защитой от "зависания"
         try {
-            const userInfo = await vkBridge.send("VKWebAppGetUserInfo");
+            // Говорим коду: "Жди данные профиля максимум 2 секунды"
+            const userInfo = await Promise.race([
+                vkBridge.send("VKWebAppGetUserInfo"),
+                new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 2000))
+            ]);
+
             if (userInfo) {
                 const nameEl = document.getElementById('user-name');
                 const photoEl = document.getElementById('user-photo');
@@ -448,8 +467,11 @@ async function init() {
                     photoEl.innerHTML = `<img src="${userInfo.photo_100}" style="width:100%; border-radius:50%;">`;
                 }
             }
-        } catch (e) { console.log("Профиль не загружен"); }
-
+        } catch (e) { 
+            console.log("Профиль не загружен или пользователь отклонил запрос:", e.message); 
+            // Не выводим ошибку на экран, просто идем дальше
+        }
+        
         logStatus("☁️ Запрос к серверу (GAS)...");
         const fetchUrl = `${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=none`;
         
