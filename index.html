@@ -95,6 +95,23 @@
     top: 40px; /* выезжает на 20px от верха */
 }
 
+        .info-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: #e1e3e6;
+    color: #818c99;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+
     </style>
 </head>
 <body>
@@ -225,11 +242,38 @@
         <option value="аномальный">Аномальный</option>
     </select>
 </label>
-        <label>Период расчета RSI <input type="number" id="in_rsi_period" style="width: 80px;"></label>
+        
+        <label style="margin-top:12px;">
+        <div style="display: flex; align-items: center;">
+            Период расчета RSI 
+            <span class="info-btn" onclick="showToast('Кол-во свечей для расчета индекса силы. Стандарт: 14')">i</span>
+        </div>
+        <input type="number" id="in_rsi_period" style="width: 80px;">
+    </label> 
+
+    <label style="margin-top:12px;">
+        <div style="display: flex; align-items: center;">
+            Расчёт для Объёма 
+            <span class="info-btn" onclick="showToast('За сколько дней считать средний объем для поиска аномалий')">i</span>
+        </div>
+        <input type="number" id="in_volume_days" style="width: 80px;">
+    </label>
+
+    <label style="margin-top:12px;">
+        <div style="display: flex; align-items: center;">
+            Расчёт суммы сделок 
+            <span class="info-btn" onclick="showToast('Период анализа средних и максимальных сумм сделок в стакане')">i</span>
+        </div>
+        <input type="number" id="in_trades_days" style="width: 80px;">
+    </label>
+</div>
+        
+        <!-- <label>Период расчета RSI <input type="number" id="in_rsi_period" style="width: 80px;"></label> 
+        
         <label>Период расчёта для Объёма <input type="number" id="in_volume_days" style="width: 80px;"></label>
-        <label>Период расчёта для ср и макс суммы сделок <input type="number" id="in_trades_days" style="width: 80px;"></label>
+        <label>Период расчёта для ср и макс суммы сделок <input type="number" id="in_trades_days" style="width: 80px;"></label> -->
     
-    </div>
+    <!-- </div> -->
 
     <div class="section-title">Основной Функционал</div>
     <div class="card">
