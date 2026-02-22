@@ -485,27 +485,61 @@
 
 
 
-    function switchTab(tabId, el) {
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+//     function switchTab(tabId, el) {
+//     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     
-    // Пытаемся найти вкладку по ID. Если нажали 'settings', найдет 'tab-settings'
+//     // Пытаемся найти вкладку по ID. Если нажали 'settings', найдет 'tab-settings'
+//     const target = document.getElementById('tab-' + tabId);
+//     if (target) target.classList.add('active');
+
+//     document.querySelectorAll('.tab-item').forEach(i => i.classList.remove('active'));
+//     el.classList.add('active');
+    
+//     // Кнопка сохранения нужна только в Настройках
+//     const saveContainer = document.querySelector('.save-container');
+//     if (saveContainer) saveContainer.classList.remove('visible');
+//     if (tabId === 'help') {
+//             saveContainer.classList.remove('visible');
+//         } else {
+//             // Если мы в Профиле или Настройках — проверяем, есть ли изменения
+//             checkChanges(); 
+//         }
+        
+//     const saveBtn = document.querySelector('.save-container');
+//     if (saveBtn) {
+//         saveBtn.style.display = (tabId === 'settings') ? 'block' : 'none';
+//     }
+// }
+
+
+
+function switchTab(tabId, el) {
+    // 1. Переключаем контент вкладок
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     const target = document.getElementById('tab-' + tabId);
     if (target) target.classList.add('active');
 
+    // 2. Красим иконки в меню
     document.querySelectorAll('.tab-item').forEach(i => i.classList.remove('active'));
     el.classList.add('active');
     
-    // Кнопка сохранения нужна только в Настройках
+    // 3. УПРАВЛЕНИЕ КНОПКОЙ СОХРАНЕНИЯ
     const saveContainer = document.querySelector('.save-container');
-    if (saveContainer) saveContainer.classList.remove('visible');
-
-        
-    const saveBtn = document.querySelector('.save-container');
-    if (saveBtn) {
-        saveBtn.style.display = (tabId === 'settings') ? 'block' : 'none';
+    if (saveContainer) {
+        if (tabId === 'help') {
+            // В справке кнопка всегда скрыта (там нечего сохранять)
+            saveContainer.classList.remove('visible');
+        } else {
+            // В Профиле и Настройках вызываем проверку изменений. 
+            // Если что-то было изменено — кнопка выплывет сама через .visible
+            checkChanges(); 
+        }
     }
 }
 
+
+
+    
 
 //        function switchTab(tabId, el) {
 //     // 1. Скрываем все вкладки
