@@ -290,14 +290,6 @@
         <option value="аномальный">Аномальный</option>
     </select>
 </label>
-        
-        <!-- <label style="margin-top:12px;">
-        <div style="display: flex; align-items: center;">
-            Период расчета RSI 
-            <span class="info-btn" onclick="showToast('Кол-во свечей для расчета индекса силы. Стандарт: 14')">i</span>
-        </div>
-        <input type="number" id="in_rsi_period" style="width: 80px;">
-    </label>  -->
 
         <label style="margin-top:12px;">
     <div style="display: flex; align-items: center;">
@@ -313,18 +305,24 @@
 
     <label style="margin-top:12px;">
         <div style="display: flex; align-items: center;">
-            Расчёт для Объёма 
-            <span class="info-btn" onclick="showToast('За сколько дней считать средний объем для поиска аномалий')">i</span>
+            Период расчёта для Объёма 
+            <div class="info-wrapper">
+            <span class="info-btn" onclick="showTip(this, 'За сколько дней считать ср и макс объем')">i</span>
+            <div class="tooltip-box">Подсказка</div>
+        </div>
         </div>
         <input type="number" id="in_volume_days" style="width: 80px;">
     </label>
 
     <label style="margin-top:12px;">
         <div style="display: flex; align-items: center;">
-            Расчёт суммы сделок 
-            <span class="info-btn" onclick="showToast('Период анализа средних и максимальных сумм сделок в стакане')">i</span>
+            Период расчёта для сделок 
+            <div class="info-wrapper">
+            <span class="info-btn" onclick="showTip(this, 'За сколько дн считать средние и максимальные суммы сделок')">i</span>
+            <div class="tooltip-box">Подсказка</div>
         </div>
-        <input type="number" id="in_trades_days" style="width: 80px;">
+    </div>
+   <input type="number" id="in_trades_days" style="width: 80px;">
     </label>
 </div>
         
