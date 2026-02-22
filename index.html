@@ -159,6 +159,26 @@
 }
 
 
+        .save-container {
+    position: fixed;
+    bottom: 70px; /* Над таббаром */
+    left: 16px;
+    right: 16px;
+    z-index: 90;
+    transition: transform 0.3s ease, opacity 0.3s ease; /* Анимация появления */
+    transform: translateY(150%); /* По умолчанию скрыта внизу */
+    opacity: 0;
+    pointer-events: none; /* Чтобы нельзя было нажать на скрытую кнопку */
+}
+
+/* Класс, который мы будем добавлять через JS */
+.save-container.visible {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+
 
     </style>
 </head>
@@ -476,6 +496,10 @@
     el.classList.add('active');
     
     // Кнопка сохранения нужна только в Настройках
+    const saveContainer = document.querySelector('.save-container');
+    if (saveContainer) saveContainer.classList.remove('visible');
+
+        
     const saveBtn = document.querySelector('.save-container');
     if (saveBtn) {
         saveBtn.style.display = (tabId === 'settings') ? 'block' : 'none';
@@ -656,16 +680,6 @@ async function init() {
 }
 
 
-
-
-
-
-
-
-
-
-
-    
 //       async function init() {
 //     const statusEl = document.getElementById('loading-text');
 
@@ -805,10 +819,10 @@ function showToast(message, isError = false) {
     tickers: data.tickers_stocks || "",
     bonds: data.tickers_bonds || "",
     futs: data.tickers_fut || "",
-    adr: String(data.adr || "20"),
+    adr: String(data.adr || "27"),
     rsi: String(data.rsi_period || "14"), // Имя 'rsi'
-    volume: String(data.volume_days || "10"), // Имя 'volume'
-    trades: String(data.trades_days || "10"), // Имя 'trades'
+    volume: String(data.volume_days || "27"), // Имя 'volume'
+    trades: String(data.trades_days || "27"), // Имя 'trades'
     vk_on: data.vk_on === "Вкл",
     tg_on: data.tg_on === "Вкл",
     currency: data.currency || "RUB",
@@ -970,19 +984,32 @@ function checkChanges() {
     const btn = document.getElementById('save-btn');
     if (!btn) return;
 
-    // Итоговое состояние кнопки
     const canSave = hasChanged && isNumbersValid;
-    btn.disabled = !canSave;
-    
-    if (canSave) {
-        btn.innerText = "Сохранить изменения";
-        btn.style.opacity = "1";
-        btn.style.background = "#0077ff";
-    } else {
-        btn.innerText = isNumbersValid ? "Изменений нет" : "⚠️ Ошибка в цифрах";
-        btn.style.opacity = "0.5";
-        btn.style.background = "#818c99";
+    const saveContainer = document.querySelector('.save-container');
+
+    if (saveContainer) {
+        if (canSave) {
+            saveContainer.classList.add('visible'); // Показываем кнопку
+            btn.innerText = "Сохранить изменения";
+            btn.style.background = "#0077ff";
+        } else {
+            saveContainer.classList.remove('visible'); // Полностью убираем
+        }
     }
+    
+    // Итоговое состояние кнопки
+    // const canSave = hasChanged && isNumbersValid;
+    // btn.disabled = !canSave;
+    
+    // if (canSave) {
+    //     btn.innerText = "Сохранить изменения";
+    //     btn.style.opacity = "1";
+    //     btn.style.background = "#0077ff";
+    // } else {
+    //     btn.innerText = isNumbersValid ? "Изменений нет" : "⚠️ Ошибка в цифрах";
+    //     btn.style.opacity = "0.5";
+    //     btn.style.background = "#818c99";
+    // }
 }
 
 
