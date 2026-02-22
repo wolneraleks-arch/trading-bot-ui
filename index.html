@@ -866,6 +866,8 @@ function showToast(message, isError = false) {
         // Устанавливаем значения в поля
         document.getElementById('user-level').innerText = (data.level || "Базовый") + " доступ";
         document.getElementById('in_tickers_stocks').value = initialData.tickers;
+        document.getElementById('in_tickers_bonds').value = initialData.bonds; // ДОБАВИТЬ ЭТО
+        document.getElementById('in_tickers_fut').value = initialData.futs;
         document.getElementById('in_adr_days').value = initialData.adr;
         document.getElementById('sw_vk_on').checked = initialData.vk_on;
         document.getElementById('sw_tg_on').checked = initialData.tg_on;
@@ -1118,63 +1120,171 @@ function checkChanges() {
     
 
 
-async function saveData() {
-if (!window.isPremium) {
-        showToast("❌ Сохранение доступно только с подпиской", true);
+// async function saveData() {
+// if (!window.isPremium) {
+//         showToast("❌ Сохранение доступно только с подпиской", true);
         
-        // Через 1.5 секунды предлагаем оплатить (открываем модалку или редирект)
+//         // Через 1.5 секунды предлагаем оплатить (открываем модалку или редирект)
+//         setTimeout(() => {
+//             if (confirm("Хотите оформить подписку Tribute, чтобы сохранять настройки?")) {
+//                 openTribute();
+//             }
+//         }, 1500);
+        
+//         return; // Прерываем выполнение функции, данные в GAS не полетят
+//     }
+
+    
+//     const btn = document.getElementById('save-btn');
+//     // 1. Сначала собираем данные из полей
+//     const stocks = document.getElementById('in_tickers_stocks').value;
+//     const bonds = document.getElementById('in_tickers_bonds').value;
+//     const futs = document.getElementById('in_tickers_fut').value;
+//     const adr = document.getElementById('in_adr_days').value;
+//     const vk_on = document.getElementById('sw_vk_on').checked ? "Вкл" : "Выкл";
+//     const tg_on = document.getElementById('sw_tg_on').checked ? "Вкл" : "Выкл";
+
+//     const rsi = document.getElementById('in_rsi_period').value;
+//     const vol = document.getElementById('in_volume_days').value;
+//     const trd = document.getElementById('in_trades_days').value;
+
+//     if (!validateNumbers(adr) || !validateNumbers(rsi) || !validateNumbers(vol) || !validateNumbers(trd)) {
+//         showToast("⚠️ Период не может быть больше 30 дней!", true);
+//         return;
+//     }
+
+    
+//     // 2. Валидация (проверка длины)
+//     if (!validateTickers(stocks, 6) || !validateTickers(bonds, 14) || !validateTickers(futs, 8)) {
+//         showToast("⚠️ Один из тикеров слишком длинный!", true);
+//         return;
+//     }
+
+//     // 3. Если всё ок, блокируем кнопку и начинаем отправку
+//     btn.disabled = true;
+//     btn.innerText = "⏳ Сохранение...";
+
+//     const currentData = {
+//          vk_id: currentVkId,
+//         tickers: stocks,
+//         bonds: bonds,
+//         futs: futs, 
+//         adr: adr,
+//         vk_on: vk_on,
+//         tg_on: tg_on,
+//         rsi_period: rsi, 
+//         volume_days: vol, 
+//         trades_days: trd,
+//         currency: document.getElementById('in_currency').value,
+//         adr_exclude: document.getElementById('in_adr_exclude').value
+//     };
+
+//     try {
+//         const url = `${GAS_URL}?action=update_settings&` + new URLSearchParams(currentData);
+//         const response = await fetch(url);
+//         const res = await response.json();
+
+//         // 4. ТЕПЕРЬ проверяем ответ от сервера
+//         if (res.status === "success") {
+//             // Обновляем "фотографию" данных для кнопки
+//             initialData = {
+//                 tickers: currentData.tickers,
+//                 bonds: currentData.bonds,
+//                 futs: currentData.futs,
+//                 adr: currentData.adr,
+//                 vk_on: currentData.vk_on === "Вкл",
+//                 tg_on: currentData.tg_on === "Вкл",
+//                 rsi_period: currentData.rsi_period, 
+//                 volume_days: currentData.volume_days, 
+//                 trades_days: currentData.trades_days,
+//                 currency: currentData.currency,
+//                 adr_exclude: currentData.adr_exclude
+//             };
+            
+//             showToast("✅ Настройки сохранены");
+
+//             // 2. Сбрасываем текст кнопки обратно
+//          btn.innerText = "Сохранить изменения";
+//         btn.disabled = false;
+            
+//             // Ждем немного и возвращаем кнопку в исходное состояние (серый цвет)
+//             setTimeout(checkChanges, 1500);
+//         } 
+//         else {
+//             showToast("❌ Ошибка сервера", true);
+//             btn.disabled = false;
+//         }
+//     } catch (e) {
+//         showToast("❌ Ошибка связи", true);
+//         console.error(e);
+//         btn.disabled = false;
+//     }
+// }
+
+
+
+async function saveData() {
+    if (!window.isPremium) {
+        showToast("❌ Сохранение доступно только с подпиской", true);
         setTimeout(() => {
             if (confirm("Хотите оформить подписку Tribute, чтобы сохранять настройки?")) {
                 openTribute();
             }
         }, 1500);
-        
-        return; // Прерываем выполнение функции, данные в GAS не полетят
+        return; 
     }
 
-    
     const btn = document.getElementById('save-btn');
-    // 1. Сначала собираем данные из полей
-    const stocks = document.getElementById('in_tickers_stocks').value;
-    const bonds = document.getElementById('in_tickers_bonds').value;
-    const futs = document.getElementById('in_tickers_fut').value;
-    const adr = document.getElementById('in_adr_days').value;
-    const vk_on = document.getElementById('sw_vk_on').checked ? "Вкл" : "Выкл";
-    const tg_on = document.getElementById('sw_tg_on').checked ? "Вкл" : "Выкл";
+    
+    // ФУНКЦИЯ-ЗАЩИТА: берет значение из поля или из памяти (если поля нет на экране)
+    const getV = (id, key) => {
+        const el = document.getElementById(id);
+        return el ? el.value : initialData[key];
+    };
+    const getC = (id, key) => {
+        const el = document.getElementById(id);
+        return el ? (el.checked ? "Вкл" : "Выкл") : (initialData[key] ? "Вкл" : "Выкл");
+    };
 
-    const rsi = document.getElementById('in_rsi_period').value;
-    const vol = document.getElementById('in_volume_days').value;
-    const trd = document.getElementById('in_trades_days').value;
+    // 1. Собираем данные (БЕЗОПАСНО)
+    const stocks = getV('in_tickers_stocks', 'tickers');
+    const bonds = getV('in_tickers_bonds', 'bonds');
+    const futs = getV('in_tickers_fut', 'futs');
+    const adr = getV('in_adr_days', 'adr');
+    const rsi = getV('in_rsi_period', 'rsi');
+    const vol = getV('in_volume_days', 'volume');
+    const trd = getV('in_trades_days', 'trades');
+    const vk_on = getC('sw_vk_on', 'vk_on');
+    const tg_on = getC('sw_tg_on', 'tg_on');
+    const curr = getV('in_currency', 'currency');
+    const excl = getV('in_adr_exclude', 'adr_exclude');
 
+    // 2. Валидация
     if (!validateNumbers(adr) || !validateNumbers(rsi) || !validateNumbers(vol) || !validateNumbers(trd)) {
         showToast("⚠️ Период не может быть больше 30 дней!", true);
         return;
     }
-
-    
-    // 2. Валидация (проверка длины)
     if (!validateTickers(stocks, 6) || !validateTickers(bonds, 14) || !validateTickers(futs, 8)) {
         showToast("⚠️ Один из тикеров слишком длинный!", true);
         return;
     }
 
-    // 3. Если всё ок, блокируем кнопку и начинаем отправку
     btn.disabled = true;
     btn.innerText = "⏳ Сохранение...";
 
     const currentData = {
-         vk_id: currentVkId,
+        vk_id: currentVkId,
         tickers: stocks,
         bonds: bonds,
         futs: futs, 
         adr: adr,
+        rsi_period: rsi,
+        volume_days: vol,
+        trades_days: trd,
         vk_on: vk_on,
         tg_on: tg_on,
-        rsi_period: rsi, 
-        volume_days: vol, 
-        trades_days: trd,
-        currency: document.getElementById('in_currency').value,
-        adr_exclude: document.getElementById('in_adr_exclude').value
+        currency: curr,
+        adr_exclude: excl
     };
 
     try {
@@ -1182,33 +1292,27 @@ if (!window.isPremium) {
         const response = await fetch(url);
         const res = await response.json();
 
-        // 4. ТЕПЕРЬ проверяем ответ от сервера
         if (res.status === "success") {
-            // Обновляем "фотографию" данных для кнопки
+            // Обновляем "слепок" для функции checkChanges
             initialData = {
                 tickers: currentData.tickers,
                 bonds: currentData.bonds,
                 futs: currentData.futs,
                 adr: currentData.adr,
+                rsi: currentData.rsi_period,
+                volume: currentData.volume_days,
+                trades: currentData.trades_days,
                 vk_on: currentData.vk_on === "Вкл",
                 tg_on: currentData.tg_on === "Вкл",
-                rsi_period: currentData.rsi_period, 
-                volume_days: currentData.volume_days, 
-                trades_days: currentData.trades_days,
                 currency: currentData.currency,
                 adr_exclude: currentData.adr_exclude
             };
             
             showToast("✅ Настройки сохранены");
-
-            // 2. Сбрасываем текст кнопки обратно
-         btn.innerText = "Сохранить изменения";
-        btn.disabled = false;
-            
-            // Ждем немного и возвращаем кнопку в исходное состояние (серый цвет)
-            setTimeout(checkChanges, 1500);
-        } 
-        else {
+            btn.innerText = "Сохранить изменения";
+            btn.disabled = false;
+            setTimeout(checkChanges, 500); 
+        } else {
             showToast("❌ Ошибка сервера", true);
             btn.disabled = false;
         }
@@ -1220,6 +1324,14 @@ if (!window.isPremium) {
 }
 
 
+
+
+
+
+
+
+
+    
     function openTribute() {
     const url = "https://tribute.tg";
     addLog("📱 Мобильный запуск оплаты...");
