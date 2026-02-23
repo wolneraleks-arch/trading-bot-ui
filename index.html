@@ -924,7 +924,15 @@ async function saveData() {
                 vk_on: currentData.vk_on === "Вкл",
                 tg_on: currentData.tg_on === "Вкл",
                 currency: currentData.currency,
-                adr_exclude: currentData.adr_exclude
+                adr_exclude: currentData.adr_exclude,
+
+                adr_on: currentData.adr_on === "Вкл",
+                vol_on: currentData.vol_on === "Вкл",
+                order_on: currentData.order_on === "Выкл",
+                trades_on: currentData.trades_on === "Выкл",
+                rsi_on: currentData.rsi_on === "Вкл",
+                bonds_on: currentData.bonds_on === "Вкл",
+                fut_on: currentData.fut_on === "Вкл"
             };
             
             showToast("✅ Настройки сохранены");
