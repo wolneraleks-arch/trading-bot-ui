@@ -657,13 +657,19 @@ function showToast(message, isError = false) {
     tg_on: data.tg_on === "Вкл",
     currency: data.currency || "RUB",
     adr_exclude: data.adr_exclude || "",
-    adr_on: data.adr_on  === "Вкл",   
+    adr_on: data.adr_on  === "Вкл", 
+    trades_on: data.trades_on ===  "Выкл",
+    vol_on: data.vol_on ===  "Вкл",
+    order_on: data.order_on ===  "Вкл",
+    rsi_on: data.rsi_on ===  "Вкл",
+     bonds_on: data.bonds_on ===  "Выкл",
+     fut_on: data.fut_on ===  "Выкл"
 };
 
         // Устанавливаем значения в поля
         document.getElementById('user-level').innerText = (data.level || "Базовый") + " доступ";
         document.getElementById('in_tickers_stocks').value = initialData.tickers;
-     document.getElementById('in_tickers_bonds').value = initialData.bonds; // ДОБАВИТЬ ЭТО
+     document.getElementById('in_tickers_bonds').value = initialData.bonds; 
         document.getElementById('in_tickers_fut').value = initialData.futs;
         document.getElementById('in_adr_days').value = initialData.adr;
         document.getElementById('sw_vk_on').checked = initialData.vk_on;
@@ -674,8 +680,14 @@ function showToast(message, isError = false) {
        document.getElementById('in_volume_days').value = initialData.volume;
        document.getElementById('in_trades_days').value = initialData.trades;
         
+        document.getElementById('sw_adr_on').value = initialData.adr_on;
+        document.getElementById('sw_trades_on').value = initialData.trades_on;
+        document.getElementById('sw_vol_on').value = initialData.vol_on;
+        document.getElementById('sw_order_on').value = initialData.order_on;
+        document.getElementById('sw_rsi_on').value = initialData.rsi_on;
+        document.getElementById('sw_bonds_on').value = initialData.bonds_on;
+        document.getElementById('sw_fut_on').value = initialData.fut_on;
         
-
 
         ['in_tickers_stocks', 'in_tickers_bonds', 'in_tickers_fut'].forEach(id => {
     const input = document.getElementById(id);
@@ -708,7 +720,7 @@ function showToast(message, isError = false) {
 // 3. ОСТАЛЬНЫЕ (Свитчи и списки): Просто следим за изменениями
 
         // Вешаем "слушателей" на все изменения
-        [ 'sw_vk_on', 'sw_tg_on', 'in_currency', 'in_adr_exclude'].forEach(id => {
+        [ 'sw_vk_on', 'sw_tg_on','sw_adr_on','sw_trades_on' ,'sw_vol_on' ,'sw_order_on' ,'sw_rsi_on' ,'sw_bonds_on' ,'sw_fut_on', 'in_currency', 'in_adr_exclude'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
         el.addEventListener('change', checkChanges);
@@ -722,58 +734,8 @@ function showToast(message, isError = false) {
        
     }
 
+    
     // 2. ФУНКЦИЯ ПРОВЕРКИ ИЗМЕНЕНИЙ (УМНАЯ КНОПКА)
-    // function checkChanges() {
-    //     const elStocks = document.getElementById('in_tickers_stocks');
-    // if (!elStocks) return;
-    //     const currentData = {
-    //         tickers: elStocks.value,
-    //     bonds: document.getElementById('in_tickers_bonds').value,
-    //     futs: document.getElementById('in_tickers_fut').value, 
-    //     adr: document.getElementById('in_adr_days').value,
-    //     vk_on: document.getElementById('sw_vk_on').checked,
-    //     tg_on: document.getElementById('sw_tg_on').checked,
-    //     rsi_period: document.getElementById('in_rsi_period').value,
-    //     volume_days: document.getElementById('in_volume_days').value,
-    //     currency: document.getElementById('in_currency').value,
-    //     adr_exclude: document.getElementById('in_adr_exclude').value
-        
-    //     };
-
-    //     const isNumbersValid = 
-    //     parseInt(document.getElementById('in_adr_days').value) <= 30 &&
-    //     parseInt(document.getElementById('in_rsi_period').value) <= 30 &&
-    //     parseInt(document.getElementById('in_volume_days').value) <= 30 &&
-    //     parseInt(document.getElementById('in_trades_days').value) <= 30;
-
-    //     // Сравниваем текущее с тем, что было в БД
-    //     const hasChanged = 
-    //         currentData.tickers !== initialData.tickers ||
-    //         currentData.bonds !== initialData.bonds || 
-    //         currentData.futs !== initialData.futs || 
-    //         currentData.adr !== initialData.adr ||
-    //         currentData.vk_on !== initialData.vk_on ||
-    //         currentData.tg_on !== initialData.tg_on ||
-    //         currentData.currency !== initialData.currency ||
-    //         currentData.rsi !== initialData.rsi || 
-    //         currentData.volume !== initialData.volume || 
-    //         currentData.trades !== initialData.trades || 
-    //         currentData.adr_exclude !== initialData.adr_exclude;
-
-    //     const btn = document.getElementById('save-btn');
-    //     btn.disabled = !hasChanged || !isNumbersValid;
-    //     btn.style.opacity = (hasChanged && isNumbersValid) ? "1" : "0.5";
-        
-    //     if (hasChanged) {
-    //         btn.innerText = "Сохранить изменения";
-    //         btn.style.opacity = "1";
-    //         btn.style.background = "#0077ff";
-    //     } else {
-    //         btn.innerText = "Изменений нет";
-    //         btn.style.opacity = "0.5";
-    //         btn.style.background = "#818c99";
-    //     }
-    // }
 
 function checkChanges() {
     // 1. Безопасное получение значений (если элемента нет на экране, берем старое из initialData)
@@ -797,7 +759,14 @@ function checkChanges() {
         volume: getVal('in_volume_days', 'volume'),
         trades: getVal('in_trades_days', 'trades'),
         currency: getVal('in_currency', 'currency'),
-        adr_exclude: getVal('in_adr_exclude', 'adr_exclude')
+        adr_exclude: getVal('in_adr_exclude', 'adr_exclude'),
+        adr_on: getCheck('sw_adr_on', 'adr_on'),
+        trades_on: getCheck('sw_trades_on', 'trades_on'),
+        vol_on: getCheck('sw_vol_on', 'vol_on'),
+        order_on: getCheck('sw_order_on', 'order_on'),
+        rsi_on: getCheck('sw_rsi_on', 'rsi_on'),
+        bonds_on: getCheck('sw_bonds_on', 'bonds_on'),
+        fut_on: getCheck('sw_fut_on', 'fut_on')
     };
 
     // 2. Валидация чисел
@@ -819,7 +788,15 @@ function checkChanges() {
         currentData.rsi !== initialData.rsi || 
         currentData.volume !== initialData.volume || 
         currentData.trades !== initialData.trades || 
-        currentData.adr_exclude !== initialData.adr_exclude;
+        currentData.adr_exclude !== initialData.adr_exclude
+
+        currentData.adr_on !== initialData.adr_on ||
+        currentData.trades_on !== initialData.trades_on ||
+            currentData.vol_on !== initialData.vol_on ||
+            currentData.order_on !== initialData.order_on ||
+            currentData.rsi_on !== initialData.rsi_on ||
+            currentData.bonds_on !== initialData.bonds_on ||
+            currentData.fut_on !== initialData.fut_on;
 
     // 4. Управление кнопкой
     const btn = document.getElementById('save-btn');
