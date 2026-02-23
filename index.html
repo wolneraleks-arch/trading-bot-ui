@@ -434,36 +434,6 @@
 
 
 
-
-
-//     function switchTab(tabId, el) {
-//     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    
-//     // Пытаемся найти вкладку по ID. Если нажали 'settings', найдет 'tab-settings'
-//     const target = document.getElementById('tab-' + tabId);
-//     if (target) target.classList.add('active');
-
-//     document.querySelectorAll('.tab-item').forEach(i => i.classList.remove('active'));
-//     el.classList.add('active');
-    
-//     // Кнопка сохранения нужна только в Настройках
-//     const saveContainer = document.querySelector('.save-container');
-//     if (saveContainer) saveContainer.classList.remove('visible');
-//     if (tabId === 'help') {
-//             saveContainer.classList.remove('visible');
-//         } else {
-//             // Если мы в Профиле или Настройках — проверяем, есть ли изменения
-//             checkChanges(); 
-//         }
-        
-//     const saveBtn = document.querySelector('.save-container');
-//     if (saveBtn) {
-//         saveBtn.style.display = (tabId === 'settings') ? 'block' : 'none';
-//     }
-// }
-
-
-
 function switchTab(tabId, el) {
     // 1. Переключаем контент вкладок
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -487,23 +457,6 @@ function switchTab(tabId, el) {
         }
     }
 }
-
-
-
-    
-
-//        function switchTab(tabId, el) {
-//     // 1. Скрываем все вкладки
-//     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-//     // 2. Показываем нужную
-//     const target = document.getElementById('tab-' + tabId);
-//     if (target) target.classList.add('active');
-
-//     // 3. Убираем синий цвет у всех кнопок в меню
-//     document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
-//     // 4. Красим текущую кнопку в синий
-//     el.classList.add('active'); 
-// }
 
         
     function showView(viewId) {
@@ -928,8 +881,8 @@ async function saveData() {
 
                 adr_on: currentData.adr_on === "Вкл",
                 vol_on: currentData.vol_on === "Вкл",
-                order_on: currentData.order_on === "Выкл",
-                trades_on: currentData.trades_on === "Выкл",
+                order_on: currentData.order_on === "Вкл",
+                trades_on: currentData.trades_on === "Вкл",
                 rsi_on: currentData.rsi_on === "Вкл",
                 bonds_on: currentData.bonds_on === "Вкл",
                 fut_on: currentData.fut_on === "Вкл"
