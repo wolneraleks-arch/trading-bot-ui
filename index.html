@@ -889,6 +889,10 @@ async function saveData() {
             };
             
             showToast("✅ Настройки сохранены");
+             // Скрываем контейнер принудительно, чтобы не ждать checkChanges
+            const saveContainer = document.querySelector('.save-container');
+            if (saveContainer) saveContainer.classList.remove('visible');
+            
             btn.innerText = "Сохранить изменения";
             btn.disabled = false;
             setTimeout(checkChanges, 500); 
