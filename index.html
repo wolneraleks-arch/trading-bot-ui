@@ -850,6 +850,15 @@ async function saveData() {
     const curr = getV('in_currency', 'currency');
     const excl = getV('in_adr_exclude', 'adr_exclude');
 
+    const adr_on = getC('sw_adr_on', 'adr_on');
+    const order_on = getC('sw_order_on', 'order_on');
+    const vol_on = getC('sw_vol_on', 'vol_on');
+    const trades_on = getC('sw_trades_on', 'trades_on');
+    const rsi_on = getC('sw_rsi_on', 'rsi_on');
+    const bonds_on = getC('sw_bonds_on', 'bonds_on');
+    const fut_on = getC('sw_fut_on', 'fut_on');
+    
+
     // 2. Валидация
 
    const cleanDuplicates = (str) => {
@@ -885,7 +894,16 @@ async function saveData() {
         vk_on: vk_on,
         tg_on: tg_on,
         currency: curr,
-        adr_exclude: excl
+        adr_exclude: excl,
+
+        adr_on: adr_on,
+        vol_on: vol_on,
+        order_on: order_on,
+        trades_on: trades_on,
+        rsi_on: rsi_on,
+        bonds_on: bonds_on,
+        fut_on: fut_on,
+        
     };
 
     try {
