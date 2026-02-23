@@ -1,1 +1,7 @@
-
+<label>ADR <div class="switch"><input type="checkbox" id="sw_adr_on"><span class="slider"></span></div></label>
+        <label>Сделки <div class="switch"><input type="checkbox" id="sw_trades_on"><span class="slider"></span></div></label>
+        <label>Аномальный объем <div class="switch"><input type="checkbox" id="sw_vol_on"><span class="slider"></span></div></label>
+        <label>Заявки <div class="switch"><input type="checkbox" id="sw_order_on"><span class="slider"></span></div></label>
+        <label>Индикатор RSI <div class="switch"><input type="checkbox" id="sw_rsi_on"><span class="slider"></span></div></label>
+        <label>Облигации <div class="switch"><input type="checkbox" id="sw_bonds_on"><span class="slider"></span></div></label>
+        <label>Фьючерсы <div class="switch"><input type="checkbox" id="sw_fut_on"><span class="slider"></span></div></label>
