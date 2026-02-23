@@ -331,6 +331,9 @@
     <label>Сокращать числа (K, M, B)
         <div class="switch"><input type="checkbox" id="sw_short_nums" checked><span class="slider"></span></div>
     </label>
+    <label>Автоудаление сообщений
+        <div class="switch"><input type="checkbox" id="sw_delms_on" checked><span class="slider"></span></div>
+    </label>
 </div>
 
 </div>
@@ -602,7 +605,9 @@ function showToast(message, isError = false) {
     order_on: data.order_on ===  "Вкл",
     rsi_on: data.rsi_on ===  "Вкл",
      bonds_on: data.bonds_on ===  "Вкл",
-     fut_on: data.fut_on ===  "Вкл"
+     fut_on: data.fut_on ===  "Вкл",
+
+    delms_on: data.delms_on ===  "Вкл"
 };
 
         // Устанавливаем значения в поля
@@ -626,7 +631,8 @@ function showToast(message, isError = false) {
         document.getElementById('sw_rsi_on').checked = initialData.rsi_on;
         document.getElementById('sw_bonds_on').checked = initialData.bonds_on;
         document.getElementById('sw_fut_on').checked = initialData.fut_on;
-        
+
+        document.getElementById('sw_delms_on').checked = initialData.delms_on;
 
         ['in_tickers_stocks', 'in_tickers_bonds', 'in_tickers_fut'].forEach(id => {
     const input = document.getElementById(id);
@@ -659,7 +665,7 @@ function showToast(message, isError = false) {
 // 3. ОСТАЛЬНЫЕ (Свитчи и списки): Просто следим за изменениями
 
         // Вешаем "слушателей" на все изменения
-        [ 'sw_vk_on', 'sw_tg_on','sw_adr_on','sw_trades_on' ,'sw_vol_on' ,'sw_order_on' ,'sw_rsi_on' ,'sw_bonds_on' ,'sw_fut_on', 'in_currency', 'in_adr_exclude'].forEach(id => {
+        [ 'sw_vk_on', 'sw_tg_on','sw_adr_on','sw_trades_on' ,'sw_vol_on' ,'sw_order_on' ,'sw_rsi_on' ,'sw_bonds_on' ,'sw_fut_on', 'in_currency', 'in_adr_exclude', 'sw_delms_on'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
         el.addEventListener('change', checkChanges);
@@ -705,7 +711,8 @@ function checkChanges() {
         order_on: getCheck('sw_order_on', 'order_on'),
         rsi_on: getCheck('sw_rsi_on', 'rsi_on'),
         bonds_on: getCheck('sw_bonds_on', 'bonds_on'),
-        fut_on: getCheck('sw_fut_on', 'fut_on')
+        fut_on: getCheck('sw_fut_on', 'fut_on'),
+        delms_on: getCheck('sw_delms_on', 'delms_on')
     };
 
     // 2. Валидация чисел
@@ -735,7 +742,9 @@ function checkChanges() {
             currentData.order_on !== initialData.order_on ||
             currentData.rsi_on !== initialData.rsi_on ||
             currentData.bonds_on !== initialData.bonds_on ||
-            currentData.fut_on !== initialData.fut_on;
+            currentData.fut_on !== initialData.fut_on ||
+    
+        currentData.delms_on !== initialData.delms_on;
 
     // 4. Управление кнопкой
     const btn = document.getElementById('save-btn');
@@ -796,6 +805,8 @@ async function saveData() {
     const rsi_on = getC('sw_rsi_on', 'rsi_on');
     const bonds_on = getC('sw_bonds_on', 'bonds_on');
     const fut_on = getC('sw_fut_on', 'fut_on');
+
+    const delms_on = getC('sw_delms_on', 'delms_on');
     
 
     // 2. Валидация
@@ -842,7 +853,8 @@ async function saveData() {
         rsi_on: rsi_on,
         bonds_on: bonds_on,
         fut_on: fut_on,
-        
+
+        delms_on: delms_on
     };
 
     try {
@@ -871,7 +883,9 @@ async function saveData() {
                 trades_on: currentData.trades_on === "Вкл",
                 rsi_on: currentData.rsi_on === "Вкл",
                 bonds_on: currentData.bonds_on === "Вкл",
-                fut_on: currentData.fut_on === "Вкл"
+                fut_on: currentData.fut_on === "Вкл",
+
+                delms_on: currentData.delms_on === "Вкл"
             };
             
             showToast("✅ Настройки сохранены");
