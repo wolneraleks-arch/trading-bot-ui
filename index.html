@@ -619,13 +619,13 @@ function showToast(message, isError = false) {
        document.getElementById('in_volume_days').value = initialData.volume;
        document.getElementById('in_trades_days').value = initialData.trades;
         
-        document.getElementById('sw_adr_on').value = initialData.adr_on;
-        document.getElementById('sw_trades_on').value = initialData.trades_on;
-        document.getElementById('sw_vol_on').value = initialData.vol_on;
-        document.getElementById('sw_order_on').value = initialData.order_on;
-        document.getElementById('sw_rsi_on').value = initialData.rsi_on;
-        document.getElementById('sw_bonds_on').value = initialData.bonds_on;
-        document.getElementById('sw_fut_on').value = initialData.fut_on;
+        document.getElementById('sw_adr_on').checked = initialData.adr_on;
+        document.getElementById('sw_trades_on').checked = initialData.trades_on;
+        document.getElementById('sw_vol_on').checked = initialData.vol_on;
+        document.getElementById('sw_order_on').checked = initialData.order_on;
+        document.getElementById('sw_rsi_on').checked = initialData.rsi_on;
+        document.getElementById('sw_bonds_on').checked = initialData.bonds_on;
+        document.getElementById('sw_fut_on').checked = initialData.fut_on;
         
 
         ['in_tickers_stocks', 'in_tickers_bonds', 'in_tickers_fut'].forEach(id => {
