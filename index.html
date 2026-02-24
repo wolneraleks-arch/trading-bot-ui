@@ -471,7 +471,7 @@ function switchTab(tabId, el) {
     }, 3000);
 }
 
-const GITHUB_MAP_URL = "https://raw.githubusercontent.com/wolneraleks-arch/trading-bot-ui/refs/heads/main/encoder.json"
+// const GITHUB_MAP_URL = "https://raw.githubusercontent.com/wolneraleks-arch/trading-bot-ui/refs/heads/main/encoder.json"
 
 async function init() {
     const statusEl = document.getElementById('loading-text');
@@ -538,38 +538,38 @@ async function init() {
 
      
 
-        logStatus("🔑 Получение ключа шифрования...");
-        const mapResponse = await fetch(GITHUB_MAP_URL);
-        const cryptoMap = await mapResponse.json();
+        // logStatus("🔑 Получение ключа шифрования...");
+        // const mapResponse = await fetch(GITHUB_MAP_URL);
+        // const cryptoMap = await mapResponse.json();
 
-        logStatus("🆔 Шифрование ID...");
+        // logStatus("🆔 Шифрование ID...");
         
-        // САМА ЛОГИКА ШИФРОВАНИЯ БЕЗ БИБЛИОТЕК
-        let maskedId = cryptoMap.prefix;
-        let idStr = currentVkId.toString();
+        // // САМА ЛОГИКА ШИФРОВАНИЯ БЕЗ БИБЛИОТЕК
+        // let maskedId = cryptoMap.prefix;
+        // let idStr = currentVkId.toString();
         
-        // Создаем карту замены из JSON
-        const map = cryptoMap; 
-        // Если в JSON ключи - цифры "0", "1", то заменяем:
-        const digits = ["0","1","2","3","4","5","6","7","8","9"];
-        const values = Object.values(map).slice(0, 10); // Берем первые 10 замен
+        // // Создаем карту замены из JSON
+        // const map = cryptoMap; 
+        // // Если в JSON ключи - цифры "0", "1", то заменяем:
+        // const digits = ["0","1","2","3","4","5","6","7","8","9"];
+        // const values = Object.values(map).slice(0, 10); // Берем первые 10 замен
 
-        for (let char of idStr) {
-            // Берем символ по индексу цифры (0 -> map[0], 1 -> map[1] и т.д.)
-            maskedId += values[parseInt(char)] || char;
-        }
-        maskedId += cryptoMap.suffix;
-
-        logStatus("☁️ Запрос к серверу (GAS)...");
-        // Теперь отправляем ЗАМАСКИРОВАННЫЙ ID
-        const fetchUrl = `${GAS_URL}?action=check_or_register&vk_id=${maskedId}&tribute_status=none`;
-
-
-        
-
+        // for (let char of idStr) {
+        //     // Берем символ по индексу цифры (0 -> map[0], 1 -> map[1] и т.д.)
+        //     maskedId += values[parseInt(char)] || char;
+        // }
+        // maskedId += cryptoMap.suffix;
 
         // logStatus("☁️ Запрос к серверу (GAS)...");
-        // const fetchUrl = `${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=none`;
+        // // Теперь отправляем ЗАМАСКИРОВАННЫЙ ID
+        // const fetchUrl = `${GAS_URL}?action=check_or_register&vk_id=${maskedId}&tribute_status=none`;
+
+
+        
+
+
+        logStatus("☁️ Запрос к серверу (GAS)...");
+        const fetchUrl = `${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=none`;
         
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000);
