@@ -764,7 +764,8 @@ async function init() {
                 levelEl.innerHTML = "<span style='color:#E64646'>Демо-режим (Без подписки)</span>";
                 levelEl.style.fontWeight = "bold";
             } else {
-                levelEl.innerText = (res.data.level || "Премиум") + " доступ";
+                const levelName = = (res.data.level || "Премиум");
+                levelEl.innerHTML = `<span style="color:#4bb34b; font-weight:bold;">${levelName} доступ</span>`;
             }
         }
 
