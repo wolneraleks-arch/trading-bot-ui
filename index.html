@@ -210,6 +210,13 @@
     .article-link { display: flex; align-items: center; justify-content: center; padding: 12px; border-radius: 12px; background: #f0f7ff; color: #2575fc; text-decoration: none; font-weight: 600; margin-top: 10px; border: 1px dashed #2575fc; }
     .article-link:active { transform: scale(0.98); }
 
+
+
+        .faq-item.active .answer { display: block !important; }
+.faq-item.active .arrow { transform: rotate(180deg); }
+.arrow { font-size: 10px; color: #818c99; transition: 0.2s; }
+
+
     </style>
 </head>
 <body>
@@ -399,7 +406,7 @@
     </div>
 
     <!-- Инструкция по формату -->
-    <div class="section-title">Настройка уведомлений</div>
+    <div class="section-title">О настройке уведомлений</div>
     <div class="card" style="font-size: 14px; line-height: 1.5;">
         <div style="margin-bottom: 12px;">
             <b>Валюта и числа:</b><br>
@@ -428,6 +435,21 @@
         <small>💡 <b>Совет:</b> Для фьючерсов используйте краткие коды текущего контракта. Обновляйте список раз в квартал при экспирации.</small>
     </div>
 
+    <div class="faq-item" onclick="this.classList.toggle('active')" style="cursor:pointer; padding: 10px 0; border-bottom: 1px solid #f0f2f5;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <b>Валюта и числа</b>
+        <span class="arrow">▼</span>
+    </div>
+    <div class="answer" style="display: none; margin-top: 10px;">
+        Текст ответа здесь...
+    </div>
+</div>
+
+
+
+
+    
+
 
 <!-- Техническая информация и поддержка -->
 <div class="card" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: #ffffff; border-radius: 12px;">
@@ -453,60 +475,9 @@
     </div>
     </div> 
 </div>
-
-
-
-
-        <!-- Блок Контакты и Сообщество -->
-<div class="card" style="padding: 16px; background: #ffffff; border-radius: 12px; border: 1px solid #f0f2f5; box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
-    
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <div style="font-size: 12px; color: #818c99;">
-            <span style="font-weight: 600; color: #2c3e50;">Версия приложения:</span> 1.0.6 (2026)<br>
-            <span style="font-weight: 600; color: #2c3e50;">Разработчик:</span> @wolneraleks
-        </div>
-        <div style="font-size: 10px; color: #4bb34b; background: #edf9ed; padding: 4px 8px; border-radius: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
-            Online 24/7
-        </div>
-    </div>
-
-    <!-- Кнопки ПОДДЕРЖКИ (Прямая связь) -->
-    <div style="margin-bottom: 12px;">
-        <div style="font-size: 11px; font-weight: 700; color: #99a2ad; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.8px;">Написать в саппорт:</div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-            <a href="https://vk.com" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; background: #f0f7ff; color: #2D81E0; text-decoration: none; border-radius: 10px; font-size: 13px; font-weight: 600; border: 1px solid #e1e9f5;">
-                <img src="https://upload.wikimedia.org" width="16" height="16"> VK Чат
-            </a>
-            <a href="https://t.me" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; background: #f0f9ff; color: #0088cc; text-decoration: none; border-radius: 10px; font-size: 13px; font-weight: 600; border: 1px solid #e1f0f5;">
-                <img src="https://upload.wikimedia.org" width="16" height="16"> TG Чат
-            </a>
-        </div>
-    </div>
-
-    <!-- Кнопки СООБЩЕСТВА (Следить за новостями) -->
-    <div>
-        <div style="font-size: 11px; font-weight: 700; color: #99a2ad; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.8px;">Наши ресурсы:</div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-            <a href="https://vk.com" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; background: #ffffff; color: #2c3e50; text-decoration: none; border-radius: 10px; font-size: 13px; font-weight: 500; border: 1px solid #e7e8ec;">
-                <img src="https://upload.wikimedia.org" width="16" height="16"> Группа VK
-            </a>
-            <a href="https://pinterest.com" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; background: #ffffff; color: #2c3e50; text-decoration: none; border-radius: 10px; font-size: 13px; font-weight: 500; border: 1px solid #e7e8ec;">
-                <img src="https://upload.wikimedia.org" width="16" height="16"> Pinterest
-            </a>
-        </div>
-    </div>
-
-</div>
-
-
-
-
-
-
-
         
         
-!-- Техническая инфо -->
+<!-- Техническая инфо -->
     
 <!-- <div class="card" style="font-size: 12px; color: #818c99; display: flex; justify-content: space-between; align-items: center;">
         <div>
