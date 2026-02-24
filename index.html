@@ -181,6 +181,35 @@
 
 
 
+
+          /* Стили для "крутого" вида справки */
+    .help-container { font-family: -apple-system, system-ui, sans-serif; color: #2c3e50; }
+    .glass-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        border: 1px solid #f0f2f5;
+        transition: transform 0.2s;
+    }
+    .feature-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        background: linear-gradient(135-deg, #6a11cb 0%, #2575fc 100%);
+        color: white;
+    }
+    .info-grid { display: grid; grid-template-columns: 32px 1fr; gap: 12px; margin-top: 15px; align-items: start; }
+    .icon-box { background: #f0f4ff; border-radius: 10px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+    .ticker-example { background: #f8f9fa; padding: 10px; border-radius: 8px; border-left: 3px solid #2575fc; font-family: monospace; font-size: 13px; margin: 8px 0; }
+    .article-link { display: flex; align-items: center; justify-content: center; padding: 12px; border-radius: 12px; background: #f0f7ff; color: #2575fc; text-decoration: none; font-weight: 600; margin-top: 10px; border: 1px dashed #2575fc; }
+    .article-link:active { transform: scale(0.98); }
+
     </style>
 </head>
 <body>
@@ -355,59 +384,103 @@
     <div class="card" style="font-size: 13px; color: #818c99;">
         Версия приложения: 1.0.4<br>
         Поддержка: @wolneraleks
-    </div> -->
+    </div> 
 </div> -->
 
 
-        <!-- Вкладка 4: СПРАВКА -->
-<div id="tab-help" class="tab-content">
+<style>
+    /* Стили для "крутого" вида */
+    .help-container { font-family: -apple-system, system-ui, sans-serif; color: #2c3e50; }
+    .glass-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        border: 1px solid #f0f2f5;
+        transition: transform 0.2s;
+    }
+    .feature-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        background: linear-gradient(135-deg, #6a11cb 0%, #2575fc 100%);
+        color: white;
+    }
+    .info-grid { display: grid; grid-template-columns: 32px 1fr; gap: 12px; margin-top: 15px; align-items: start; }
+    .icon-box { background: #f0f4ff; border-radius: 10px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+    .ticker-example { background: #f8f9fa; padding: 10px; border-radius: 8px; border-left: 3px solid #2575fc; font-family: monospace; font-size: 13px; margin: 8px 0; }
+    .article-link { display: flex; align-items: center; justify-content: center; padding: 12px; border-radius: 12px; background: #f0f7ff; color: #2575fc; text-decoration: none; font-weight: 600; margin-top: 10px; border: 1px dashed #2575fc; }
+    .article-link:active { transform: scale(0.98); }
+</style>
+
+<!-- Вкладка 4: СПРАВКА -->
+<div id="tab-help" class="tab-content help-container">
     
-    <!-- О боте -->
-    <div class="section-title">О системе</div>
-    <div class="card">
-        <p style="margin-bottom: 8px;"><b>WiseInvest Bot</b> — персональный ассистент для поиска аномалий и мониторинга волатильности на фондовом рынке в режиме реального времени.</p>
-        <a href="ТВОЯ_ССЫЛКА_НА_СТАТЬЮ" style="color: #2D81E0; text-decoration: none; font-size: 13px;">📖 Как работают стратегии (ADR, RSI, Объемы) →</a>
+    <!-- Hero Блок -->
+    <div class="glass-card" style="text-align: center; background: linear-gradient(to bottom, #ffffff, #f9fbff);">
+        <div class="feature-badge">AI Assistant</div>
+        <h2 style="margin: 0 0 10px 0; font-size: 22px; background: -webkit-linear-gradient(#2575fc, #6a11cb); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">WiseInvest Bot</h2>
+        <p style="font-size: 14px; color: #64748b;">Умный фильтр биржевого шума. Мы мониторим сотни инструментов, чтобы вы видели только реальные возможности.</p>
+        
+        <a href="ТВОЯ_ССЫЛКА" class="article-link">
+            <span>📚 База знаний: Индикаторы & Стратегии</span>
+        </a>
     </div>
 
-    <!-- Инструкция по формату -->
-    <div class="section-title">Настройка уведомлений</div>
-    <div class="card" style="font-size: 14px; line-height: 1.5;">
-        <div style="margin-bottom: 12px;">
-            <b>💰 Валюта и числа:</b><br>
-            При включении <b>«Сокращать числа»</b> значения будут отображаться в формате: 
-            <span style="color: #4bb34b;">1.5K</span> (тысячи), <span style="color: #4bb34b;">2.1M</span> (миллионы), <span style="color: #4bb34b;">0.5B</span> (миллиарды).
+    <!-- Блок Форматы и Настройки -->
+    <div class="section-title">Конфигурация уведомлений</div>
+    <div class="glass-card">
+        <div class="info-grid">
+            <div class="icon-box">💰</div>
+            <div>
+                <b>Формат валют</b><br>
+                <span style="font-size: 13px; color: #64748b;">Выбирайте удобную валюту отображения. Режим <b>«K/M/B»</b> заменяет длинные числа на компактные: 1 500 000 → 1.5M.</span>
+            </div>
         </div>
+
+        <div class="info-grid">
+            <div class="icon-box">🧹</div>
+            <div>
+                <b>Автоудаление (Smart Cleanup)</b><br>
+                <span style="font-size: 13px; color: #64748b;">При активации бот сам почистит историю чата от устаревших сигналов через 24 часа.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Блок Синтаксис тикеров -->
+    <div class="section-title">Синтаксис инструментов</div>
+    <div class="glass-card">
+        <div style="font-size: 14px; margin-bottom: 15px;">Указывайте тикеры строго через запятую без пробелов:</div>
         
         <div style="margin-bottom: 12px;">
-            <b>♻️ Автоудаление:</b><br>
-            Бот будет автоматически удалять свои сообщения через 24 часа. Это помогает держать чат чистым от неактуальных сигналов.
+            <span style="color: #64748b; font-size: 12px; font-weight: 600;">🔵 АКЦИИ</span>
+            <div class="ticker-example">SBER,GAZP,LKOH,NVTK</div>
         </div>
 
-        <div style="margin-bottom: 4px;">
-            <b>📍 Формат тикеров:</b><br>
-            Вписывайте инструменты через запятую <b>БЕЗ пробелов</b>.
+        <div style="margin-bottom: 12px;">
+            <span style="color: #64748b; font-size: 12px; font-weight: 600;">🟢 ОБЛИГАЦИИ (ISIN)</span>
+            <div class="ticker-example">SU26207RMFS9,SU29006RMFS2</div>
         </div>
-        <ul style="margin: 0; padding-left: 20px; color: #5181b8;">
-            <li><b>Акции:</b> SBER,GAZP,LKOH</li>
-            <li><b>Облигации:</b> ISIN-код (SU26207RMFS9)</li>
-            <li><b>Фьючерсы:</b> Код контракта (SRZ4 или SiZ4)</li>
-        </ul>
+
+        <div style="margin-bottom: 0;">
+            <span style="color: #64748b; font-size: 12px; font-weight: 600;">🔴 ФЬЮЧЕРСЫ (Код контракта)</span>
+            <div class="ticker-example">SRZ4,SiZ4,RIZ4</div>
+            <small style="color: #94a3b8; font-size: 11px;">* Не забывайте обновлять код после экспирации</small>
+        </div>
     </div>
 
-    <!-- Совет по фьючерсам -->
-    <div class="card" style="background-color: #f5f7fa; border-left: 4px solid #5181b8;">
-        <small>💡 <b>Совет:</b> Для фьючерсов используйте краткие коды текущего контракта. Обновляйте список раз в квартал при экспирации.</small>
-    </div>
-
-    <!-- Техническая инфо -->
-    <div class="card" style="font-size: 12px; color: #818c99; display: flex; justify-content: space-between; align-items: center;">
-        <div>
-            Версия: 1.0.5 <br>
-            Разработчик: @wolneraleks
+    <!-- Футер -->
+    <div style="padding: 0 10px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 12px; color: #94a3b8;">
+            Build 1.0.5 <br>
+            Core: GAS + VK API
         </div>
-        <div style="text-align: right;">
-            <a href="https://vk.com" class="button-secondary" style="padding: 4px 8px; font-size: 11px;">Написать в саппорт</a>
-        </div>
+        <a href="https://vk.com" style="color: #2575fc; text-decoration: none; font-size: 13px; font-weight: 600;">Связаться с нами →</a>
     </div>
 </div>
 
