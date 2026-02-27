@@ -739,38 +739,6 @@ async function init() {
             }
         } 
 
-     
-
-        // logStatus("🔑 Получение ключа шифрования...");
-        // const mapResponse = await fetch(GITHUB_MAP_URL);
-        // const cryptoMap = await mapResponse.json();
-
-        // logStatus("🆔 Шифрование ID...");
-        
-        // // САМА ЛОГИКА ШИФРОВАНИЯ БЕЗ БИБЛИОТЕК
-        // let maskedId = cryptoMap.prefix;
-        // let idStr = currentVkId.toString();
-        
-        // // Создаем карту замены из JSON
-        // const map = cryptoMap; 
-        // // Если в JSON ключи - цифры "0", "1", то заменяем:
-        // const digits = ["0","1","2","3","4","5","6","7","8","9"];
-        // const values = Object.values(map).slice(0, 10); // Берем первые 10 замен
-
-        // for (let char of idStr) {
-        //     // Берем символ по индексу цифры (0 -> map[0], 1 -> map[1] и т.д.)
-        //     maskedId += values[parseInt(char)] || char;
-        // }
-        // maskedId += cryptoMap.suffix;
-
-        // logStatus("☁️ Запрос к серверу (GAS)...");
-        // // Теперь отправляем ЗАМАСКИРОВАННЫЙ ID
-        // const fetchUrl = `${GAS_URL}?action=check_or_register&vk_id=${maskedId}&tribute_status=none`;
-
-
-        
-
-
         logStatus("☁️ Запрос к серверу (GAS)...");
         const fetchUrl = `${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=none`;
         
@@ -845,7 +813,8 @@ function showToast(message, isError = false) {
      bonds_on: data.bonds_on ===  "Вкл",
      fut_on: data.fut_on ===  "Вкл",
 
-    delms_on: data.delms_on ===  "Вкл"
+    delms_on: data.delms_on ===  "Вкл",
+    short_nums: data.short_nums === "Вкл"
 };
 
         // Устанавливаем значения в поля
@@ -871,6 +840,7 @@ function showToast(message, isError = false) {
         document.getElementById('sw_fut_on').checked = initialData.fut_on;
 
         document.getElementById('sw_delms_on').checked = initialData.delms_on;
+        document.getElementById('sw_short_nums').checked = initialData.short_nums;
 
         ['in_tickers_stocks', 'in_tickers_bonds', 'in_tickers_fut'].forEach(id => {
     const input = document.getElementById(id);
@@ -950,7 +920,8 @@ function checkChanges() {
         rsi_on: getCheck('sw_rsi_on', 'rsi_on'),
         bonds_on: getCheck('sw_bonds_on', 'bonds_on'),
         fut_on: getCheck('sw_fut_on', 'fut_on'),
-        delms_on: getCheck('sw_delms_on', 'delms_on')
+        delms_on: getCheck('sw_delms_on', 'delms_on'),
+        short_nums: getCheck('sw_short_nums', 'short_nums')
     };
 
     // 2. Валидация чисел
@@ -982,7 +953,9 @@ function checkChanges() {
             currentData.bonds_on !== initialData.bonds_on ||
             currentData.fut_on !== initialData.fut_on ||
     
-        currentData.delms_on !== initialData.delms_on;
+        currentData.delms_on !== initialData.delms_on ||
+
+        currentData.short_nums !== initialData.short_nums;
 
     // 4. Управление кнопкой
     const btn = document.getElementById('save-btn');
@@ -1045,6 +1018,7 @@ async function saveData() {
     const fut_on = getC('sw_fut_on', 'fut_on');
 
     const delms_on = getC('sw_delms_on', 'delms_on');
+    const short_nums = getC('sw_short_nums', 'short_nums');
     
 
     // 2. Валидация
@@ -1092,7 +1066,9 @@ async function saveData() {
         bonds_on: bonds_on,
         fut_on: fut_on,
 
-        delms_on: delms_on
+        delms_on: delms_on,
+
+        short_nums:short_nums
     };
 
     try {
@@ -1123,7 +1099,8 @@ async function saveData() {
                 bonds_on: currentData.bonds_on === "Вкл",
                 fut_on: currentData.fut_on === "Вкл",
 
-                delms_on: currentData.delms_on === "Вкл"
+                delms_on: currentData.delms_on === "Вкл",
+                short_nums: currentData.short_nums === "Вкл"
             };
             
             showToast("✅ Настройки сохранены");
