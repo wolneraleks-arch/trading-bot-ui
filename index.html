@@ -532,32 +532,6 @@
 </div>
     
 </div>
-
-
-<!-- Техническая информация и поддержка -->
-<!-- <div class="card" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: #ffffff; border-radius: 12px;">
-    <div style="font-size: 12px; color: #818c99; line-height: 1.4;">
-        <span style="font-weight: 600; color: #2c3e50;">Версия приложения:</span> 1.0.5<br>
-        <span style="font-weight: 600; color: #2c3e50;">Разработчик:</span> @wiseinvest_group
-    </div>
-    
-    <div style="text-align: right;">
-        <a href="https://vk.com/id877729824" target="_blank" 
-           style="display: inline-block; 
-                  padding: 10px 16px; 
-                  background-color: #2D81E0; 
-                  color: #ffffff; 
-                  text-decoration: none; 
-                  border-radius: 10px; 
-                  font-size: 13px; 
-                  font-weight: 500;
-                  box-shadow: 0 2px 8px rgba(45, 129, 224, 0.2);
-                  transition: background-color 0.2s;">
-            Написать в поддержку
-        </a>
-    </div>
-    </div> 
-         -->
         
 </div>
 
@@ -873,7 +847,7 @@ function showToast(message, isError = false) {
 // 3. ОСТАЛЬНЫЕ (Свитчи и списки): Просто следим за изменениями
 
         // Вешаем "слушателей" на все изменения
-        [ 'sw_vk_on', 'sw_tg_on','sw_adr_on','sw_trades_on' ,'sw_vol_on' ,'sw_order_on' ,'sw_rsi_on' ,'sw_bonds_on' ,'sw_fut_on', 'in_currency', 'in_adr_exclude', 'sw_delms_on'].forEach(id => {
+        [ 'sw_vk_on', 'sw_tg_on','sw_adr_on','sw_trades_on' ,'sw_vol_on' ,'sw_order_on' ,'sw_rsi_on' ,'sw_bonds_on' ,'sw_fut_on', 'in_currency','sw_short_nums', 'in_adr_exclude', 'sw_delms_on'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
         el.addEventListener('change', checkChanges);
