@@ -260,16 +260,6 @@
         </div>
     </div>
 
-    <!-- ЭКРАН 2: ПЕЙВОЛЛ -->
-    <!-- <div id="view-paywall" class="view">
-        <div class="card" style="text-align: center; margin-top: 20vh;">
-            <div style="font-size: 48px;">💎</div>
-            <h2>Доступ ограничен</h2>
-            <p>Оформите подписку в Tribute для доступа к боту.</p>
-            <button class="btn" style="background:#4bb34b" onclick="openTribute()">Оплатить доступ</button>
-        </div>
-    </div> -->
-
     <!-- ЭКРАН 3: ГЛАВНОЕ МЕНЮ -->
     <div id="view-main" class="view">
 
@@ -303,6 +293,42 @@
     
 </div>
 
+
+<!-- Вкладка: СТАТИСТИКА -->
+<div id="tab-stats" class="tab-content">
+    <div class="section-title">Аналитика по тикерам</div>
+    <div class="card">
+        <label style="flex-direction: column; align-items: flex-start;">
+            Выберите тикер для анализа
+            <select id="stats_ticker_select" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #dce1e6; background: #f5f5f5; margin-top: 8px;" onchange="loadTickerStats()">
+                <option value="">-- Выберите из списка --</option>
+            </select>
+        </label>
+    </div>
+
+    <!-- Место для графика (позже подключим библиотеку) -->
+    <div id="stats-container" style="display: none;">
+        <div class="section-title">График ADR и Объемов</div>
+        <div class="card" style="padding: 10px; height: 250px; display: flex; align-items: center; justify-content: center; background: #fff; color: #818c99;">
+            <canvas id="tickerChart"></canvas> 
+        </div>
+
+        <div class="section-title">Подробные показатели</div>
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span>Средний АДР (тек):</span>
+                <span id="stat-adr-val" style="font-weight: 700;">--</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span>Макс. Объем (мес):</span>
+                <span id="stat-vol-val" style="font-weight: 700;">--</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        
 <!-- Объединенная вкладка: НАСТРОЙКИ -->
 <div id="tab-settings" class="tab-content">
     <div class="section-title">Список тикеров</div>
@@ -549,6 +575,9 @@
     </div>
     <div class="tab-item" onclick="switchTab('settings', this)">
         <div class="tab-icon">⚙️</div><div>Настройки</div>
+    </div>
+     <div class="tab-item" onclick="switchTab('stats', this)">
+        <div class="tab-icon">📊</div><div>Статистика</div>
     </div>
     <div class="tab-item" onclick="switchTab('help', this)">
         <div class="tab-icon">❓</div>
