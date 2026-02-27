@@ -310,7 +310,7 @@
     <div id="stats-container" style="display: none;">
         <div class="section-title">График ADR и Объемов</div>
         <div class="card" style="padding: 10px; height: 250px; display: flex; align-items: center; justify-content: center; background: #fff; color: #818c99;">
-            <canvas id="tickerChart"></canvas> 
+            <canvas id="tickerChart"></canvas>
         </div>
 
         <div class="section-title">Подробные показатели</div>
@@ -655,6 +655,45 @@
 // }
 
 
+
+// Пример для Варианта 2 (Линейный с градиентом через Chart.js)
+function drawSimpleChart(labels, prices) {
+    const ctx = document.getElementById('tickerChart').getContext('2d');
+    
+    // Создаем градиент (от синего к прозрачному)
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(0, 119, 255, 0.3)');
+    gradient.addColorStop(1, 'rgba(0, 119, 255, 0)');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels, // Даты из Истории
+            datasets: [{
+                label: 'Цена',
+                data: prices, // Цены Close из Истории
+                borderColor: '#0077ff',
+                borderWidth: 2,
+                fill: true,
+                backgroundColor: gradient,
+                tension: 0.4, // Делает линию плавной (изгибы)
+                pointRadius: 0 // Убираем точки для чистоты
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } }, // Скрываем лишние надписи
+            scales: {
+                x: { display: false }, // Скрываем даты внизу для красоты
+                y: { grid: { display: false } } // Убираем сетку
+            }
+        }
+    });
+}
+
+
+    
 
      function switchTab(tabId, el) {
     // 1. Переключаем контент вкладок
