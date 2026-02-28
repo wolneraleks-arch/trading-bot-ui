@@ -385,13 +385,35 @@
     
     <div class="section-title">Аналитика по тикерам</div>
     <div class="card">
+    <label style="flex-direction: column; align-items: flex-start; position: relative;">
+        Выберите тикер для анализа
+        <!-- ПОЛЕ ПОИСКА -->
+        <input type="text" id="ticker_search" placeholder="🔍 Поиск по названию или тикеру..." 
+               style="width: 100%; padding: 10px; border-radius: 8px 8px 0 0; border: 1px solid #dce1e6; border-bottom: none; margin-top: 8px; outline: none;"
+               oninput="filterTickers()">
+        
+        <!-- ВАШ СЕЛЕКТ (немного подправлен стиль верхней границы) -->
+        <select id="stats_ticker_select" 
+                style="width: 100%; padding: 12px; border-radius: 0 0 8px 8px; border: 1px solid #dce1e6; background: #f5f5f5;" 
+                onchange="loadTickerStats()">
+            <option value="">-- Загрузка... --</option>
+        </select>
+    </label>
+</div>
+
+    
+    
+    <!-- <div class="card">
         <label style="flex-direction: column; align-items: flex-start;">
             Выберите тикер для анализа
             <select id="stats_ticker_select" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #dce1e6; background: #f5f5f5; margin-top: 8px;" onchange="loadTickerStats()">
                 <option value="">-- Выберите из списка --</option>
             </select>
         </label>
-    </div>
+    </div> -->
+
+
+    
 
     <!-- Место для графика (позже подключим библиотеку) -->
     <div id="stats-container" style="display: none; padding-bottom: 80px;">
@@ -1581,6 +1603,34 @@ function updateStatsTickers() {
     }
 }
 
+
+
+// ФИЛЬТРАЦИЯ ТИКЕРОВ
+    function filterTickers() {
+    const searchVal = document.getElementById('ticker_search').value.toLowerCase();
+    const select = document.getElementById('stats_ticker_select');
+    const options = select.getElementsByTagName('option');
+    const groups = select.getElementsByTagName('optgroup');
+
+    // Проходим по всем опциям
+    for (let i = 0; i < options.length; i++) {
+        const opt = options[i];
+        if (opt.value === "") continue; // Не трогаем дефолтный пункт
+
+        // Ищем совпадение в тексте (название) или в значении (тикер)
+        const matches = opt.textContent.toLowerCase().includes(searchVal) || 
+                        opt.value.toLowerCase().includes(searchVal);
+        
+        opt.style.display = matches ? "" : "none";
+    }
+
+    // Скрываем пустые группы (optgroup), если в них нет подходящих тикеров
+    for (let i = 0; i < groups.length; i++) {
+        const group = groups[i];
+        const visibleOptions = Array.from(group.children).filter(opt => opt.style.display !== "none");
+        group.style.display = visibleOptions.length > 0 ? "" : "none";
+    }
+}
 
 
 
