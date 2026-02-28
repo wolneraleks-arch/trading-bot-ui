@@ -1217,17 +1217,40 @@ function updateThermometer(barId, textId, percentInput) {
 
 let globalTickers = []; 
 
-async function fetchGlobalTickers() {
+
+    async function fetchGlobalTickers() {
     try {
+        console.log("Запрос к GAS по адресу:", GAS_URL);
         const response = await fetch(`${GAS_URL}?action=get_all_tickers`);
         const res = await response.json();
-        if (res.status === "success") {
-            // Теперь здесь объекты {ticker, name}
-            globalTickers = res.data; 
+        
+        console.log("Ответ от сервера:", res); // Смотрим в консоль здесь!
+
+        if (res.status === "success" && Array.isArray(res.data)) {
+            globalTickers = res.data;
+            console.log("Массив тикеров загружен, длина:", globalTickers.length);
             updateStatsTickers(); 
+        } else {
+            console.error("Сервер прислал ошибку или данные не массив:", res);
         }
-    } catch (e) { console.error("Ошибка загрузки списка тикеров", e); }
+    } catch (e) { 
+        console.error("Ошибка связи с GAS:", e); 
+    }
 }
+
+    
+    
+//     async function fetchGlobalTickers() {
+//     try {
+//         const response = await fetch(`${GAS_URL}?action=get_all_tickers`);
+//         const res = await response.json();
+//         if (res.status === "success") {
+//             // Теперь здесь объекты {ticker, name}
+//             globalTickers = res.data; 
+//             updateStatsTickers(); 
+//         }
+//     } catch (e) { console.error("Ошибка загрузки списка тикеров", e); }
+// }
 
 // function updateStatsTickers() {
 //     const select = document.getElementById('stats_ticker_select');
