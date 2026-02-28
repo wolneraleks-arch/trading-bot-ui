@@ -251,6 +251,23 @@
 .arrow { font-size: 10px; color: #818c99; transition: 0.2s; }
 
 
+        .badge-item {
+    display: inline-flex;
+    flex-direction: column;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid #e1e3e6;
+    min-width: 130px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+.badge-label { font-size: 11px; color: #818c99; margin-bottom: 4px; }
+.badge-value { font-size: 14px; font-weight: 700; color: #2c2d2e; }
+.badge-trend-up { color: #4BB34B; }
+.badge-trend-down { color: #E64646; }
+
+
+
     </style>
 </head>
 <body>
@@ -301,6 +318,13 @@
 <!-- Вкладка: СТАТИСТИКА -->
 <div id="tab-stats" class="tab-content">
 
+<div class="section-title">Анализ рынка за сегодня</div>
+<div id="stats-badges-container" style="display: flex; gap: 8px; padding: 0 16px 16px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch;">
+    <!-- Сюда JS будет вставлять плашки -->
+
+
+
+    
     <div class="section-title">📊 Обзор выбранных акций</div>
 
 <!-- 1. Круговая: Общее соотношение -->
@@ -363,7 +387,7 @@
         </div>
     </div>
 </div>
-
+</div>
 
 </div>
 
@@ -735,48 +759,81 @@ function drawSimpleChart(labels, prices) {
     // Переменные для хранения объектов графиков (чтобы удалять старые при обновлении)
 let chartPortfolioPie, chartBuyBar, chartSellBar;
 
-// function displayDemoStats() {
-//     // ТЕСТОВЫЕ ДАННЫЕ (как будто из твоего списка тикеров)
-//     const labels = ['SBER', 'GAZP', 'LKOH', 'CHMF', 'NVTK'];
-//     const buyData = [120.5, 85.2, 45.0, 0, 10.5];  // Суммы в покупку
-//     const sellData = [0, 0, 0, 95.8, 40.2];         // Суммы в продажу
-    
-//     const totalBuy = buyData.reduce((a, b) => a + b, 0);
-//     const totalSell = sellData.reduce((a, b) => a + b, 0);
-
-//     // 1. Круговая диаграмма (Общее состояние)
-//     drawPortfolioPie(totalBuy, totalSell);
-
-//     // 2. Столбчатая: Покупки (Зеленая)
-//     drawBarStats('topBuyBar', labels, buyData, '#4BB34B', 'Покупка');
-
-//     // 3. Столбчатая: Продажи (Красная)
-//     drawBarStats('topSellBar', labels, sellData, '#E64646', 'Продажа');
-// }
 
 
 function displayDemoStats() {
-    // 1. Берем РЕАЛЬНЫЕ тикеры из твоего поля настроек
     const rawTickers = document.getElementById('in_tickers_stocks').value || "";
     const labels = rawTickers.split(',').map(t => t.trim().toUpperCase()).filter(t => t);
 
-    if (labels.length === 0) {
-        console.log("Список тикеров пуст");
-        return;
-    }
+    if (labels.length === 0) return;
 
-    // 2. Генерируем случайные данные для ТВОИХ тикеров (пока нет связи с БД)
+    // Генерируем тестовые данные
     const buyData = labels.map(() => Math.floor(Math.random() * 100));
-    const sellData = labels.map(() => Math.floor(Math.random() * 50));
-    
+    const sellData = labels.map(() => Math.floor(Math.random() * 100));
+
+    // Находим "Героев дня" для информеров
+    const maxBuyIndex = buyData.indexOf(Math.max(...buyData));
+    const maxSellIndex = sellData.indexOf(Math.max(...sellData));
+
+    // Отрисовываем информеры
+    updateBadges([
+        { label: "🚀 Лидер покупок", value: labels[maxBuyIndex], sub: buyData[maxBuyIndex] + " млн", type: "up" },
+        { label: "📉 Лидер продаж", value: labels[maxSellIndex], sub: sellData[maxSellIndex] + " млн", type: "down" },
+        { label: "🔥 Активность", value: "Высокая", sub: "125% ADR", type: "up" }
+    ]);
+
+    // Рисуем графики (твои старые функции)
     const totalBuy = buyData.reduce((a, b) => a + b, 0);
     const totalSell = sellData.reduce((a, b) => a + b, 0);
-
-    // 3. Отрисовка (твои функции)
     drawPortfolioPie(totalBuy, totalSell);
     drawBarStats('topBuyBar', labels, buyData, '#4BB34B', 'Покупка');
     drawBarStats('topSellBar', labels, sellData, '#E64646', 'Продажа');
 }
+
+function updateBadges(badges) {
+    const container = document.getElementById('stats-badges-container');
+    if (!container) return;
+
+    container.innerHTML = badges.map(b => `
+        <div class="badge-item">
+            <span class="badge-label">${b.label}</span>
+            <span class="badge-value">${b.value}</span>
+            <span style="font-size: 11px; margin-top: 2px;" class="${b.type === 'up' ? 'badge-trend-up' : 'badge-trend-down'}">
+                ${b.sub}
+            </span>
+        </div>
+    `).join('');
+}
+
+
+
+
+
+    
+
+
+// function displayDemoStats() {
+//     // 1. Берем РЕАЛЬНЫЕ тикеры из твоего поля настроек
+//     const rawTickers = document.getElementById('in_tickers_stocks').value || "";
+//     const labels = rawTickers.split(',').map(t => t.trim().toUpperCase()).filter(t => t);
+
+//     if (labels.length === 0) {
+//         console.log("Список тикеров пуст");
+//         return;
+//     }
+
+//     // 2. Генерируем случайные данные для ТВОИХ тикеров (пока нет связи с БД)
+//     const buyData = labels.map(() => Math.floor(Math.random() * 100));
+//     const sellData = labels.map(() => Math.floor(Math.random() * 50));
+    
+//     const totalBuy = buyData.reduce((a, b) => a + b, 0);
+//     const totalSell = sellData.reduce((a, b) => a + b, 0);
+
+//     // 3. Отрисовка (твои функции)
+//     drawPortfolioPie(totalBuy, totalSell);
+//     drawBarStats('topBuyBar', labels, buyData, '#4BB34B', 'Покупка');
+//     drawBarStats('topSellBar', labels, sellData, '#E64646', 'Продажа');
+// }
 
 
 
