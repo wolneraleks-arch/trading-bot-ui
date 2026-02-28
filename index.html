@@ -427,7 +427,7 @@
                 <div id="vol-status-text" style="font-size: 12px; font-weight: 600; margin-top: 6px; padding: 4px 8px; border-radius: 4px; display: inline-block;"></div>
                 <div class="thermometer-limit"></div>
             </div>
-            <div style="font-size: 11px; color: #818c99; margin-top: 4px;">100% — превышение максимума за период</div>
+            <!-- <div style="font-size: 11px; color: #818c99; margin-top: 4px;">100% — превышение максимума за период</div> -->
         </div>
     </div>
 
@@ -1053,8 +1053,14 @@ function updateThermometer(barId, textId, percentInput) {
     } else {
         // ЛОГИКА ДЛЯ ОБЪЕМА
         if (percent >= 200) { color = '#7442D4'; status = "⚛️ Экстремальный объем"; bgStatus = "#F5F2FF"; }
-        else if (percent >= 100) { color = '#4BB34B'; status = "📈 Всплеск объема"; bgStatus = "#F2FFF2"; }
-        else { color = '#818c99'; status = "📊 Норма объема"; bgStatus = "#F5F5F5"; }
+        else if (percent >= 100) { color = '#4BB34B'; status = "📈 Всплеск объема"; bgStatus = "#F2FFF2"; } 
+          else {
+        // ЛОГИКА ДЛЯ ОБЪЕМА (чем ближе к 100%, тем краснее)
+        if (percent >= 100) { color = '#E64646'; status = "⚠️ Аномальный объем"; bgStatus = "#FFF1F1"; }
+        else if (percent >= 70) { color = '#FF9E00'; status = "📈 Высокий объем"; bgStatus = "#FFF9F0"; }
+        else if (percent >= 40) { color = '#4BB34B'; status = "📊 Средний объем"; bgStatus = "#F2FFF2"; }
+        else { color = '#818c99'; status = "💿 Низкий объем"; bgStatus = "#F5F5F5"; }
+    }
     }
 
     // Применяем визуал
