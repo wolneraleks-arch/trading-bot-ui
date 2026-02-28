@@ -1031,22 +1031,19 @@ async function loadTickerStats() {
 
     
 // Универсальная функция для обновления любого "градусника"
-function updateThermometer(barId, textId, percent) {
+function updateThermometer(barId, textId, percentInput) {
     const bar = document.getElementById(barId);
     const text = document.getElementById(textId);
     const statusText = document.getElementById('adr-status-text');
+    
+    // Если базовых элементов нет — выходим сразу, чтобы не вешать скрипт
     if (!bar || !text) return;
 
-    // Визуальная ширина (для красоты ограничим 100% на шкале, но цифру пишем реальную)
-    bar.style.width = Math.min(percent, 100) + '%';
-    text.innerText = percent + '%';
+    // ГАРАНТИРУЕМ, ЧТО ЭТО ЧИСЛО
+    const percent = Number(percentInput) || 0;
 
-    // let color = '#0077ff'; // Дефолтный синий (до 100%)
-    // let status = "Дневной АДР";
-    // let bgStatus = "#f0f2f5"; // Фон для подписи
-     
-    // const percent = Number(percentRaw);
-     let color, status, bgStatus;
+    // 1. Сначала определяем все параметры
+    let color, status, bgStatus;
 
     if (percent >= 300) {
         color = '#E64646'; // Красный
@@ -1056,7 +1053,7 @@ function updateThermometer(barId, textId, percent) {
         color = '#4BB34B'; // Зеленый
         status = "🚀 Аномальный (x2-x3)";
         bgStatus = "#F2FFF2";
-    } else if (percent >= 100 ) {
+    } else if (percent >= 100) {
         color = '#FF9E00'; // Желтый/Оранжевый
         status = "⚠️ Повышенный (x1-x2)";
         bgStatus = "#FFF9F0";
@@ -1066,16 +1063,19 @@ function updateThermometer(barId, textId, percent) {
         bgStatus = "#F0F7FF";
     }
 
-    // Применяем цвета к полоске и тексту процентов
+    // 2. ПРИМЕНЯЕМ ВИЗУАЛ (Один раз)
+    bar.style.width = Math.min(percent, 100) + '%';
     bar.style.background = color;
+    
+    text.innerText = percent + '%';
     text.style.color = color;
 
-    // Обновляем плашку статуса под шкалой
+    // 3. ОБНОВЛЯЕМ СТАТУС (только если элемент существует в HTML)
     if (statusText) {
         statusText.innerText = status;
         statusText.style.color = color;
         statusText.style.backgroundColor = bgStatus;
-        statusText.style.border = `1px solid ${color}44`; // Легкая рамка того же цвета
+        statusText.style.border = `1px solid ${color}44`; 
     }
 }
 
