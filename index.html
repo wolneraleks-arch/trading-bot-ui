@@ -1031,7 +1031,7 @@ async function loadTickerStats() {
 
     
 // Универсальная функция для обновления любого "градусника"
-function updateThermometer(barId, textId, percent) {
+function updateThermometer(barId, textId, percentRaw) {
     const bar = document.getElementById(barId);
     const text = document.getElementById(textId);
     const statusText = document.getElementById('adr-status-text');
