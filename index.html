@@ -300,6 +300,24 @@
 
 <!-- Вкладка: СТАТИСТИКА -->
 <div id="tab-stats" class="tab-content">
+   <div class="section-title">📊 Общий обзор портфеля (Текущий день)</div>
+<div class="card" style="margin-bottom: 16px;">
+    <div style="font-size: 14px; margin-bottom: 12px; font-weight: 600; text-align: center;">Общее соотношение Покупок / Продаж</div>
+    <div style="height: 200px;"><canvas id="totalPieChart"></canvas></div>
+</div>
+
+<div class="card" style="margin-bottom: 16px;">
+    <div style="font-size: 14px; margin-bottom: 12px; font-weight: 600; text-align: center;">Топ Покупок (по тикерам)</div>
+    <div style="height: 250px;"><canvas id="buyBarChart"></canvas></div>
+</div>
+
+<div class="card" style="margin-bottom: 16px;">
+    <div style="font-size: 14px; margin-bottom: 12px; font-weight: 600; text-align: center;">Топ Продаж (по тикерам)</div>
+    <div style="height: 250px;"><canvas id="sellBarChart"></canvas></div>
+</div>
+
+
+    
     <div class="section-title">Аналитика по тикерам</div>
     <div class="card">
         <label style="flex-direction: column; align-items: flex-start;">
@@ -334,6 +352,7 @@
         </div>
     </div>
 </div>
+
 
 </div>
 
@@ -702,6 +721,96 @@ function drawSimpleChart(labels, prices) {
     });
 }
 
+    // Переменные для хранения объектов графиков (чтобы удалять старые при обновлении)
+let chartPortfolioPie, chartBuyBar, chartSellBar;
+
+function displayDemoStats() {
+    // ТЕСТОВЫЕ ДАННЫЕ (как будто из твоего списка тикеров)
+    const labels = ['SBER', 'GAZP', 'LKOH', 'CHMF', 'NVTK'];
+    const buyData = [120.5, 85.2, 45.0, 0, 10.5];  // Суммы в покупку
+    const sellData = [0, 0, 0, 95.8, 40.2];         // Суммы в продажу
+    
+    const totalBuy = buyData.reduce((a, b) => a + b, 0);
+    const totalSell = sellData.reduce((a, b) => a + b, 0);
+
+    // 1. Круговая диаграмма (Общее состояние)
+    drawPortfolioPie(totalBuy, totalSell);
+
+    // 2. Столбчатая: Покупки (Зеленая)
+    drawBarStats('topBuyBar', labels, buyData, '#4BB34B', 'Покупка');
+
+    // 3. Столбчатая: Продажи (Красная)
+    drawBarStats('topSellBar', labels, sellData, '#E64646', 'Продажа');
+}
+
+function drawPortfolioPie(buy, sell) {
+    const ctx = document.getElementById('totalPortfolioPie').getContext('2d');
+    if (chartPortfolioPie) chartPortfolioPie.destroy();
+
+    chartPortfolioPie = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Покупки', 'Продажи'],
+            datasets: [{
+                data: [buy, sell],
+                backgroundColor: ['#4BB34B', '#E64646'],
+                hoverOffset: 8,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%', // Делаем кольцо тоньше
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
+            }
+        }
+    });
+}
+
+function drawBarStats(canvasId, labels, data, color, labelName) {
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    const chartInstance = (canvasId === 'topBuyBar') ? chartBuyBar : chartSellBar;
+    if (chartInstance) chartInstance.destroy();
+
+    const newChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: labelName,
+                data: data,
+                backgroundColor: color,
+                borderRadius: 6,
+                barThickness: 20
+            }]
+        },
+        options: {
+            indexAxis: 'y', // Горизонтальные столбцы - идеально для мобильных тикеров
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { 
+                    beginAtZero: true,
+                    grid: { display: false },
+                    ticks: { color: '#818c99' }
+                },
+                y: { 
+                    grid: { display: false },
+                    ticks: { color: '#2c2d2e', font: { weight: 'bold' } }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+
+    if (canvasId === 'topBuyBar') chartBuyBar = newChart; else chartSellBar = newChart;
+}
+
+
 
     
 
@@ -721,6 +830,7 @@ function drawSimpleChart(labels, prices) {
     if (tabId === 'stats') {
         // При переходе в статистику обновляем список доступных тикеров
         updateStatsTickers();
+         displayDemoStats(); // ЗАПУСКАЕМ ТЕСТОВЫЕ ГРАФИКИ
         if (saveContainer) saveContainer.classList.remove('visible');
     } else if (tabId === 'help') {
         if (saveContainer) saveContainer.classList.remove('visible');
