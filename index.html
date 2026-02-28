@@ -826,13 +826,22 @@ function drawBarStats(canvasId, labels, data, color, labelName) {
     
     // 3. УПРАВЛЕНИЕ КНОПКОЙ СОХРАНЕНИЯ И СПЕЦ. ЛОГИКА
     const saveContainer = document.querySelector('.save-container');
-    
-    if (tabId === 'stats') {
-        // При переходе в статистику обновляем список доступных тикеров
+             if (tabId === 'stats') {
         updateStatsTickers();
-         displayDemoStats(); // ЗАПУСКАЕМ ТЕСТОВЫЕ ГРАФИКИ
+        // Даем вкладке время отобразиться
+        setTimeout(() => {
+            displayDemoStats(); 
+        }, 150); // 150мс достаточно
         if (saveContainer) saveContainer.classList.remove('visible');
-    } else if (tabId === 'help') {
+    }
+
+    // if (tabId === 'stats') {
+    //     // При переходе в статистику обновляем список доступных тикеров
+    //     updateStatsTickers();
+    //      displayDemoStats(); // ЗАПУСКАЕМ ТЕСТОВЫЕ ГРАФИКИ
+    //     if (saveContainer) saveContainer.classList.remove('visible');
+    // } 
+    else if (tabId === 'help') {
         if (saveContainer) saveContainer.classList.remove('visible');
     } else {
         // В Профиле и Настройках проверяем изменения
