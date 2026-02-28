@@ -291,6 +291,10 @@
     top: 0;
 }
 
+#adr-status-text {
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
 
 
 
@@ -396,17 +400,21 @@
     <div class="section-title">Индикаторы активности (Live)</div>
     <div class="card" style="padding: 16px; margin-bottom: 16px;">
         <!-- Шкала АДР -->
-        <div style="margin-bottom: 20px;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                <span style="font-size: 13px; font-weight: 600;">🌡️ Ход цены (ADR)</span>
-                <span id="adr-perc-val" style="font-size: 13px; font-weight: 700; color: #0077ff;">0%</span>
-            </div>
-            <div class="thermometer-track">
-                <div id="adr-bar" class="thermometer-fill" style="width: 0%;"></div>
-                <div class="thermometer-limit"></div> 
-            </div>
-            <div style="font-size: 11px; color: #818c99; margin-top: 4px;">100% — норма хода за день</div>
-        </div>
+   
+<div style="margin-bottom: 24px;">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+        <span style="font-size: 13px; font-weight: 600;">🌡️ Ход цены (ADR)</span>
+        <span id="adr-perc-val" style="font-size: 14px; font-weight: 800;">0%</span>
+    </div>
+    <div class="thermometer-track">
+        <div id="adr-bar" class="thermometer-fill" style="width: 0%;"></div>
+        <div class="thermometer-limit"></div> 
+    </div>
+    <!-- Динамическая подпись -->
+    <div id="adr-status-text" style="font-size: 12px; font-weight: 600; color: #818c99; margin-top: 6px; padding: 4px 8px; border-radius: 4px; display: inline-block;">
+        Ожидание данных...
+    </div>
+</div>
 
         <!-- Шкала Объема -->
         <div>
@@ -1026,26 +1034,47 @@ async function loadTickerStats() {
 function updateThermometer(barId, textId, percent) {
     const bar = document.getElementById(barId);
     const text = document.getElementById(textId);
+    const statusText = document.getElementById('adr-status-text');
     if (!bar || !text) return;
 
-    // Визуально ограничиваем полоску 100%, но текст пишем реальный (хоть 250%)
-    const visualWidth = Math.min(percent, 100);
-    bar.style.width = visualWidth + '%';
+    // Визуальная ширина (для красоты ограничим 100% на шкале, но цифру пишем реальную)
+    bar.style.width = Math.min(percent, 100) + '%';
     text.innerText = percent + '%';
 
-    // Цветовая логика "накала"
-    if (percent >= 100) {
-        bar.style.background = '#E64646'; // Красный (Лимит пробит)
-        text.style.color = '#E64646';
-    } else if (percent >= 80) {
-        bar.style.background = '#FF9E00'; // Оранжевый (Внимание)
-        text.style.color = '#FF9E00';
+    let color = '#0077ff'; // Дефолтный синий (до 100%)
+    let status = "Дневной АДР";
+    let bgStatus = "#f0f2f5"; // Фон для подписи
+
+    if (percent >= 300) {
+        color = '#E64646'; // Красный
+        status = "🔥 Черный лебедь (x3+)";
+        bgStatus = "#FFF1F1";
+    } else if (percent >= 200) {
+        color = '#4BB34B'; // Зеленый
+        status = "🚀 Аномальный (x2-x3)";
+        bgStatus = "#F2FFF2";
+    } else if (percent >= 100) {
+        color = '#FF9E00'; // Желтый/Оранжевый
+        status = "⚠️ Повышенный (x1-x2)";
+        bgStatus = "#FFF9F0";
     } else {
-        // Стандартные цвета (Синий для АДР, Зеленый для Объема)
-        bar.style.background = (barId === 'adr-bar') ? '#0077ff' : '#4BB34B';
-        text.style.color = (barId === 'adr-bar') ? '#0077ff' : '#4BB34B';
+        color = '#0077ff'; // Синий
+        status = "⚪ Дневной норматив";
+        bgStatus = "#F0F7FF";
+    }
+
+    // Применяем цвета к полоске и тексту процентов
+    bar.style.background = color;
+    text.style.color = color;
+
+    // Обновляем плашку статуса под шкалой
+    if (statusText) {
+        statusText.innerText = status;
+        statusText.style.color = color;
+        statusText.style.backgroundColor = bgStatus;
     }
 }
+
 
 
 
