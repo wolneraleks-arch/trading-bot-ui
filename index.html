@@ -279,7 +279,7 @@
     height: 100%;
     width: 0%;
     background: #0077ff;
-    transition: width 0.6s cubic-bezier(0.1, 0.7, 1.0, 0.1);
+    transition: width 0.6s cubic-bezier(0.21, 0.7, 1.0, 0.91), background 0.3s ease;
     border-radius: 6px;
 }
 
@@ -290,6 +290,7 @@
     height: 100%;
     top: 0;
 }
+
 
 
 
@@ -971,6 +972,83 @@ function drawBarStats(canvasId, labels, data, color, labelName) {
 
 
 
+
+async function loadTickerStats() {
+    const ticker = document.getElementById('stats_ticker_select').value;
+    const container = document.getElementById('stats-container');
+    
+    if (!ticker) {
+        container.style.display = 'none';
+        return;
+    }
+    
+    // Показываем контейнер
+    container.style.display = 'block';
+
+    // --- ИМИТАЦИЯ ДАННЫХ ИЗ ТАБЛИЦЫ ---
+    // Генерируем случайный процент хода (от 10% до 160%)
+    const mockAdrPercent = Math.floor(Math.random() * 150) + 10;
+    // Генерируем случайный процент объема (от 5% до 130%)
+    const mockVolPercent = Math.floor(Math.random() * 125) + 5;
+
+    // Данные для круговой диаграммы (Покупки/Продажи)
+    const mockBuy = Math.floor(Math.random() * 1000000);
+    const mockSell = Math.floor(Math.random() * 1000000);
+
+    // Данные для столбцов (30 дней истории)
+    const mockLabels = Array.from({length: 30}, (_, i) => i + 1);
+    const mockVolumes = mockLabels.map(() => Math.floor(Math.random() * 500000) + 100000);
+
+    // --- ЗАПУСК ОТРИСОВКИ ---
+    
+    // 1. Оживляем ТЕРМОМЕТРЫ (с задержкой для красоты анимации)
+    setTimeout(() => {
+        updateThermometer('adr-bar', 'adr-perc-val', mockAdrPercent);
+        updateThermometer('vol-bar', 'vol-perc-val', mockVolPercent);
+    }, 100);
+
+    // 2. Рисуем круговую диаграмму
+    drawPieChart(mockBuy, mockSell);
+
+    // 3. Рисуем столбцы объемов
+    drawBarChart(mockLabels, mockVolumes);
+
+    // 4. Текстовая детализация
+    const avg = (mockVolumes.reduce((a, b) => a + b, 0) / 30).toLocaleString();
+    document.getElementById('avg-vol-val').innerText = avg + " ₽";
+}
+
+
+
+
+    
+// Универсальная функция для обновления любого "градусника"
+function updateThermometer(barId, textId, percent) {
+    const bar = document.getElementById(barId);
+    const text = document.getElementById(textId);
+    if (!bar || !text) return;
+
+    // Визуально ограничиваем полоску 100%, но текст пишем реальный (хоть 250%)
+    const visualWidth = Math.min(percent, 100);
+    bar.style.width = visualWidth + '%';
+    text.innerText = percent + '%';
+
+    // Цветовая логика "накала"
+    if (percent >= 100) {
+        bar.style.background = '#E64646'; // Красный (Лимит пробит)
+        text.style.color = '#E64646';
+    } else if (percent >= 80) {
+        bar.style.background = '#FF9E00'; // Оранжевый (Внимание)
+        text.style.color = '#FF9E00';
+    } else {
+        // Стандартные цвета (Синий для АДР, Зеленый для Объема)
+        bar.style.background = (barId === 'adr-bar') ? '#0077ff' : '#4BB34B';
+        text.style.color = (barId === 'adr-bar') ? '#0077ff' : '#4BB34B';
+    }
+}
+
+
+
     
 
      function switchTab(tabId, el) {
@@ -1043,25 +1121,28 @@ function updateStatsTickers() {
 let chartPie = null;
 let chartBar = null;
 
-async function loadTickerStats() {
-    const ticker = document.getElementById('stats_ticker_select').value;
-    if (!ticker) {
-        document.getElementById('stats-container').style.display = 'none';
-        return;
-    }
-    document.getElementById('stats-container').style.display = 'block';
+// async function loadTickerStats() {
+//     const ticker = document.getElementById('stats_ticker_select').value;
+//     if (!ticker) {
+//         document.getElementById('stats-container').style.display = 'none';
+//         return;
+//     }
+//     document.getElementById('stats-container').style.display = 'block';
 
-    // ПРИМЕР ДАННЫХ (в след. шаге заменим на ответ от GAS)
-    const dataMock = {
-        buyVol: 650000,
-        sellVol: 350000,
-        last30DaysVol: [120, 150, 80, 200, 170, 90, 300, 250, 100, 110, 140, 180, 210, 160, 130] // и т.д.
-    };
+//     // ПРИМЕР ДАННЫХ (в след. шаге заменим на ответ от GAS)
+//     const dataMock = {
+//         buyVol: 650000,
+//         sellVol: 350000,
+//         last30DaysVol: [120, 150, 80, 200, 170, 90, 300, 250, 100, 110, 140, 180, 210, 160, 130] // и т.д.
+//     };
 
-    drawPieChart(dataMock.buyVol, dataMock.sellVol);
-    drawBarChart(dataMock.last30DaysVol);
-}
+//     drawPieChart(dataMock.buyVol, dataMock.sellVol);
+//     drawBarChart(dataMock.last30DaysVol);
+// }
 
+
+
+    
 // 1. Круговая диаграмма (Покупки vs Продажи)
 function drawPieChart(buy, sell) {
     const ctx = document.getElementById('pieChart').getContext('2d');
