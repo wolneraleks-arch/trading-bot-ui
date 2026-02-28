@@ -1044,10 +1044,10 @@ function updateThermometer(barId, textId, percent) {
     // let color = '#0077ff'; // Дефолтный синий (до 100%)
     // let status = "Дневной АДР";
     // let bgStatus = "#f0f2f5"; // Фон для подписи
-
+     
+    const percent = Number(percentRaw);
      let color, status, bgStatus;
 
-    
     if (percent >= 300) {
         color = '#E64646'; // Красный
         status = "🔥 Черный лебедь (x3+)";
