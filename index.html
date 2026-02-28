@@ -1043,7 +1043,12 @@ function updateThermometer(barId, textId, percentInput) {
     const percent = Number(percentInput) || 0;
 
     // 1. Сначала определяем все параметры
-    let color, status, bgStatus;
+// 1. ОПРЕДЕЛЯЕМ ПАРАМЕТРЫ
+    let color = '#0077ff'; 
+    let status = "⚪ Дневной АДР";
+    let bgStatus = "#F0F7FF";
+    
+    //let color, status, bgStatus;
 
     if (percent >= 300) {
         color = '#E64646'; // Красный
@@ -1071,11 +1076,12 @@ function updateThermometer(barId, textId, percentInput) {
     text.style.color = color;
 
     // 3. ОБНОВЛЯЕМ СТАТУС (только если элемент существует в HTML)
-    if (statusText) {
+    if (statusText && barId === 'adr-bar') {
         statusText.innerText = status;
         statusText.style.color = color;
         statusText.style.backgroundColor = bgStatus;
-        statusText.style.border = `1px solid ${color}44`; 
+        statusText.style.border = `1px solid ${color}44`;
+        statusText.style.display = "inline-block";
     }
 }
 
