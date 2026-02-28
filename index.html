@@ -1374,6 +1374,9 @@ async function init() {
             return;
         }
 
+        fetchGlobalTickers(); 
+    // --------------------------------------
+        
         // Заполняем ID в профиле сразу
         const displayIdEl = document.getElementById('display-id');
         logStatus("этап 2.");
