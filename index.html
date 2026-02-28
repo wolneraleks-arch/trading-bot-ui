@@ -1218,83 +1218,83 @@ function updateThermometer(barId, textId, percentInput) {
 let globalTickers = []; 
 
 
-    async function fetchGlobalTickers() {
-    try {
-        console.log("Запрос к GAS по адресу:", GAS_URL);
-        const response = await fetch(`${GAS_URL}?action=get_all_tickers`);
-        const res = await response.json();
-        
-        console.log("Ответ от сервера:", res); // Смотрим в консоль здесь!
-
-        if (res.status === "success" && Array.isArray(res.data)) {
-            globalTickers = res.data;
-            console.log("Массив тикеров загружен, длина:", globalTickers.length);
-            updateStatsTickers(); 
-        } else {
-            console.error("Сервер прислал ошибку или данные не массив:", res);
-        }
-    } catch (e) { 
-        console.error("Ошибка связи с GAS:", e); 
-    }
-}
-
-    
-    
 //     async function fetchGlobalTickers() {
 //     try {
+//         console.log("Запрос к GAS по адресу:", GAS_URL);
 //         const response = await fetch(`${GAS_URL}?action=get_all_tickers`);
 //         const res = await response.json();
-//         if (res.status === "success") {
-//             // Теперь здесь объекты {ticker, name}
-//             globalTickers = res.data; 
-//             updateStatsTickers(); 
-//         }
-//     } catch (e) { console.error("Ошибка загрузки списка тикеров", e); }
-// }
-
-// function updateStatsTickers() {
-//     const select = document.getElementById('stats_ticker_select');
-//     if (!select) return;
-
-//     // Тикеры пользователя из настроек (там обычно просто список через запятую)
-//     const rawUser = document.getElementById('in_tickers_stocks').value || "";
-//     const userTickersCodes = rawUser.split(',').map(t => t.trim().toUpperCase()).filter(t => t);
-
-//     select.innerHTML = '<option value="">-- Выберите акцию --</option>';
-
-//     // 1. Добавляем тикеры пользователя (⭐ Мои тикеры)
-//     if (userTickersCodes.length > 0) {
-//         const groupUser = document.createElement('optgroup');
-//         groupUser.label = "⭐ Мои тикеры";
         
-//         userTickersCodes.forEach(code => {
-//             const opt = document.createElement('option');
-//             opt.value = code;
-            
-//             // Ищем красивое название в globalTickers, если нет - пишем тикер
-//             const found = globalTickers.find(item => item.ticker === code);
-//             opt.textContent = found ? found.name : code; 
-            
-//             groupUser.appendChild(opt);
-//         });
-//         select.appendChild(groupUser);
-//     }
+//         console.log("Ответ от сервера:", res); // Смотрим в консоль здесь!
 
-//     // 2. Добавляем весь остальной рынок (📈 Весь рынок)
-//     const groupAll = document.createElement('optgroup');
-//     groupAll.label = "📈 Весь рынок";
-    
-//     globalTickers.forEach(item => {
-//         // Добавляем только если этого тикера нет в списке пользователя
-//         if (!userTickersCodes.includes(item.ticker)) {
-//             const opt = document.createElement('option');
-//             opt.value = item.ticker; // В коде используем SBER
-//             opt.textContent = item.name; // Пользователь видит "Сбербанк"
-//             groupAll.appendChild(opt);
+//         if (res.status === "success" && Array.isArray(res.data)) {
+//             globalTickers = res.data;
+//             console.log("Массив тикеров загружен, длина:", globalTickers.length);
+//             updateStatsTickers(); 
+//         } else {
+//             console.error("Сервер прислал ошибку или данные не массив:", res);
 //         }
-//     });
-//     select.appendChild(groupAll);
+//     } catch (e) { 
+//         console.error("Ошибка связи с GAS:", e); 
+//     }
 // }
+
+    
+    
+    async function fetchGlobalTickers() {
+    try {
+        const response = await fetch(`${GAS_URL}?action=get_all_tickers`);
+        const res = await response.json();
+        if (res.status === "success") {
+            // Теперь здесь объекты {ticker, name}
+            globalTickers = res.data; 
+            updateStatsTickers(); 
+        }
+    } catch (e) { console.error("Ошибка загрузки списка тикеров", e); }
+}
+
+function updateStatsTickers() {
+    const select = document.getElementById('stats_ticker_select');
+    if (!select) return;
+
+    // Тикеры пользователя из настроек (там обычно просто список через запятую)
+    const rawUser = document.getElementById('in_tickers_stocks').value || "";
+    const userTickersCodes = rawUser.split(',').map(t => t.trim().toUpperCase()).filter(t => t);
+
+    select.innerHTML = '<option value="">-- Выберите акцию --</option>';
+
+    // 1. Добавляем тикеры пользователя (⭐ Мои тикеры)
+    if (userTickersCodes.length > 0) {
+        const groupUser = document.createElement('optgroup');
+        groupUser.label = "⭐ Мои тикеры";
+        
+        userTickersCodes.forEach(code => {
+            const opt = document.createElement('option');
+            opt.value = code;
+            
+            // Ищем красивое название в globalTickers, если нет - пишем тикер
+            const found = globalTickers.find(item => item.ticker === code);
+            opt.textContent = found ? found.name : code; 
+            
+            groupUser.appendChild(opt);
+        });
+        select.appendChild(groupUser);
+    }
+
+    // 2. Добавляем весь остальной рынок (📈 Весь рынок)
+    const groupAll = document.createElement('optgroup');
+    groupAll.label = "📈 Весь рынок";
+    
+    globalTickers.forEach(item => {
+        // Добавляем только если этого тикера нет в списке пользователя
+        if (!userTickersCodes.includes(item.ticker)) {
+            const opt = document.createElement('option');
+            opt.value = item.ticker; // В коде используем SBER
+            opt.textContent = item.name; // Пользователь видит "Сбербанк"
+            groupAll.appendChild(opt);
+        }
+    });
+    select.appendChild(groupAll);
+}
 
 
 
