@@ -1049,11 +1049,11 @@ function updateThermometer(barId, textId, percentInput) {
         color = '#E64646'; // Красный
         status = "🔥 Черный лебедь (x3+)";
         bgStatus = "#FFF1F1";
-    } else if (percent >= 200) {
+    } else if (percent >= 200  && percent < 300) {
         color = '#4BB34B'; // Зеленый
         status = "🚀 Аномальный (x2-x3)";
         bgStatus = "#F2FFF2";
-    } else if (percent >= 100) {
+    } else if (percent >= 100 && percent < 200) {
         color = '#FF9E00'; // Желтый/Оранжевый
         status = "⚠️ Повышенный (x1-x2)";
         bgStatus = "#FFF9F0";
