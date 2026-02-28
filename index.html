@@ -982,7 +982,54 @@ function drawBarStats(canvasId, labels, data, color, labelName) {
 
 
 
-async function loadTickerStats() {
+// async function loadTickerStats() {
+//     const ticker = document.getElementById('stats_ticker_select').value;
+//     const container = document.getElementById('stats-container');
+    
+//     if (!ticker) {
+//         container.style.display = 'none';
+//         return;
+//     }
+    
+//     // Показываем контейнер
+//     container.style.display = 'block';
+
+//     // --- ИМИТАЦИЯ ДАННЫХ ИЗ ТАБЛИЦЫ ---
+//     // Генерируем случайный процент хода (от 10% до 160%)
+//     const mockAdrPercent = Math.floor(Math.random() * 150) + 100;
+//     // Генерируем случайный процент объема (от 5% до 130%)
+//     const mockVolPercent = Math.floor(Math.random() * 125) + 5;
+
+//     // Данные для круговой диаграммы (Покупки/Продажи)
+//     const mockBuy = Math.floor(Math.random() * 1000000);
+//     const mockSell = Math.floor(Math.random() * 1000000);
+
+//     // Данные для столбцов (30 дней истории)
+//     const mockLabels = Array.from({length: 30}, (_, i) => i + 1);
+//     const mockVolumes = mockLabels.map(() => Math.floor(Math.random() * 500000) + 100000);
+
+//     // --- ЗАПУСК ОТРИСОВКИ ---
+    
+//     // 1. Оживляем ТЕРМОМЕТРЫ (с задержкой для красоты анимации)
+//     setTimeout(() => {
+//         updateThermometer('adr-bar', 'adr-perc-val', mockAdrPercent);
+//         updateThermometer('vol-bar', 'vol-perc-val', mockVolPercent);
+//     }, 100);
+
+//     // 2. Рисуем круговую диаграмму
+//     drawPieChart(mockBuy, mockSell);
+
+//     // 3. Рисуем столбцы объемов
+//     drawBarChart(mockLabels, mockVolumes);
+
+//     // 4. Текстовая детализация
+//     const avg = (mockVolumes.reduce((a, b) => a + b, 0) / 30).toLocaleString();
+//     document.getElementById('avg-vol-val').innerText = avg + " ₽";
+// }
+
+
+
+    async function loadTickerStats() {
     const ticker = document.getElementById('stats_ticker_select').value;
     const container = document.getElementById('stats-container');
     
@@ -991,41 +1038,39 @@ async function loadTickerStats() {
         return;
     }
     
-    // Показываем контейнер
     container.style.display = 'block';
-
-    // --- ИМИТАЦИЯ ДАННЫХ ИЗ ТАБЛИЦЫ ---
-    // Генерируем случайный процент хода (от 10% до 160%)
-    const mockAdrPercent = Math.floor(Math.random() * 150) + 100;
-    // Генерируем случайный процент объема (от 5% до 130%)
-    const mockVolPercent = Math.floor(Math.random() * 125) + 5;
-
-    // Данные для круговой диаграммы (Покупки/Продажи)
-    const mockBuy = Math.floor(Math.random() * 1000000);
-    const mockSell = Math.floor(Math.random() * 1000000);
-
-    // Данные для столбцов (30 дней истории)
-    const mockLabels = Array.from({length: 30}, (_, i) => i + 1);
-    const mockVolumes = mockLabels.map(() => Math.floor(Math.random() * 500000) + 100000);
-
-    // --- ЗАПУСК ОТРИСОВКИ ---
     
-    // 1. Оживляем ТЕРМОМЕТРЫ (с задержкой для красоты анимации)
-    setTimeout(() => {
-        updateThermometer('adr-bar', 'adr-perc-val', mockAdrPercent);
-        updateThermometer('vol-bar', 'vol-perc-val', mockVolPercent);
-    }, 100);
+    // Показываем индикатор загрузки на градусниках
+    document.getElementById('adr-perc-val').innerText = "⏳";
+    document.getElementById('vol-perc-val').innerText = "⏳";
 
-    // 2. Рисуем круговую диаграмму
-    drawPieChart(mockBuy, mockSell);
+    try {
+        // ЗАПРОС К ТАБЛИЦЕ
+        const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}`);
+        const res = await response.json();
 
-    // 3. Рисуем столбцы объемов
-    drawBarChart(mockLabels, mockVolumes);
+        if (res.status === "success") {
+            const d = res.data;
 
-    // 4. Текстовая детализация
-    const avg = (mockVolumes.reduce((a, b) => a + b, 0) / 30).toLocaleString();
-    document.getElementById('avg-vol-val').innerText = avg + " ₽";
+            // Оживляем градусники реальными цифрами
+            updateThermometer('adr-bar', 'adr-perc-val', d.adrPercent);
+            updateThermometer('vol-bar', 'vol-perc-val', d.volPercent);
+            
+            // Здесь же можно будет вызвать отрисовку графиков (следующим шагом)
+               // 2. Рисуем круговую диаграмму
+            drawPieChart(mockBuy, mockSell);
+
+         // 3. Рисуем столбцы объемов
+          drawBarChart(mockLabels, mockVolumes);
+            
+        } else {
+            console.error("Ошибка GAS:", res.msg);
+        }
+    } catch (e) {
+        console.error("Ошибка связи:", e);
+    }
 }
+
 
 
 
@@ -1117,36 +1162,95 @@ function updateThermometer(barId, textId, percentInput) {
     }
 }
 
-// Вспомогательная функция для обновления списка тикеров во вкладке Статистика
+
+
+
+// 1. При загрузке приложения (в init) один раз скачиваем весь список
+let globalTickers = []; 
+
+async function fetchGlobalTickers() {
+    try {
+        const response = await fetch(`${GAS_URL}?action=get_all_tickers`);
+        const res = await response.json();
+        if (res.status === "success") {
+            globalTickers = res.data;
+            updateStatsTickers(); // Перерисовываем селект
+        }
+    } catch (e) { console.error("Ошибка загрузки списка тикеров", e); }
+}
+
+// 2. Обновляем выпадающий список
 function updateStatsTickers() {
     const select = document.getElementById('stats_ticker_select');
     if (!select) return;
 
-    // Берем текущие тикеры из поля ввода (те, что ввел юзер)
-    const rawStocks = document.getElementById('in_tickers_stocks').value || "";
-    // Превращаем в массив, чистим пробелы
-    const tickers = rawStocks.split(',')
-        .map(t => t.trim().toUpperCase())
-        .filter(t => t.length > 0);
+    // Тикеры пользователя (из настроек)
+    const rawUser = document.getElementById('in_tickers_stocks').value || "";
+    const userTickers = rawUser.split(',').map(t => t.trim().toUpperCase()).filter(t => t);
 
-    // Сохраняем текущий выбранный тикер, чтобы он не сбросился при переключении вкладок
-    const currentSelected = select.value;
-
-    // Очищаем и заполняем заново
     select.innerHTML = '<option value="">-- Выберите тикер --</option>';
-    
-    tickers.forEach(t => {
-        const opt = document.createElement('option');
-        opt.value = t;
-        opt.textContent = t;
-        select.appendChild(opt);
-    });
 
-    // Возвращаем выбор на место, если тикер все еще в списке
-    if (tickers.includes(currentSelected)) {
-        select.value = currentSelected;
+    // Добавляем тикеры пользователя
+    if (userTickers.length > 0) {
+        const groupUser = document.createElement('optgroup');
+        groupUser.label = "⭐ Мои тикеры";
+        userTickers.forEach(t => {
+            const opt = document.createElement('option');
+            opt.value = t; opt.textContent = t; groupUser.appendChild(opt);
+        });
+        select.appendChild(groupUser);
     }
+
+    // Добавляем весь остальной рынок (кроме тех, что уже есть у юзера)
+    const groupAll = document.createElement('optgroup');
+    groupAll.label = "📈 Весь рынок";
+    globalTickers.forEach(t => {
+        if (!userTickers.includes(t)) {
+            const opt = document.createElement('option');
+            opt.value = t; opt.textContent = t; groupAll.appendChild(opt);
+        }
+    });
+    select.appendChild(groupAll);
 }
+
+
+
+
+
+
+
+
+    
+// // Вспомогательная функция для обновления списка тикеров во вкладке Статистика
+// function updateStatsTickers() {
+//     const select = document.getElementById('stats_ticker_select');
+//     if (!select) return;
+
+//     // Берем текущие тикеры из поля ввода (те, что ввел юзер)
+//     const rawStocks = document.getElementById('in_tickers_stocks').value || "";
+//     // Превращаем в массив, чистим пробелы
+//     const tickers = rawStocks.split(',')
+//         .map(t => t.trim().toUpperCase())
+//         .filter(t => t.length > 0);
+
+//     // Сохраняем текущий выбранный тикер, чтобы он не сбросился при переключении вкладок
+//     const currentSelected = select.value;
+
+//     // Очищаем и заполняем заново
+//     select.innerHTML = '<option value="">-- Выберите тикер --</option>';
+    
+//     tickers.forEach(t => {
+//         const opt = document.createElement('option');
+//         opt.value = t;
+//         opt.textContent = t;
+//         select.appendChild(opt);
+//     });
+
+//     // Возвращаем выбор на место, если тикер все еще в списке
+//     if (tickers.includes(currentSelected)) {
+//         select.value = currentSelected;
+//     }
+// }
 
 
 let chartPie = null;
