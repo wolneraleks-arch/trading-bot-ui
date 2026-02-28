@@ -1041,19 +1041,22 @@ function updateThermometer(barId, textId, percent) {
     bar.style.width = Math.min(percent, 100) + '%';
     text.innerText = percent + '%';
 
-    let color = '#0077ff'; // Дефолтный синий (до 100%)
-    let status = "Дневной АДР";
-    let bgStatus = "#f0f2f5"; // Фон для подписи
+    // let color = '#0077ff'; // Дефолтный синий (до 100%)
+    // let status = "Дневной АДР";
+    // let bgStatus = "#f0f2f5"; // Фон для подписи
 
+     let color, status, bgStatus;
+
+    
     if (percent >= 300) {
         color = '#E64646'; // Красный
         status = "🔥 Черный лебедь (x3+)";
         bgStatus = "#FFF1F1";
-    } else if (percent >= 200 && percent < 300) {
+    } else if (percent >= 200) {
         color = '#4BB34B'; // Зеленый
         status = "🚀 Аномальный (x2-x3)";
         bgStatus = "#F2FFF2";
-    } else if (percent >= 100 && percent < 200) {
+    } else if (percent >= 100 ) {
         color = '#FF9E00'; // Желтый/Оранжевый
         status = "⚠️ Повышенный (x1-x2)";
         bgStatus = "#FFF9F0";
@@ -1072,6 +1075,7 @@ function updateThermometer(barId, textId, percent) {
         statusText.innerText = status;
         statusText.style.color = color;
         statusText.style.backgroundColor = bgStatus;
+        statusText.style.border = `1px solid ${color}44`; // Легкая рамка того же цвета
     }
 }
 
