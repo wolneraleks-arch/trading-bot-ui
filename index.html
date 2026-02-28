@@ -300,7 +300,39 @@
 
 <!-- Вкладка: СТАТИСТИКА -->
 <div id="tab-stats" class="tab-content">
-   <div class="section-title">📊 Общий обзор портфеля (Текущий день)</div>
+
+    <div class="section-title">📊 Обзор выбранных акций</div>
+
+<!-- 1. Круговая: Общее соотношение -->
+<div class="card" style="margin-bottom: 16px; text-align: center;">
+    <div style="font-size: 14px; color: #818c99; margin-bottom: 12px;">Общий баланс рынка (Покупки vs Продажи)</div>
+    <div style="height: 200px; position: relative;">
+        <canvas id="totalPortfolioPie"></canvas>
+    </div>
+</div>
+
+<!-- 2. Столбчатая: Топ Покупок -->
+<div class="card" style="margin-bottom: 16px;">
+    <div style="font-size: 14px; color: #818c99; margin-bottom: 12px; text-align: center;">Топ текущих покупок (млн ₽)</div>
+    <div style="height: 250px;">
+        <canvas id="topBuyBar"></canvas>
+    </div>
+</div>
+
+<!-- 3. Столбчатая: Топ Продаж -->
+<div class="card" style="margin-bottom: 16px;">
+    <div style="font-size: 14px; color: #818c99; margin-bottom: 12px; text-align: center;">Топ текущих продаж (млн ₽)</div>
+    <div style="height: 250px;">
+        <canvas id="topSellBar"></canvas>
+    </div>
+</div>
+
+<!-- <div class="section-title">🔍 Детальный анализ</div> -->
+<!-- Твой старый селект выбора тикера остается ниже -->
+
+
+    
+   <!-- <div class="section-title">📊 Общий обзор портфеля (Текущий день)</div>
 <div class="card" style="margin-bottom: 16px;">
     <div style="font-size: 14px; margin-bottom: 12px; font-weight: 600; text-align: center;">Общее соотношение Покупок / Продаж</div>
     <div style="height: 200px;"><canvas id="totalPieChart"></canvas></div>
@@ -314,7 +346,7 @@
 <div class="card" style="margin-bottom: 16px;">
     <div style="font-size: 14px; margin-bottom: 12px; font-weight: 600; text-align: center;">Топ Продаж (по тикерам)</div>
     <div style="height: 250px;"><canvas id="sellBarChart"></canvas></div>
-</div>
+</div> -->
 
 
     
