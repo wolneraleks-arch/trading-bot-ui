@@ -424,6 +424,7 @@
             </div>
             <div class="thermometer-track">
                 <div id="vol-bar" class="thermometer-fill" style="width: 0%; background: #4BB34B;"></div>
+                <div id="vol-status-text" style="font-size: 12px; font-weight: 600; margin-top: 6px; padding: 4px 8px; border-radius: 4px; display: inline-block;"></div>
                 <div class="thermometer-limit"></div>
             </div>
             <div style="font-size: 11px; color: #818c99; margin-top: 4px;">100% — превышение максимума за период</div>
@@ -1034,53 +1035,38 @@ async function loadTickerStats() {
 function updateThermometer(barId, textId, percentInput) {
     const bar = document.getElementById(barId);
     const text = document.getElementById(textId);
-    const statusText = document.getElementById('adr-status-text');
+    // Выбираем нужный статус-контейнер динамически
+    const statusTextId = (barId === 'adr-bar') ? 'adr-status-text' : 'vol-status-text';
+    const statusText = document.getElementById(statusTextId);
     
-    // Если базовых элементов нет — выходим сразу, чтобы не вешать скрипт
     if (!bar || !text) return;
+    const percent = Number(percentInput);
 
-    // ГАРАНТИРУЕМ, ЧТО ЭТО ЧИСЛО
-    const percent = Number(percentInput) || 0;
+    let color, status, bgStatus;
 
-    // 1. Сначала определяем все параметры
-// 1. ОПРЕДЕЛЯЕМ ПАРАМЕТРЫ
-    let color = '#0077ff'; 
-    let status = "⚪ Дневной АДР";
-    let bgStatus = "#F0F7FF";
-    
-    //let color, status, bgStatus;
-
-    if (percent >= 300) {
-        color = '#E64646'; // Красный
-        status = "🔥 Черный лебедь (x3+)";
-        bgStatus = "#FFF1F1";
-    } else if (percent >= 200  && percent < 300) {
-        color = '#4BB34B'; // Зеленый
-        status = "🚀 Аномальный (x2-x3)";
-        bgStatus = "#F2FFF2";
-    } else if (percent >= 100 && percent < 200) {
-        color = '#FF9E00'; // Желтый/Оранжевый
-        status = "⚠️ Повышенный (x1-x2)";
-        bgStatus = "#FFF9F0";
-    } else if (percent < 100) {
-        color = '#0077ff'; // Синий
-        status = "⚪ Дневной норматив";
-        bgStatus = "#F0F7FF";
+    if (barId === 'adr-bar') {
+        // ЛОГИКА ДЛЯ АДР (ЦЕНА)
+        if (percent >= 300) { color = '#E64646'; status = "🔥 Черный лебедь (x3+)"; bgStatus = "#FFF1F1"; }
+        else if (percent >= 200) { color = '#4BB34B'; status = "🚀 Аномальный (x2-x3)"; bgStatus = "#F2FFF2"; }
+        else if (percent >= 100) { color = '#FF9E00'; status = "⚠️ Повышенный (x1-x2)"; bgStatus = "#FFF9F0"; }
+        else { color = '#0077ff'; status = "⚪ Дневной АДР"; bgStatus = "#F0F7FF"; }
+    } else {
+        // ЛОГИКА ДЛЯ ОБЪЕМА
+        if (percent >= 200) { color = '#7442D4'; status = "⚛️ Экстремальный объем"; bgStatus = "#F5F2FF"; }
+        else if (percent >= 100) { color = '#4BB34B'; status = "📈 Всплеск объема"; bgStatus = "#F2FFF2"; }
+        else { color = '#818c99'; status = "📊 Норма объема"; bgStatus = "#F5F5F5"; }
     }
 
-    // 2. ПРИМЕНЯЕМ ВИЗУАЛ (Один раз)
+    // Применяем визуал
     bar.style.width = Math.min(percent, 100) + '%';
     bar.style.background = color;
-    
     text.innerText = percent + '%';
     text.style.color = color;
 
-    // 3. ОБНОВЛЯЕМ СТАТУС (только если элемент существует в HTML)
-    if (statusText && barId === 'adr-bar') {
+    if (statusText) {
         statusText.innerText = status;
         statusText.style.color = color;
         statusText.style.backgroundColor = bgStatus;
-        statusText.style.border = `1px solid ${color}44`;
         statusText.style.display = "inline-block";
     }
 }
