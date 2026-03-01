@@ -1411,7 +1411,7 @@ async function init() {
         }
 
         fetchGlobalTickers(); 
-         loadMarketStats();
+         // loadMarketStats();
     // --------------------------------------
         
         // Заполняем ID в профиле сразу
@@ -1463,7 +1463,7 @@ async function init() {
         // Заполняем форму (с защитой от пустых данных)
         fillForm(res.data || { tickers_stocks: "", adr: "20" });
 
-       
+        loadMarketStats();
 
         const levelEl = document.getElementById('user-level');
         if (levelEl) {
@@ -1486,7 +1486,7 @@ async function init() {
 
 
 
-async function loadMarketStats() {
+async function loаadMarketStats() {
     try {
         const response = await fetch(`${GAS_URL}?action=get_batch_indicators&vk_id=${currentVkId}`);
         const res = await response.json();
