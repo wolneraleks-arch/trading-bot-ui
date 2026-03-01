@@ -1602,9 +1602,9 @@ async function loadTickerStats() {
                 chartContainer.style.display = 'block'; // Показываем график
                 
                 let symbol = "₽";
-                if (d.cur.includes("USD") || d.cur.includes("Доллар")) symbol = "$";
-                else if (d.cur.includes("EUR") || d.cur.includes("Евро")) symbol = "€";
-                else if (d.cur.includes("Юань")) symbol = "¥";
+                if (d.currencyLabel.includes("USD") || d.cur.includes("Доллар")) symbol = "$";
+                else if (d.currencyLabel.includes("EUR") || d.cur.includes("Евро")) symbol = "€";
+                else if (d.currencyLabel.includes("Юань")) symbol = "¥";
 
                 drawPieChart(d.buy, d.sell, symbol);
             } else {
