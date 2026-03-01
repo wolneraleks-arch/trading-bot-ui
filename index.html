@@ -1754,72 +1754,143 @@ async function fetchGlobalTickers() {
     }
 }
 
-// 2. Отрисовка списка Select
+
+
+const demoTickers = ["ALRS","MGNT","MSNG","SMLT","AFLT","GAZP","MVID","MOEX","ROSN","FEES","HYDR","SBER","CHMF","SNGS","VTBR","LKOH","GMKN","NVTK","TATN","PLZL","KMAZ","YDEX","MTLR","FESH","NLMK","RTKM","OZON","TRNFP","AFKS","AKRN","BANE","BSPB","CBOM","FLOT","MAGN","PHOR","SVCB","UNAC","VSMO"];
+
+
 function updateStatsTickers() {
     const select = document.getElementById('stats_ticker_select');
-    if (!select) {
-        console.error("❌ Элемент stats_ticker_select не найден в DOM!");
-        return;
-    }
+    if (!select) return;
 
-    // Получаем тикеры пользователя (из настроек)
-    const inputElement = document.getElementById('in_tickers_stocks');
-    const rawUser = inputElement ? inputElement.value : "";
-    const userTickersCodes = rawUser.split(',')
-        .map(t => t.trim().toUpperCase())
-        .filter(t => t);
+    const rawUser = document.getElementById('in_tickers_stocks').value || "";
+    const userTickersCodes = rawUser.split(',').map(t => t.trim().toUpperCase()).filter(t => t);
 
-    console.log("⭐ Тикеры пользователя:", userTickersCodes);
+    select.innerHTML = '<option value="">-- Выберите акцию --</option>';
 
-    // Очищаем список полностью
-    select.innerHTML = '';
-    
-    // Добавляем дефолтный пункт
-    const defaultOpt = document.createElement('option');
-    defaultOpt.value = "";
-    defaultOpt.textContent = "-- Выберите акцию --";
-    select.appendChild(defaultOpt);
-
-    // Группа "Мои тикеры"
+    // 1. Группа "Мои тикеры" (Оставляем как есть, так как юзер сам их вписал)
     if (userTickersCodes.length > 0) {
         const groupUser = document.createElement('optgroup');
         groupUser.label = "⭐ Мои тикеры";
-        
         userTickersCodes.forEach(code => {
-            const found = globalTickers.find(item => item.ticker === code);
             const opt = document.createElement('option');
             opt.value = code;
-            opt.textContent = found ? found.name : code; 
+            const found = globalTickers.find(item => item.ticker === code);
+            opt.textContent = found ? found.name : code;
             groupUser.appendChild(opt);
         });
         select.appendChild(groupUser);
     }
 
-    // Группа "Весь рынок"
-    if (globalTickers.length > 0) {
-        const groupAll = document.createElement('optgroup');
-        groupAll.label = "📈 Весь рынок";
+    // 2. Группа "Весь рынок" с учетом ДЕМО-ОГРАНИЧЕНИЙ
+    const groupAll = document.createElement('optgroup');
+    groupAll.label = window.isPremium ? "📈 Весь рынок" : "🔒 Весь рынок (Демо)";
+    
+    let count = 0;
+    globalTickers.forEach(item => {
+        const tickerUpper = item.ticker.toUpperCase();
         
-        let addedCount = 0;
-        globalTickers.forEach(item => {
-            // Добавляем только если тикера нет в списке пользователя
-            if (!userTickersCodes.includes(item.ticker)) {
+        // УСЛОВИЕ: 
+        // 1. Тикера нет в "Моих"
+        // 2. Если НЕ премиум, то тикер должен быть в списке demoTickers
+        const isUserTicker = userTickersCodes.includes(tickerUpper);
+        const isAllowedInDemo = demoTickers.includes(tickerUpper);
+
+        if (!isUserTicker) {
+            if (window.isPremium || isAllowedInDemo) {
                 const opt = document.createElement('option');
                 opt.value = item.ticker;
                 opt.textContent = item.name;
                 groupAll.appendChild(opt);
-                addedCount++;
+                count++;
             }
-        });
-
-        if (addedCount > 0) {
-            select.appendChild(groupAll);
-            console.log(`✅ Добавлено в 'Весь рынок': ${addedCount} акций`);
         }
-    } else {
-        console.warn("⚠️ Список globalTickers пуст, нечего добавлять в Весь рынок");
+    });
+
+    if (count > 0) {
+        select.appendChild(groupAll);
     }
 }
+
+
+
+
+
+
+
+
+
+
+    
+
+
+    
+// // 2. Отрисовка списка Select
+// function updateStatsTickers() {
+//     const select = document.getElementById('stats_ticker_select');
+//     if (!select) {
+//         console.error("❌ Элемент stats_ticker_select не найден в DOM!");
+//         return;
+//     }
+
+//     // Получаем тикеры пользователя (из настроек)
+//     const inputElement = document.getElementById('in_tickers_stocks');
+//     const rawUser = inputElement ? inputElement.value : "";
+//     const userTickersCodes = rawUser.split(',')
+//         .map(t => t.trim().toUpperCase())
+//         .filter(t => t);
+
+//     console.log("⭐ Тикеры пользователя:", userTickersCodes);
+
+//     // Очищаем список полностью
+//     select.innerHTML = '';
+    
+//     // Добавляем дефолтный пункт
+//     const defaultOpt = document.createElement('option');
+//     defaultOpt.value = "";
+//     defaultOpt.textContent = "-- Выберите акцию --";
+//     select.appendChild(defaultOpt);
+
+//     // Группа "Мои тикеры"
+//     if (userTickersCodes.length > 0) {
+//         const groupUser = document.createElement('optgroup');
+//         groupUser.label = "⭐ Мои тикеры";
+        
+//         userTickersCodes.forEach(code => {
+//             const found = globalTickers.find(item => item.ticker === code);
+//             const opt = document.createElement('option');
+//             opt.value = code;
+//             opt.textContent = found ? found.name : code; 
+//             groupUser.appendChild(opt);
+//         });
+//         select.appendChild(groupUser);
+//     }
+
+//     // Группа "Весь рынок"
+//     if (globalTickers.length > 0) {
+//         const groupAll = document.createElement('optgroup');
+//         groupAll.label = "📈 Весь рынок";
+        
+//         let addedCount = 0;
+//         globalTickers.forEach(item => {
+//             // Добавляем только если тикера нет в списке пользователя
+//             if (!userTickersCodes.includes(item.ticker)) {
+//                 const opt = document.createElement('option');
+//                 opt.value = item.ticker;
+//                 opt.textContent = item.name;
+//                 groupAll.appendChild(opt);
+//                 addedCount++;
+//             }
+//         });
+
+//         if (addedCount > 0) {
+//             select.appendChild(groupAll);
+//             console.log(`✅ Добавлено в 'Весь рынок': ${addedCount} акций`);
+//         }
+//     } else {
+//         console.warn("⚠️ Список globalTickers пуст, нечего добавлять в Весь рынок");
+//     }
+// }
 
 
 
