@@ -459,15 +459,24 @@
 
 
          <!-- Карточка для графика -->
-<div id="chart-card" class="card" style="display: none; margin-top: 16px; padding: 16px;">
+<div id="chart-card" class="card" style="display: none; margin-top: 16px; padding: 16px; min-height: 200px; position: relative;">
     <div style="font-size: 14px; font-weight: 700; margin-bottom: 12px; text-align: center;">📊 Баланс сделок</div>
-    <!-- Обязательно фиксированная высота для контейнера -->
-    <div style="position: relative; height: 250px; width: 100%;">
+    
+    <!-- Индикатор загрузки и заглушка -->
+    <div id="chart-info" style="display: none; flex-direction: column; align-items: center; justify-content: center; height: 180px; color: #818c99;">
+        <span id="chart-status-icon" style="font-size: 32px; margin-bottom: 8px;">⏳</span>
+        <span id="chart-status-text" style="font-size: 13px; font-weight: 500;">Загрузка данных...</span>
+    </div>
+
+    <!-- Контейнер для самого графика -->
+    <div id="chart-container" style="position: relative; height: 220px; width: 100%;">
         <canvas id="pieChart"></canvas>
     </div>
 </div>
 
 
+
+        
 
         
     <!-- Блок 1: Соотношение сделок -->
@@ -1524,8 +1533,20 @@ async function loadTickerStats() {
         container.style.display = 'none';
         return;
     }
+
+
+
+
+
     
     container.style.display = 'block';
+    chartCard.style.display = 'block';
+    
+    // Включаем режим ожидания (песочные часы)
+    chartInfo.style.display = 'flex';
+    chartContainer.style.display = 'none';
+    statusIcon.innerText = "⏳";
+    statusText.innerText = "Запрашиваю данные по сделкам...";
     
     // Индикация загрузки
     document.getElementById('adr-perc-val').innerText = "⏳";
@@ -1555,6 +1576,11 @@ async function loadTickerStats() {
                 drawPieChart(d.buy, d.sell, symbol);
             } else {
                 chartCard.style.display = 'none';
+                // ДАННЫХ НЕТ
+                chartInfo.style.display = 'flex';
+                chartContainer.style.display = 'none';
+                statusIcon.innerText = "🔍";
+                statusText.innerText = "Сделок по данному тикеру не найдено";
             }
             
         } else {
