@@ -1493,8 +1493,18 @@ async function loadMarketStats() {
         
         console.log("Данные для обзора рынка:", res); // ПРОВЕРЬТЕ КОНСОЛЬ (F12)
 
+        
+
         if (res.status === "success" && res.data.length > 0) {
             const data = res.data;
+
+         // --- БЛОК ОГРАНИЧЕНИЯ ---
+            if (!window.isPremium) {
+                const allowed = ["GAZP", "CHMF"];
+                data = data.filter(item => allowed.includes(item.t.toUpperCase()));
+                console.log("⚠️ Режим демо: доступно только 2 тикера");
+            }
+            
             const symbol = "₽"; // Пока захардкодим для теста
 
             const totalBuy = data.reduce((a, b) => a + b.b, 0);
