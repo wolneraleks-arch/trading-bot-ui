@@ -457,21 +457,21 @@
     <!-- ... далее остальные блоки ... -->
 
 
-         <!-- Карточка для графика -->
-<div id="chart-card" class="card" style="display: none; margin-top: 16px; padding: 16px; min-height: 200px; position: relative;">
+        <div id="chart-card" class="card" style="display: none; margin-top: 16px; padding: 16px; min-height: 250px;">
     <div style="font-size: 14px; font-weight: 700; margin-bottom: 12px; text-align: center;">📊 Баланс сделок</div>
     
-    <!-- Индикатор загрузки и заглушка -->
-    <div id="chart-info" style="display: none; flex-direction: column; align-items: center; justify-content: center; height: 180px; color: #818c99;">
-        <span id="chart-status-icon" style="font-size: 32px; margin-bottom: 8px;">⏳</span>
-        <span id="chart-status-text" style="font-size: 13px; font-weight: 500;">Загрузка данных...</span>
+    <!-- Блок статуса (загрузка/нет данных) -->
+    <div id="chart-info" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 180px;">
+        <span id="chart-status-icon" style="font-size: 24px;">⏳</span>
+        <span id="chart-status-text">Загрузка...</span>
     </div>
 
-    <!-- Контейнер для самого графика -->
-    <div id="chart-container" style="position: relative; height: 220px; width: 100%;">
+    <!-- Контейнер для CANVAS (важно: отдельный блок) -->
+    <div id="chart-container" style="display: none; height: 200px; width: 100%;">
         <canvas id="pieChart"></canvas>
     </div>
 </div>
+
 
 
 
@@ -1585,6 +1585,8 @@ async function loadTickerStats() {
     try {
         const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
         const res = await response.json();
+
+       console.log("Полный ответ от сервера:", res.data);
 
         if (res.status === "success") {
             const d = res.data;
