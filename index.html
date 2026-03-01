@@ -417,6 +417,15 @@
 
     <!-- Место для графика (позже подключим библиотеку) -->
     <div id="stats-container" style="display: none; padding-bottom: 80px;">
+
+
+        <div id="chart-card" class="card" style="display: none; margin-top: 16px; padding: 16px;">
+    <div style="font-size: 14px; font-weight: 700; margin-bottom: 12px; text-align: center;">📊 Баланс сделок (Buy vs Sell)</div>
+    <div style="position: relative; height: 200px;">
+        <canvas id="pieChart"></canvas>
+    </div>
+   </div>
+
     
     <!-- 1. ВСТАВЛЯЕМ СЮДА: СЕКЦИЯ С ГРАДУСНИКАМИ -->
     <div class="section-title">Индикаторы активности (Live)</div>
@@ -1334,10 +1343,6 @@ function drawBarChart(volumes) {
 
 
 
-
-
-
-
         
     function showView(viewId) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -1469,10 +1474,48 @@ async function init() {
 
 
 
+// async function loadTickerStats() {
+//     const ticker = document.getElementById('stats_ticker_select').value;
+//     const container = document.getElementById('stats-container');
+//     const chartCard = document.getElementById('chart-card');
+    
+//     if (!ticker) {
+//         container.style.display = 'none';
+//         return;
+//     }
+    
+//     container.style.display = 'block';
+
+//     try {
+//         const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}`);
+//         const res = await response.json();
+
+//         if (res.status === "success") {
+//             const d = res.data;
+
+//             // 1. Обновляем градусники
+//             updateThermometer('adr-bar', 'adr-perc-val', d.adrPercent);
+//             updateThermometer('vol-bar', 'vol-perc-val', d.volPercent);
+            
+//             // 2. Логика графика
+//             if (d.buy > 0 || d.sell > 0) {
+//                 chartCard.style.display = 'block';
+//                 drawPieChart(d.buy, d.sell);
+//             } else {
+//                 // Если данных нет (нули) — скрываем карточку графика
+//                 chartCard.style.display = 'none';
+//                 console.warn("Данных для графика нет");
+//             }
+            
+//         }
+//     } catch (e) { console.error("Ошибка:", e); }
+// }
+
 
 async function loadTickerStats() {
     const ticker = document.getElementById('stats_ticker_select').value;
     const container = document.getElementById('stats-container');
+    const chartCard = document.getElementById('chart-card');
     
     if (!ticker) {
         container.style.display = 'none';
@@ -1481,36 +1524,159 @@ async function loadTickerStats() {
     
     container.style.display = 'block';
     
-    // Показываем индикатор загрузки на градусниках
+    // Индикация загрузки
     document.getElementById('adr-perc-val').innerText = "⏳";
     document.getElementById('vol-perc-val').innerText = "⏳";
 
     try {
-        // ЗАПРОС К ТАБЛИЦЕ
-        const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}`);
+        // Передаем текущий тикер и vk_id для получения настроек валюты
+        const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
         const res = await response.json();
 
         if (res.status === "success") {
             const d = res.data;
 
-            // Оживляем градусники реальными цифрами
+            // 1. Обновляем градусники
             updateThermometer('adr-bar', 'adr-perc-val', d.adrPercent);
             updateThermometer('vol-bar', 'vol-perc-val', d.volPercent);
             
-            // Здесь же можно будет вызвать отрисовку графиков (следующим шагом)
-               // 2. Рисуем круговую диаграмму
-            drawPieChart(mockBuy, mockSell);
+            // 2. Логика графика баланса сделок
+            if (d.buy > 0 || d.sell > 0) {
+                chartCard.style.display = 'block';
+                // Определяем символ валюты для графика
+                let symbol = "₽";
+                if (d.currencyLabel.includes("USD") || d.currencyLabel.includes("Доллар")) symbol = "$";
+                else if (d.currencyLabel.includes("EUR") || d.currencyLabel.includes("Евро")) symbol = "€";
+                else if (d.currencyLabel.includes("CNY") || d.currencyLabel.includes("Юань")) symbol = "¥";
 
-         // 3. Рисуем столбцы объемов
-          drawBarChart(mockLabels, mockVolumes);
+                drawPieChart(d.buy, d.sell, symbol);
+            } else {
+                chartCard.style.display = 'none';
+            }
             
         } else {
             console.error("Ошибка GAS:", res.msg);
+            chartCard.style.display = 'none';
         }
     } catch (e) {
         console.error("Ошибка связи:", e);
     }
 }
+
+
+
+
+    
+
+let chartPie = null; // Глобальная переменная для графика
+
+function drawPieChart(buy, sell, symbol) {
+    const canvas = document.getElementById('pieChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    if (chartPie) chartPie.destroy(); // Удаляем старый график перед отрисовкой
+    
+    // Форматируем числа (например, 1250300 -> 1 250 300)
+    const fmt = (val) => new Intl.NumberFormat('ru-RU').format(val);
+
+    chartPie = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: [`Покупки: ${fmt(buy)} ${symbol}`, `Продажи: ${fmt(sell)} ${symbol}`],
+            datasets: [{
+                data: [buy, sell],
+                backgroundColor: ['#4BB34B', '#E64646'], // Цвета VK (Зеленый / Красный)
+                hoverBackgroundColor: ['#52c352', '#ff4d4d'],
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%', // Толщина кольца
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 15,
+                        font: { size: 13, weight: '600' },
+                        color: '#2c2d2e'
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.label || '';
+                            let value = context.raw || 0;
+                            let total = buy + sell;
+                            let percentage = Math.round((value / total) * 100);
+                            return ` ${fmt(value)} ${symbol} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+// async function loadTickerStats() {
+//     const ticker = document.getElementById('stats_ticker_select').value;
+//     const container = document.getElementById('stats-container');
+    
+//     if (!ticker) {
+//         container.style.display = 'none';
+//         return;
+//     }
+    
+//     container.style.display = 'block';
+    
+//     // Показываем индикатор загрузки на градусниках
+//     document.getElementById('adr-perc-val').innerText = "⏳";
+//     document.getElementById('vol-perc-val').innerText = "⏳";
+
+//     try {
+//         // ЗАПРОС К ТАБЛИЦЕ
+//         const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}`);
+//         const res = await response.json();
+
+//         if (res.status === "success") {
+//             const d = res.data;
+
+//             // Оживляем градусники реальными цифрами
+//             updateThermometer('adr-bar', 'adr-perc-val', d.adrPercent);
+//             updateThermometer('vol-bar', 'vol-perc-val', d.volPercent);
+            
+//             // Здесь же можно будет вызвать отрисовку графиков (следующим шагом)
+//                // 2. Рисуем круговую диаграмму
+//             drawPieChart(mockBuy, mockSell);
+
+//          // 3. Рисуем столбцы объемов
+//           drawBarChart(mockLabels, mockVolumes);
+            
+//         } else {
+//             console.error("Ошибка GAS:", res.msg);
+//         }
+//     } catch (e) {
+//         console.error("Ошибка связи:", e);
+//     }
+// }
 
 
  let globalTickers = []; 
