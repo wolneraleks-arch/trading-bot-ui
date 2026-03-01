@@ -864,12 +864,12 @@
 //     const maxBuyIndex = buyData.indexOf(Math.max(...buyData));
 //     const maxSellIndex = sellData.indexOf(Math.max(...sellData));
 
-//     // Отрисовываем информеры
-//     updateBadges([
-//         { label: "🚀 Лидер покупок", value: labels[maxBuyIndex], sub: buyData[maxBuyIndex] + " млн", type: "up" },
-//         { label: "📉 Лидер продаж", value: labels[maxSellIndex], sub: sellData[maxSellIndex] + " млн", type: "down" },
-//         { label: "🔥 Активность", value: "Высокая", sub: "125% ADR", type: "up" }
-//     ]);
+    // // Отрисовываем информеры
+    // updateBadges([
+    //     { label: "🚀 Лидер покупок", value: labels[maxBuyIndex], sub: buyData[maxBuyIndex] + " млн", type: "up" },
+    //     { label: "📉 Лидер продаж", value: labels[maxSellIndex], sub: sellData[maxSellIndex] + " млн", type: "down" },
+    //     { label: "🔥 Активность", value: "Высокая", sub: "125% ADR", type: "up" }
+    // ]);
 
 //     // Рисуем графики (твои старые функции)
 //     const totalBuy = buyData.reduce((a, b) => a + b, 0);
@@ -879,20 +879,20 @@
 //     drawBarStats('topSellBar', labels, sellData, '#E64646', 'Продажа');
 // }
 
-// function updateBadges(badges) {
-//     const container = document.getElementById('stats-badges-container');
-//     if (!container) return;
+function updateBadges(badges) {
+    const container = document.getElementById('stats-badges-container');
+    if (!container) return;
 
-//     container.innerHTML = badges.map(b => `
-//         <div class="badge-item">
-//             <span class="badge-label">${b.label}</span>
-//             <span class="badge-value">${b.value}</span>
-//             <span style="font-size: 11px; margin-top: 2px;" class="${b.type === 'up' ? 'badge-trend-up' : 'badge-trend-down'}">
-//                 ${b.sub}
-//             </span>
-//         </div>
-//     `).join('');
-// }
+    container.innerHTML = badges.map(b => `
+        <div class="badge-item">
+            <span class="badge-label">${b.label}</span>
+            <span class="badge-value">${b.value}</span>
+            <span style="font-size: 11px; margin-top: 2px;" class="${b.type === 'up' ? 'badge-trend-up' : 'badge-trend-down'}">
+                ${b.sub}
+            </span>
+        </div>
+    `).join('');
+}
 
 
 
