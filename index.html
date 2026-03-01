@@ -458,12 +458,15 @@
     <!-- ... далее остальные блоки ... -->
 
 
-         <div id="chart-card" class="card" style="display: none; margin-top: 16px; padding: 16px;">
-    <div style="font-size: 14px; font-weight: 700; margin-bottom: 12px; text-align: center;">📊 Баланс сделок (Buy vs Sell)</div>
-    <div style="position: relative; height: 200px;">
+         <!-- Карточка для графика -->
+<div id="chart-card" class="card" style="display: none; margin-top: 16px; padding: 16px;">
+    <div style="font-size: 14px; font-weight: 700; margin-bottom: 12px; text-align: center;">📊 Баланс сделок</div>
+    <!-- Обязательно фиксированная высота для контейнера -->
+    <div style="position: relative; height: 250px; width: 100%;">
         <canvas id="pieChart"></canvas>
     </div>
-   </div>
+</div>
+
 
 
         
