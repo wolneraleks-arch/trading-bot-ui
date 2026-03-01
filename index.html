@@ -850,90 +850,49 @@
 
 
 
-// Пример для Варианта 2 (Линейный с градиентом через Chart.js)
-function drawSimpleChart(labels, prices) {
-    const ctx = document.getElementById('tickerChart').getContext('2d');
-    
-    // Создаем градиент (от синего к прозрачному)
-    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, 'rgba(0, 119, 255, 0.3)');
-    gradient.addColorStop(1, 'rgba(0, 119, 255, 0)');
+// function displayDemoStats() {
+//     const rawTickers = document.getElementById('in_tickers_stocks').value || "";
+//     const labels = rawTickers.split(',').map(t => t.trim().toUpperCase()).filter(t => t);
 
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels, // Даты из Истории
-            datasets: [{
-                label: 'Цена',
-                data: prices, // Цены Close из Истории
-                borderColor: '#0077ff',
-                borderWidth: 2,
-                fill: true,
-                backgroundColor: gradient,
-                tension: 0.4, // Делает линию плавной (изгибы)
-                pointRadius: 0 // Убираем точки для чистоты
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } }, // Скрываем лишние надписи
-            scales: {
-                x: { display: false }, // Скрываем даты внизу для красоты
-                y: { grid: { display: false } } // Убираем сетку
-            }
-        }
-    });
-}
+//     if (labels.length === 0) return;
 
-    // Переменные для хранения объектов графиков (чтобы удалять старые при обновлении)
-let chartPortfolioPie, chartBuyBar, chartSellBar;
+//     // Генерируем тестовые данные
+//     const buyData = labels.map(() => Math.floor(Math.random() * 100));
+//     const sellData = labels.map(() => Math.floor(Math.random() * 100));
 
+//     // Находим "Героев дня" для информеров
+//     const maxBuyIndex = buyData.indexOf(Math.max(...buyData));
+//     const maxSellIndex = sellData.indexOf(Math.max(...sellData));
 
+//     // Отрисовываем информеры
+//     updateBadges([
+//         { label: "🚀 Лидер покупок", value: labels[maxBuyIndex], sub: buyData[maxBuyIndex] + " млн", type: "up" },
+//         { label: "📉 Лидер продаж", value: labels[maxSellIndex], sub: sellData[maxSellIndex] + " млн", type: "down" },
+//         { label: "🔥 Активность", value: "Высокая", sub: "125% ADR", type: "up" }
+//     ]);
 
-function displayDemoStats() {
-    const rawTickers = document.getElementById('in_tickers_stocks').value || "";
-    const labels = rawTickers.split(',').map(t => t.trim().toUpperCase()).filter(t => t);
+//     // Рисуем графики (твои старые функции)
+//     const totalBuy = buyData.reduce((a, b) => a + b, 0);
+//     const totalSell = sellData.reduce((a, b) => a + b, 0);
+//     drawPortfolioPie(totalBuy, totalSell);
+//     drawBarStats('topBuyBar', labels, buyData, '#4BB34B', 'Покупка');
+//     drawBarStats('topSellBar', labels, sellData, '#E64646', 'Продажа');
+// }
 
-    if (labels.length === 0) return;
+// function updateBadges(badges) {
+//     const container = document.getElementById('stats-badges-container');
+//     if (!container) return;
 
-    // Генерируем тестовые данные
-    const buyData = labels.map(() => Math.floor(Math.random() * 100));
-    const sellData = labels.map(() => Math.floor(Math.random() * 100));
-
-    // Находим "Героев дня" для информеров
-    const maxBuyIndex = buyData.indexOf(Math.max(...buyData));
-    const maxSellIndex = sellData.indexOf(Math.max(...sellData));
-
-    // Отрисовываем информеры
-    updateBadges([
-        { label: "🚀 Лидер покупок", value: labels[maxBuyIndex], sub: buyData[maxBuyIndex] + " млн", type: "up" },
-        { label: "📉 Лидер продаж", value: labels[maxSellIndex], sub: sellData[maxSellIndex] + " млн", type: "down" },
-        { label: "🔥 Активность", value: "Высокая", sub: "125% ADR", type: "up" }
-    ]);
-
-    // Рисуем графики (твои старые функции)
-    const totalBuy = buyData.reduce((a, b) => a + b, 0);
-    const totalSell = sellData.reduce((a, b) => a + b, 0);
-    drawPortfolioPie(totalBuy, totalSell);
-    drawBarStats('topBuyBar', labels, buyData, '#4BB34B', 'Покупка');
-    drawBarStats('topSellBar', labels, sellData, '#E64646', 'Продажа');
-}
-
-function updateBadges(badges) {
-    const container = document.getElementById('stats-badges-container');
-    if (!container) return;
-
-    container.innerHTML = badges.map(b => `
-        <div class="badge-item">
-            <span class="badge-label">${b.label}</span>
-            <span class="badge-value">${b.value}</span>
-            <span style="font-size: 11px; margin-top: 2px;" class="${b.type === 'up' ? 'badge-trend-up' : 'badge-trend-down'}">
-                ${b.sub}
-            </span>
-        </div>
-    `).join('');
-}
+//     container.innerHTML = badges.map(b => `
+//         <div class="badge-item">
+//             <span class="badge-label">${b.label}</span>
+//             <span class="badge-value">${b.value}</span>
+//             <span style="font-size: 11px; margin-top: 2px;" class="${b.type === 'up' ? 'badge-trend-up' : 'badge-trend-down'}">
+//                 ${b.sub}
+//             </span>
+//         </div>
+//     `).join('');
+// }
 
 
 
@@ -964,76 +923,6 @@ function updateBadges(badges) {
 //     drawBarStats('topBuyBar', labels, buyData, '#4BB34B', 'Покупка');
 //     drawBarStats('topSellBar', labels, sellData, '#E64646', 'Продажа');
 // }
-
-
-
-
-let chartPortfolioPie, chartBuyBar, chartSellBar;
-
-function drawPortfolioPie(buy, sell, symbol) {
-    const ctx = document.getElementById('totalPortfolioPie').getContext('2d');
-    if (chartPortfolioPie) chartPortfolioPie.destroy();
-
-    chartPortfolioPie = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Все покупки', 'Все продажи'],
-            datasets: [{
-                data: [buy, sell],
-                backgroundColor: ['#4BB34B', '#E64646'],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'bottom' },
-                tooltip: {
-                    callbacks: {
-                        label: (ctx) => ` ${ctx.raw.toLocaleString()} ${symbol}`
-                    }
-                }
-            }
-        }
-    });
-}
-
-function drawBarStats(canvasId, labels, values, color, labelName, symbol) {
-    const ctx = document.getElementById(canvasId).getContext('2d');
-    
-    // Уничтожаем старый график перед созданием нового
-    if (canvasId === 'topBuyBar' && chartBuyBar) chartBuyBar.destroy();
-    if (canvasId === 'topSellBar' && chartSellBar) chartSellBar.destroy();
-
-    const newChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: labelName,
-                data: values,
-                backgroundColor: color,
-                borderRadius: 6
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            indexAxis: 'y', // Горизонтальные столбцы удобнее для тикеров
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                x: { ticks: { callback: (val) => val + symbol } }
-            }
-        }
-    });
-
-    if (canvasId === 'topBuyBar') chartBuyBar = newChart;
-    else chartSellBar = newChart;
-}
-
 
 
 
@@ -1425,33 +1314,41 @@ function updateThermometer(barId, textId, percentInput) {
 //     });
 // }
 
-// 2. Столбчатая диаграмма (Объемы)
-function drawBarChart(volumes) {
-    const ctx = document.getElementById('barChart').getContext('2d');
-    if (chartBar) chartBar.destroy();
 
-    chartBar = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: volumes.map((_, i) => i + 1), // Просто номера дней
-            datasets: [{
-                label: 'Объем млн руб.',
-                data: volumes,
-                backgroundColor: 'rgba(0, 119, 255, 0.6)',
-                borderRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: { display: false }, // Скрываем подписи дней для чистоты
-                y: { grid: { display: false } }
-            },
-            plugins: { legend: { display: false } }
-        }
-    });
-}
+
+
+
+
+
+
+    
+// // 2. Столбчатая диаграмма (Объемы)
+// function drawBarChart(volumes) {
+//     const ctx = document.getElementById('barChart').getContext('2d');
+//     if (chartBar) chartBar.destroy();
+
+//     chartBar = new Chart(ctx, {
+//         type: 'bar',
+//         data: {
+//             labels: volumes.map((_, i) => i + 1), // Просто номера дней
+//             datasets: [{
+//                 label: 'Объем млн руб.',
+//                 data: volumes,
+//                 backgroundColor: 'rgba(0, 119, 255, 0.6)',
+//                 borderRadius: 4
+//             }]
+//         },
+//         options: {
+//             responsive: true,
+//             maintainAspectRatio: false,
+//             scales: {
+//                 x: { display: false }, // Скрываем подписи дней для чистоты
+//                 y: { grid: { display: false } }
+//             },
+//             plugins: { legend: { display: false } }
+//         }
+//     });
+// }
 
 
 
@@ -1514,7 +1411,7 @@ async function init() {
         }
 
         fetchGlobalTickers(); 
-         loadMarketStats();
+         //loadMarketStats();
     // --------------------------------------
         
         // Заполняем ID в профиле сразу
@@ -1682,7 +1579,120 @@ function renderTickerBadges(data) {
 
 
 
+let chartPortfolioPie, chartBuyBar, chartSellBar;
 
+function drawPortfolioPie(buy, sell, symbol) {
+    const ctx = document.getElementById('totalPortfolioPie').getContext('2d');
+    if (chartPortfolioPie) chartPortfolioPie.destroy();
+
+    chartPortfolioPie = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Все покупки', 'Все продажи'],
+            datasets: [{
+                data: [buy, sell],
+                backgroundColor: ['#4BB34B', '#E64646'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => ` ${ctx.raw.toLocaleString()} ${symbol}`
+                    }
+                }
+            }
+        }
+    });
+}
+
+function drawBarStats(canvasId, labels, values, color, labelName, symbol) {
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    
+    // Уничтожаем старый график перед созданием нового
+    if (canvasId === 'topBuyBar' && chartBuyBar) chartBuyBar.destroy();
+    if (canvasId === 'topSellBar' && chartSellBar) chartSellBar.destroy();
+
+    const newChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: labelName,
+                data: values,
+                backgroundColor: color,
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y', // Горизонтальные столбцы удобнее для тикеров
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: { ticks: { callback: (val) => val + symbol } }
+            }
+        }
+    });
+
+    if (canvasId === 'topBuyBar') chartBuyBar = newChart;
+    else chartSellBar = newChart;
+}
+
+
+
+
+
+
+
+
+
+    
+
+// Пример для Варианта 2 (Линейный с градиентом через Chart.js)
+function drawSimpleChart(labels, prices) {
+    const ctx = document.getElementById('tickerChart').getContext('2d');
+    
+    // Создаем градиент (от синего к прозрачному)
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(0, 119, 255, 0.3)');
+    gradient.addColorStop(1, 'rgba(0, 119, 255, 0)');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels, // Даты из Истории
+            datasets: [{
+                label: 'Цена',
+                data: prices, // Цены Close из Истории
+                borderColor: '#0077ff',
+                borderWidth: 2,
+                fill: true,
+                backgroundColor: gradient,
+                tension: 0.4, // Делает линию плавной (изгибы)
+                pointRadius: 0 // Убираем точки для чистоты
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } }, // Скрываем лишние надписи
+            scales: {
+                x: { display: false }, // Скрываем даты внизу для красоты
+                y: { grid: { display: false } } // Убираем сетку
+            }
+        }
+    });
+}
+
+    // Переменные для хранения объектов графиков (чтобы удалять старые при обновлении)
+let chartPortfolioPie, chartBuyBar, chartSellBar;
 
 
 
