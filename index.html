@@ -1154,168 +1154,6 @@ function updateThermometer(barId, textId, percentInput) {
 
 
 
-// 1. При загрузке приложения (в init) один раз скачиваем весь список
-// let globalTickers = []; 
-
-// async function fetchGlobalTickers() {
-//     try {
-//         const response = await fetch(`${GAS_URL}?action=get_all_tickers`);
-//         const res = await response.json();
-//         if (res.status === "success") {
-//             globalTickers = res.data;
-//             updateStatsTickers(); // Перерисовываем селект
-//         }
-//     } catch (e) { console.error("Ошибка загрузки списка тикеров", e); }
-// }
-
-// // 2. Обновляем выпадающий список
-// function updateStatsTickers() {
-//     const select = document.getElementById('stats_ticker_select');
-//     if (!select) return;
-
-//     // Тикеры пользователя (из настроек)
-//     const rawUser = document.getElementById('in_tickers_stocks').value || "";
-//     const userTickers = rawUser.split(',').map(t => t.trim().toUpperCase()).filter(t => t);
-
-//     select.innerHTML = '<option value="">-- Выберите тикер --</option>';
-
-//     // Добавляем тикеры пользователя
-//     if (userTickers.length > 0) {
-//         const groupUser = document.createElement('optgroup');
-//         groupUser.label = "⭐ Мои тикеры";
-//         userTickers.forEach(t => {
-//             const opt = document.createElement('option');
-//             opt.value = t; opt.textContent = t; groupUser.appendChild(opt);
-//         });
-//         select.appendChild(groupUser);
-//     }
-
-//     // Добавляем весь остальной рынок (кроме тех, что уже есть у юзера)
-//     const groupAll = document.createElement('optgroup');
-//     groupAll.label = "📈 Весь рынок";
-//     globalTickers.forEach(t => {
-//         if (!userTickers.includes(t)) {
-//             const opt = document.createElement('option');
-//             opt.value = t; opt.textContent = t; groupAll.appendChild(opt);
-//         }
-//     });
-//     select.appendChild(groupAll);
-// }
-
-
-
-
-
-
-//     async function fetchGlobalTickers() {
-//     try {
-//         console.log("Запрос к GAS по адресу:", GAS_URL);
-//         const response = await fetch(`${GAS_URL}?action=get_all_tickers`);
-//         const res = await response.json();
-        
-//         console.log("Ответ от сервера:", res); // Смотрим в консоль здесь!
-
-//         if (res.status === "success" && Array.isArray(res.data)) {
-//             globalTickers = res.data;
-//             console.log("Массив тикеров загружен, длина:", globalTickers.length);
-//             updateStatsTickers(); 
-//         } else {
-//             console.error("Сервер прислал ошибку или данные не массив:", res);
-//         }
-//     } catch (e) { 
-//         console.error("Ошибка связи с GAS:", e); 
-//     }
-// }
- 
-
-
-
-    
-// // Вспомогательная функция для обновления списка тикеров во вкладке Статистика
-// function updateStatsTickers() {
-//     const select = document.getElementById('stats_ticker_select');
-//     if (!select) return;
-
-//     // Берем текущие тикеры из поля ввода (те, что ввел юзер)
-//     const rawStocks = document.getElementById('in_tickers_stocks').value || "";
-//     // Превращаем в массив, чистим пробелы
-//     const tickers = rawStocks.split(',')
-//         .map(t => t.trim().toUpperCase())
-//         .filter(t => t.length > 0);
-
-//     // Сохраняем текущий выбранный тикер, чтобы он не сбросился при переключении вкладок
-//     const currentSelected = select.value;
-
-//     // Очищаем и заполняем заново
-//     select.innerHTML = '<option value="">-- Выберите тикер --</option>';
-    
-//     tickers.forEach(t => {
-//         const opt = document.createElement('option');
-//         opt.value = t;
-//         opt.textContent = t;
-//         select.appendChild(opt);
-//     });
-
-//     // Возвращаем выбор на место, если тикер все еще в списке
-//     if (tickers.includes(currentSelected)) {
-//         select.value = currentSelected;
-//     }
-// }
-
-
-// let chartPie = null;
- let chartBar = null;
-
-// async function loadTickerStats() {
-//     const ticker = document.getElementById('stats_ticker_select').value;
-//     if (!ticker) {
-//         document.getElementById('stats-container').style.display = 'none';
-//         return;
-//     }
-//     document.getElementById('stats-container').style.display = 'block';
-
-//     // ПРИМЕР ДАННЫХ (в след. шаге заменим на ответ от GAS)
-//     const dataMock = {
-//         buyVol: 650000,
-//         sellVol: 350000,
-//         last30DaysVol: [120, 150, 80, 200, 170, 90, 300, 250, 100, 110, 140, 180, 210, 160, 130] // и т.д.
-//     };
-
-//     drawPieChart(dataMock.buyVol, dataMock.sellVol);
-//     drawBarChart(dataMock.last30DaysVol);
-// }
-
-
-
-    
-// 1. Круговая диаграмма (Покупки vs Продажи)
-// function drawPieChart(buy, sell) {
-//     const ctx = document.getElementById('pieChart').getContext('2d');
-//     if (chartPie) chartPie.destroy();
-    
-//     chartPie = new Chart(ctx, {
-//         type: 'doughnut', // 'doughnut' красивее обычного 'pie'
-//         data: {
-//             labels: ['Покупки', 'Продажи'],
-//             datasets: [{
-//                 data: [buy, sell],
-//                 backgroundColor: ['#4BB34B', '#E64646'], // VK Green и VK Red
-//                 borderWidth: 0,
-//                 hoverOffset: 4
-//             }]
-//         },
-//         options: {
-//             responsive: true,
-//             maintainAspectRatio: false,
-//             plugins: {
-//                 legend: { position: 'bottom' }
-//             }
-//         }
-//     });
-// }
-
-
-
 
 
 
@@ -1375,6 +1213,59 @@ function updateThermometer(barId, textId, percentInput) {
     }, 3000);
 }
 
+
+
+
+async function loаadMarketStats() {
+    try {
+        const response = await fetch(`${GAS_URL}?action=get_batch_indicators&vk_id=${currentVkId}`);
+        const res = await response.json();
+        
+        console.log("Данные для обзора рынка:", res); // ПРОВЕРЬТЕ КОНСОЛЬ (F12)
+
+        
+
+        if (res.status === "success" && res.data.length > 0) {
+            const data = res.data;
+
+         // --- БЛОК ОГРАНИЧЕНИЯ ---
+            if (!window.isPremium) {
+                const allowed = ["GAZP", "CHMF"];
+                data = data.filter(item => allowed.includes(item.t.toUpperCase()));
+                console.log("⚠️ Режим демо: доступно только 2 тикера");
+            }
+            
+            const symbol = "₽"; // Пока захардкодим для теста
+
+            const totalBuy = data.reduce((a, b) => a + b.b, 0);
+            const totalSell = data.reduce((a, b) => a + b.s, 0);
+
+            // Рисуем круговую
+            drawPortfolioPie(totalBuy, totalSell, symbol);
+
+            // Топ-7 покупок
+            const topB = [...data].sort((a,b) => b.b - a.b).slice(0, 12);
+            drawBarStats('topBuyBar', topB.map(i => i.n), topB.map(i => i.b), '#4BB34B', 'Покупки', symbol);
+
+            // Топ-7 продаж
+            const topS = [...data].sort((a,b) => b.s - a.s).slice(0, 12);
+            drawBarStats('topSellBar', topS.map(i => i.n), topS.map(i => i.s), '#E64646', 'Продажи', symbol);
+            
+        } else {
+            console.warn("Данных для графиков нет или массив пуст");
+        }
+    } catch (e) { console.error("Ошибка:", e); }
+}
+
+
+
+
+
+
+
+
+
+    
 // const GITHUB_MAP_URL = "https://raw.githubusercontent.com/wolneraleks-arch/trading-bot-ui/refs/heads/main/encoder.json"
 
 async function init() {
@@ -1482,52 +1373,6 @@ async function init() {
         console.error("Full error:", e);
     }
 }
-
-
-
-
-async function loаadMarketStats() {
-    try {
-        const response = await fetch(`${GAS_URL}?action=get_batch_indicators&vk_id=${currentVkId}`);
-        const res = await response.json();
-        
-        console.log("Данные для обзора рынка:", res); // ПРОВЕРЬТЕ КОНСОЛЬ (F12)
-
-        
-
-        if (res.status === "success" && res.data.length > 0) {
-            const data = res.data;
-
-         // --- БЛОК ОГРАНИЧЕНИЯ ---
-            if (!window.isPremium) {
-                const allowed = ["GAZP", "CHMF"];
-                data = data.filter(item => allowed.includes(item.t.toUpperCase()));
-                console.log("⚠️ Режим демо: доступно только 2 тикера");
-            }
-            
-            const symbol = "₽"; // Пока захардкодим для теста
-
-            const totalBuy = data.reduce((a, b) => a + b.b, 0);
-            const totalSell = data.reduce((a, b) => a + b.s, 0);
-
-            // Рисуем круговую
-            drawPortfolioPie(totalBuy, totalSell, symbol);
-
-            // Топ-7 покупок
-            const topB = [...data].sort((a,b) => b.b - a.b).slice(0, 12);
-            drawBarStats('topBuyBar', topB.map(i => i.n), topB.map(i => i.b), '#4BB34B', 'Покупки', symbol);
-
-            // Топ-7 продаж
-            const topS = [...data].sort((a,b) => b.s - a.s).slice(0, 12);
-            drawBarStats('topSellBar', topS.map(i => i.n), topS.map(i => i.s), '#E64646', 'Продажи', symbol);
-            
-        } else {
-            console.warn("Данных для графиков нет или массив пуст");
-        }
-    } catch (e) { console.error("Ошибка:", e); }
-}
-
-
 
 
 
