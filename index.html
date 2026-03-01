@@ -418,14 +418,6 @@
     <!-- Место для графика (позже подключим библиотеку) -->
     <div id="stats-container" style="display: none; padding-bottom: 80px;">
 
-
-        <div id="chart-card" class="card" style="display: none; margin-top: 16px; padding: 16px;">
-    <div style="font-size: 14px; font-weight: 700; margin-bottom: 12px; text-align: center;">📊 Баланс сделок (Buy vs Sell)</div>
-    <div style="position: relative; height: 200px;">
-        <canvas id="pieChart"></canvas>
-    </div>
-   </div>
-
     
     <!-- 1. ВСТАВЛЯЕМ СЮДА: СЕКЦИЯ С ГРАДУСНИКАМИ -->
     <div class="section-title">Индикаторы активности (Live)</div>
@@ -465,6 +457,13 @@
     
     <!-- ... далее остальные блоки ... -->
 
+
+         <div id="chart-card" class="card" style="display: none; margin-top: 16px; padding: 16px;">
+    <div style="font-size: 14px; font-weight: 700; margin-bottom: 12px; text-align: center;">📊 Баланс сделок (Buy vs Sell)</div>
+    <div style="position: relative; height: 200px;">
+        <canvas id="pieChart"></canvas>
+    </div>
+   </div>
 
 
         
@@ -1262,8 +1261,8 @@ function updateThermometer(barId, textId, percentInput) {
 // }
 
 
-let chartPie = null;
-let chartBar = null;
+// let chartPie = null;
+ let chartBar = null;
 
 // async function loadTickerStats() {
 //     const ticker = document.getElementById('stats_ticker_select').value;
