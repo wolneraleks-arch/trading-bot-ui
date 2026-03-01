@@ -1528,16 +1528,16 @@ async function loadTickerStats() {
     if (!ticker || !currentVkId) return;
     const container = document.getElementById('stats-container');
     const chartCard = document.getElementById('chart-card');
+
+    const chartInfo = document.getElementById('chart-info');
+    const chartContainer = document.getElementById('chart-container');
+    const statusText = document.getElementById('chart-status-text');
+    const statusIcon = document.getElementById('chart-status-icon');
     
     if (!ticker) {
         container.style.display = 'none';
         return;
     }
-
-
-
-
-
     
     container.style.display = 'block';
     chartCard.style.display = 'block';
