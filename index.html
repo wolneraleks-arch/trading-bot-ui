@@ -1505,11 +1505,11 @@ async function loadMarketStats() {
 
             // Топ-7 покупок
             const topB = [...data].sort((a,b) => b.b - a.b).slice(0, 7);
-            drawBarStats('topBuyBar', topB.map(i => i.t), topB.map(i => i.b), '#4BB34B', 'Покупки', symbol);
+            drawBarStats('topBuyBar', topB.map(i => i.n), topB.map(i => i.b), '#4BB34B', 'Покупки', symbol);
 
             // Топ-7 продаж
             const topS = [...data].sort((a,b) => b.s - a.s).slice(0, 7);
-            drawBarStats('topSellBar', topS.map(i => i.t), topS.map(i => i.s), '#E64646', 'Продажи', symbol);
+            drawBarStats('topSellBar', topS.map(i => i.n), topS.map(i => i.s), '#E64646', 'Продажи', symbol);
             
         } else {
             console.warn("Данных для графиков нет или массив пуст");
