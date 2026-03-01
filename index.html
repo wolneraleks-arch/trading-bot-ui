@@ -1480,6 +1480,8 @@ async function init() {
         // Заполняем форму (с защитой от пустых данных)
         fillForm(res.data || { tickers_stocks: "", adr: "20" });
 
+        loadMarketStats();
+
         const levelEl = document.getElementById('user-level');
         if (levelEl) {
             if (!window.isPremium) {
@@ -1500,6 +1502,82 @@ async function init() {
 
 
 
+
+async function loadMarketStats() {
+    try {
+        const response = await fetch(`${GAS_URL}?action=get_batch_indicators&vk_id=${currentVkId}`);
+        const res = await response.json();
+
+        if (res.status === "success") {
+            renderTickerBadges(res.data);
+            // Сохраняем данные для больших графиков
+            window.marketDataCache = res.data;
+            window.currentCurrency = res.cur;
+        }
+    } catch (e) { console.error("Ошибка загрузки статистики:", e); }
+}
+
+function renderTickerBadges(data) {
+    const container = document.getElementById('stats-badges-container');
+    if (!container) return;
+    container.innerHTML = "";
+
+    data.forEach(item => {
+        const div = document.createElement('div');
+        const balance = item.b - item.s;
+        const color = balance >= 0 ? "#4BB34B" : "#E64646";
+        const icon = balance >= 0 ? "📈" : "📉";
+
+        div.style = `
+            background: #fff; min-width: 90px; padding: 10px; 
+            border-radius: 12px; border: 1px solid #e1e3e6;
+            display: inline-block; text-align: center; cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        `;
+
+        div.innerHTML = `
+            <div style="font-size: 13px; font-weight: 800; color: #2c2d2e;">${item.t}</div>
+            <div style="font-size: 11px; font-weight: 600; color: ${color}; margin-top: 4px;">
+                ${icon} ${Math.abs(balance).toLocaleString()}
+            </div>
+        `;
+
+        // При клике на плашку — переходим к детальному анализу этого тикера
+        div.onclick = () => {
+            const select = document.getElementById('stats_ticker_select');
+            select.value = item.t;
+            // Вызываем вашу функцию поиска, чтобы она сбросила фильтр если нужно
+            if (typeof filterTickers === "function") {
+                document.getElementById('ticker_search').value = "";
+                filterTickers();
+            }
+            loadTickerStats();
+            // Скроллим страницу к деталям
+            document.getElementById('stats_ticker_select').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        container.appendChild(div);
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 // async function loadTickerStats() {
 //     const ticker = document.getElementById('stats_ticker_select').value;
 //     if (!ticker || !currentVkId) return;
@@ -1706,60 +1784,6 @@ function drawPieChart(buy, sell, symbol) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-    
-
-// async function loadTickerStats() {
-//     const ticker = document.getElementById('stats_ticker_select').value;
-//     const container = document.getElementById('stats-container');
-    
-//     if (!ticker) {
-//         container.style.display = 'none';
-//         return;
-//     }
-    
-//     container.style.display = 'block';
-    
-//     // Показываем индикатор загрузки на градусниках
-//     document.getElementById('adr-perc-val').innerText = "⏳";
-//     document.getElementById('vol-perc-val').innerText = "⏳";
-
-//     try {
-//         // ЗАПРОС К ТАБЛИЦЕ
-//         const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}`);
-//         const res = await response.json();
-
-//         if (res.status === "success") {
-//             const d = res.data;
-
-//             // Оживляем градусники реальными цифрами
-//             updateThermometer('adr-bar', 'adr-perc-val', d.adrPercent);
-//             updateThermometer('vol-bar', 'vol-perc-val', d.volPercent);
-            
-//             // Здесь же можно будет вызвать отрисовку графиков (следующим шагом)
-//                // 2. Рисуем круговую диаграмму
-//             drawPieChart(mockBuy, mockSell);
-
-//          // 3. Рисуем столбцы объемов
-//           drawBarChart(mockLabels, mockVolumes);
-            
-//         } else {
-//             console.error("Ошибка GAS:", res.msg);
-//         }
-//     } catch (e) {
-//         console.error("Ошибка связи:", e);
-//     }
-// }
 
 
  let globalTickers = []; 
