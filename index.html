@@ -1453,7 +1453,21 @@ function drawBarStats(canvasId, labels, values, color, labelName, symbol) {
                 legend: { display: false }
             },
             scales: {
-                x: { ticks: { callback: (val) => val + symbol } }
+                // x: { ticks: { callback: (val) => val + symbol } }
+                // ... внутри options -> scales
+     x: { 
+    ticks: { 
+        callback: (val) => {
+            if (val >= 1e6) return (val / 1e6).toFixed(1) + 'M ' + symbol; // Миллионы
+            if (val >= 1e3) return (val / 1e3).toFixed(1) + 'K ' + symbol; // Тысячи
+            return val + ' ' + symbol;
+        },
+        maxRotation: 0, // Чтобы подписи не наклонялись
+        autoSkip: true, // Убирает лишние деления, если их слишком много
+        maxTicksLimit: 6 // Ограничивает количество делений на шкале
+      }
+    }
+
             }
         }
     });
