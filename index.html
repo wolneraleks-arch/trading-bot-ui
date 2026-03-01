@@ -1483,11 +1483,16 @@ async function init() {
 
 
 
-
 // async function loadTickerStats() {
 //     const ticker = document.getElementById('stats_ticker_select').value;
+//     if (!ticker || !currentVkId) return;
 //     const container = document.getElementById('stats-container');
 //     const chartCard = document.getElementById('chart-card');
+
+//     const chartInfo = document.getElementById('chart-info');
+//     const chartContainer = document.getElementById('chart-container');
+//     const statusText = document.getElementById('chart-status-text');
+//     const statusIcon = document.getElementById('chart-status-icon');
     
 //     if (!ticker) {
 //         container.style.display = 'none';
@@ -1495,9 +1500,21 @@ async function init() {
 //     }
     
 //     container.style.display = 'block';
+//     chartCard.style.display = 'block';
+    
+//     // Включаем режим ожидания (песочные часы)
+//     chartInfo.style.display = 'flex';
+//     chartContainer.style.display = 'none';
+//     statusIcon.innerText = "⏳";
+//     statusText.innerText = "Запрашиваю данные по сделкам...";
+    
+//     // Индикация загрузки
+//     document.getElementById('adr-perc-val').innerText = "⏳";
+//     document.getElementById('vol-perc-val').innerText = "⏳";
 
 //     try {
-//         const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}`);
+//         // Передаем текущий тикер и vk_id для получения настроек валюты
+//         const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
 //         const res = await response.json();
 
 //         if (res.status === "success") {
@@ -1507,27 +1524,41 @@ async function init() {
 //             updateThermometer('adr-bar', 'adr-perc-val', d.adrPercent);
 //             updateThermometer('vol-bar', 'vol-perc-val', d.volPercent);
             
-//             // 2. Логика графика
+//             // 2. Логика графика баланса сделок
 //             if (d.buy > 0 || d.sell > 0) {
 //                 chartCard.style.display = 'block';
-//                 drawPieChart(d.buy, d.sell);
+//                 // Определяем символ валюты для графика
+//                 let symbol = "₽";
+//                 if (d.currencyLabel.includes("USD") || d.currencyLabel.includes("Доллар")) symbol = "$";
+//                 else if (d.currencyLabel.includes("EUR") || d.currencyLabel.includes("Евро")) symbol = "€";
+//                 else if (d.currencyLabel.includes("CNY") || d.currencyLabel.includes("Юань")) symbol = "¥";
+
+//                 drawPieChart(d.buy, d.sell, symbol);
 //             } else {
-//                 // Если данных нет (нули) — скрываем карточку графика
 //                 chartCard.style.display = 'none';
-//                 console.warn("Данных для графика нет");
+//                 // ДАННЫХ НЕТ
+//                 chartInfo.style.display = 'flex';
+//                 chartContainer.style.display = 'none';
+//                 statusIcon.innerText = "🔍";
+//                 statusText.innerText = "Сделок по данному тикеру не найдено";
 //             }
             
+//         } else {
+//             console.error("Ошибка GAS:", res.msg);
+//             chartCard.style.display = 'none';
 //         }
-//     } catch (e) { console.error("Ошибка:", e); }
+//     } catch (e) {
+//         console.error("Ошибка связи:", e);
+//     }
 // }
+
+
 
 
 async function loadTickerStats() {
     const ticker = document.getElementById('stats_ticker_select').value;
-    if (!ticker || !currentVkId) return;
     const container = document.getElementById('stats-container');
     const chartCard = document.getElementById('chart-card');
-
     const chartInfo = document.getElementById('chart-info');
     const chartContainer = document.getElementById('chart-container');
     const statusText = document.getElementById('chart-status-text');
@@ -1547,34 +1578,34 @@ async function loadTickerStats() {
     statusIcon.innerText = "⏳";
     statusText.innerText = "Запрашиваю данные по сделкам...";
     
-    // Индикация загрузки
+    // Градусники тоже в режим ожидания
     document.getElementById('adr-perc-val').innerText = "⏳";
     document.getElementById('vol-perc-val').innerText = "⏳";
 
     try {
-        // Передаем текущий тикер и vk_id для получения настроек валюты
         const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
         const res = await response.json();
 
         if (res.status === "success") {
             const d = res.data;
 
-            // 1. Обновляем градусники
+            // Обновляем градусники
             updateThermometer('adr-bar', 'adr-perc-val', d.adrPercent);
             updateThermometer('vol-bar', 'vol-perc-val', d.volPercent);
             
-            // 2. Логика графика баланса сделок
+            // Логика графика
             if (d.buy > 0 || d.sell > 0) {
-                chartCard.style.display = 'block';
-                // Определяем символ валюты для графика
+                // ДАННЫЕ ЕСТЬ
+                chartInfo.style.display = 'none'; // Скрываем загрузку
+                chartContainer.style.display = 'block'; // Показываем график
+                
                 let symbol = "₽";
-                if (d.currencyLabel.includes("USD") || d.currencyLabel.includes("Доллар")) symbol = "$";
-                else if (d.currencyLabel.includes("EUR") || d.currencyLabel.includes("Евро")) symbol = "€";
-                else if (d.currencyLabel.includes("CNY") || d.currencyLabel.includes("Юань")) symbol = "¥";
+                if (d.cur.includes("USD") || d.cur.includes("Доллар")) symbol = "$";
+                else if (d.cur.includes("EUR") || d.cur.includes("Евро")) symbol = "€";
+                else if (d.cur.includes("Юань")) symbol = "¥";
 
                 drawPieChart(d.buy, d.sell, symbol);
             } else {
-                chartCard.style.display = 'none';
                 // ДАННЫХ НЕТ
                 chartInfo.style.display = 'flex';
                 chartContainer.style.display = 'none';
@@ -1583,16 +1614,18 @@ async function loadTickerStats() {
             }
             
         } else {
-            console.error("Ошибка GAS:", res.msg);
-            chartCard.style.display = 'none';
+            statusIcon.innerText = "❌";
+            statusText.innerText = "Ошибка загрузки: " + (res.msg || "неизвестно");
         }
     } catch (e) {
-        console.error("Ошибка связи:", e);
+        statusIcon.innerText = "⚠️";
+        statusText.innerText = "Ошибка связи с сервером";
+        console.error(e);
     }
 }
 
 
-
+    
 
     
 
