@@ -1098,6 +1098,7 @@ async function loadMarketStats() {
                 return;
             }
 
+
             const symbol = "₽"; 
             const totalBuy = data.reduce((a, b) => a + (b.b || 0), 0);
             const totalSell = data.reduce((a, b) => a + (b.s || 0), 0);
@@ -1258,13 +1259,27 @@ async function init() {
         const res = await response.json();
 
         // Логика доступа
-        window.isPremium = (res.data && res.data.active === "Да");
+        window.isPremium = (res.data && res.data.active === "Да")? true : false;;
         showView('view-main');
+
+       console.log("💎 Статус подписки:", window.isPremium);
+
+          // // Заполняем форму данными (если их нет, передаем пустой объект, чтобы не было ошибки)
+          // if (typeof fillForm === "function") {
+          // fillForm(res.data || { tickers_stocks: "GAZP,CHMF", adr: "20" });
+          //    }
+
         
         // Заполняем форму (с защитой от пустых данных)
         fillForm(res.data || { tickers_stocks: "", adr: "20" });
 
-        loadMarketStats();
+      // Запускаем графики
+        if (typeof loadMarketStats === "function") {
+           loadMarketStats();
+        }
+        
+
+        // loadMarketStats();
 
         const levelEl = document.getElementById('user-level');
         if (levelEl) {
