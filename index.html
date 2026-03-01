@@ -1288,30 +1288,30 @@ let chartBar = null;
 
     
 // 1. Круговая диаграмма (Покупки vs Продажи)
-function drawPieChart(buy, sell) {
-    const ctx = document.getElementById('pieChart').getContext('2d');
-    if (chartPie) chartPie.destroy();
+// function drawPieChart(buy, sell) {
+//     const ctx = document.getElementById('pieChart').getContext('2d');
+//     if (chartPie) chartPie.destroy();
     
-    chartPie = new Chart(ctx, {
-        type: 'doughnut', // 'doughnut' красивее обычного 'pie'
-        data: {
-            labels: ['Покупки', 'Продажи'],
-            datasets: [{
-                data: [buy, sell],
-                backgroundColor: ['#4BB34B', '#E64646'], // VK Green и VK Red
-                borderWidth: 0,
-                hoverOffset: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'bottom' }
-            }
-        }
-    });
-}
+//     chartPie = new Chart(ctx, {
+//         type: 'doughnut', // 'doughnut' красивее обычного 'pie'
+//         data: {
+//             labels: ['Покупки', 'Продажи'],
+//             datasets: [{
+//                 data: [buy, sell],
+//                 backgroundColor: ['#4BB34B', '#E64646'], // VK Green и VK Red
+//                 borderWidth: 0,
+//                 hoverOffset: 4
+//             }]
+//         },
+//         options: {
+//             responsive: true,
+//             maintainAspectRatio: false,
+//             plugins: {
+//                 legend: { position: 'bottom' }
+//             }
+//         }
+//     });
+// }
 
 // 2. Столбчатая диаграмма (Объемы)
 function drawBarChart(volumes) {
