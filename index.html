@@ -1216,57 +1216,112 @@ function updateThermometer(barId, textId, percentInput) {
 
 
 
+
 async function loadMarketStats() {
     try {
         const response = await fetch(`${GAS_URL}?action=get_batch_indicators&vk_id=${currentVkId}`);
         const res = await response.json();
         
-        console.log("Данные для обзора рынка:", res); // ПРОВЕРЬТЕ КОНСОЛЬ (F12)
+        console.log("📦 Данные от сервера:", res); 
 
-        
+        if (res.status === "success" && res.data && res.data.length > 0) {
+            let data = res.data;
 
-        if (res.status === "success" && res.data.length > 0) {
-            const data = res.data;
+            // ПРОВЕРКА ПОДПИСКИ (строгая проверка на 2026 год)
+            const isActuallyPremium = (window.isPremium === true);
+            console.log("🔐 Статус премиум:", isActuallyPremium);
 
-         // --- БЛОК ОГРАНИЧЕНИЯ ---
-            if (!window.isPremium) {
+            if (!isActuallyPremium) {
                 const allowed = ["GAZP", "CHMF"];
-
-                / Фильтруем, проверяя и поле 't', и поле 'ticker' (на всякий случай)
+                // Фильтруем, проверяя и поле 't', и поле 'ticker' (на всякий случай)
                 data = data.filter(item => {
                     const tickerCode = (item.t || item.ticker || "").toUpperCase().trim();
                     return allowed.includes(tickerCode);
                 });
                 console.log("🛡️ Данные после демо-фильтрации:", data);
             }
-               
-            
-            const symbol = "₽"; // Пока захардкодим для теста
 
-            const totalBuy = data.reduce((a, b) => a + b.b, 0);
-            const totalSell = data.reduce((a, b) => a + b.s, 0);
+            // Если после фильтра в демо ничего не осталось (например, нет сделок по GAZP сегодня)
+            if (data.length === 0) {
+                console.warn("⚠️ Нет данных для отображения в демо-режиме");
+                // Скрываем или очищаем графики, чтобы не висели старые
+                if (chartPortfolioPie) chartPortfolioPie.destroy();
+                return;
+            }
 
-            // Рисуем круговую
+            const symbol = "₽"; 
+            const totalBuy = data.reduce((a, b) => a + (b.b || 0), 0);
+            const totalSell = data.reduce((a, b) => a + (b.s || 0), 0);
+
+            // Отрисовка
             drawPortfolioPie(totalBuy, totalSell, symbol);
 
-            // Топ-7 покупок
-            const topB = [...data].sort((a,b) => b.b - a.b).slice(0, 12);
-            drawBarStats('topBuyBar', topB.map(i => i.n), topB.map(i => i.b), '#4BB34B', 'Покупки', symbol);
+            const topB = [...data].sort((a,b) => b.b - a.b).slice(0, 15);
+            drawBarStats('topBuyBar', topB.map(i => i.n || i.t), topB.map(i => i.b), '#4BB34B', 'Покупки', symbol);
 
-            // Топ-7 продаж
-            const topS = [...data].sort((a,b) => b.s - a.s).slice(0, 12);
-            drawBarStats('topSellBar', topS.map(i => i.n), topS.map(i => i.s), '#E64646', 'Продажи', symbol);
+            const topS = [...data].sort((a,b) => b.s - a.s).slice(0, 15);
+            drawBarStats('topSellBar', topS.map(i => i.n || i.t), topS.map(i => i.s), '#E64646', 'Продажи', symbol);
             
-        } else {
-            console.warn("Данных для графиков нет или массив пуст");
         }
-    } catch (e) { console.error("Ошибка:", e); }
+    } catch (e) { 
+        console.error("❌ Ошибка в loadMarketStats:", e); 
+    }
 }
 
 
 
 
 
+
+
+    
+
+// async function loadMarketStats() {
+//     try {
+//         const response = await fetch(`${GAS_URL}?action=get_batch_indicators&vk_id=${currentVkId}`);
+//         const res = await response.json();
+        
+//         console.log("Данные для обзора рынка:", res); // ПРОВЕРЬТЕ КОНСОЛЬ (F12)
+
+        
+
+//         if (res.status === "success" && res.data.length > 0) {
+//             const data = res.data;
+
+//          // --- БЛОК ОГРАНИЧЕНИЯ ---
+//             if (!window.isPremium) {
+//                 const allowed = ["#Газпром", "#Северсталь"];
+
+//                 / Фильтруем, проверяя и поле 't', и поле 'ticker' (на всякий случай)
+//                 data = data.filter(item => {
+//                     const tickerCode = (item.n || item.name || "").toUpperCase().trim();
+//                     return allowed.includes(tickerCode);
+//                 });
+//                 console.log("🛡️ Данные после демо-фильтрации:", data);
+//             }
+               
+            
+//             const symbol = "₽"; // Пока захардкодим для теста
+
+//             const totalBuy = data.reduce((a, b) => a + b.b, 0);
+//             const totalSell = data.reduce((a, b) => a + b.s, 0);
+
+//             // Рисуем круговую
+//             drawPortfolioPie(totalBuy, totalSell, symbol);
+
+//             // Топ-7 покупок
+//             const topB = [...data].sort((a,b) => b.b - a.b).slice(0, 12);
+//             drawBarStats('topBuyBar', topB.map(i => i.n), topB.map(i => i.b), '#4BB34B', 'Покупки', symbol);
+
+//             // Топ-7 продаж
+//             const topS = [...data].sort((a,b) => b.s - a.s).slice(0, 12);
+//             drawBarStats('topSellBar', topS.map(i => i.n), topS.map(i => i.s), '#E64646', 'Продажи', symbol);
+            
+//         } else {
+//             console.warn("Данных для графиков нет или массив пуст");
+//         }
+//     } catch (e) { console.error("Ошибка:", e); }
+// }
 
 
 
