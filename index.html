@@ -439,7 +439,24 @@
 </div>
 
         <!-- Шкала Объема -->
-        <div>
+
+        <!-- Блок Объема -->
+    <div id="vol-section">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span style="font-size: 13px; font-weight: 600;">📊 Аномальный объем</span>
+            <span id="vol-perc-val" style="font-size: 14px; font-weight: 800;">0%</span>
+        </div>
+        <div class="thermometer-track">
+            <div id="vol-bar" class="thermometer-fill" style="width: 0%; background: #5181b8;"></div>
+        </div>
+        <!-- Вот этот текст вылезал -->
+        <div id="vol-status-text" style="font-size: 12px; font-weight: 600; color: #818c99; margin-top: 6px;">
+            Загрузка...
+        </div>
+    </div>
+
+        
+        <!-- <div>
             <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
                 <span style="font-size: 13px; font-weight: 600;">📊 Аномальный объем</span>
                 <span id="vol-perc-val" style="font-size: 13px; font-weight: 700; color: #4BB34B;">0%</span>
@@ -450,7 +467,7 @@
                 <div class="thermometer-limit"></div>
             </div>
             <!-- <div style="font-size: 11px; color: #818c99; margin-top: 4px;">100% — превышение максимума за период</div> -->
-        </div>
+        </div> -->
     </div>
 
     
