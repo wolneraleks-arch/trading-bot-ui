@@ -1504,11 +1504,11 @@ async function loadMarketStats() {
             drawPortfolioPie(totalBuy, totalSell, symbol);
 
             // Топ-7 покупок
-            const topB = [...data].sort((a,b) => b.b - a.b).slice(0, 7);
+            const topB = [...data].sort((a,b) => b.b - a.b).slice(0, 12);
             drawBarStats('topBuyBar', topB.map(i => i.n), topB.map(i => i.b), '#4BB34B', 'Покупки', symbol);
 
             // Топ-7 продаж
-            const topS = [...data].sort((a,b) => b.s - a.s).slice(0, 7);
+            const topS = [...data].sort((a,b) => b.s - a.s).slice(0, 12);
             drawBarStats('topSellBar', topS.map(i => i.n), topS.map(i => i.s), '#E64646', 'Продажи', symbol);
             
         } else {
