@@ -1463,9 +1463,7 @@ async function init() {
         // Заполняем форму (с защитой от пустых данных)
         fillForm(res.data || { tickers_stocks: "", adr: "20" });
 
-        
-        const dostup = window.isPremium;
-        loadMarketStats(dostup);
+        loadMarketStats();
 
         const levelEl = document.getElementById('user-level');
         if (levelEl) {
@@ -1488,7 +1486,7 @@ async function init() {
 
 
 
-async function loаadMarketStats(dostup) {
+async function loаadMarketStats() {
     try {
         const response = await fetch(`${GAS_URL}?action=get_batch_indicators&vk_id=${currentVkId}`);
         const res = await response.json();
@@ -1501,7 +1499,7 @@ async function loаadMarketStats(dostup) {
             const data = res.data;
 
          // --- БЛОК ОГРАНИЧЕНИЯ ---
-            if (!dostup) {
+            if (!window.isPremium) {
                 const allowed = ["GAZP", "CHMF"];
                 data = data.filter(item => allowed.includes(item.t.toUpperCase()));
                 console.log("⚠️ Режим демо: доступно только 2 тикера");
