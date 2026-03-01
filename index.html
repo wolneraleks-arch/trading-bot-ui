@@ -1216,7 +1216,7 @@ function updateThermometer(barId, textId, percentInput) {
 
 
 
-async function loаadMarketStats() {
+async function loadMarketStats() {
     try {
         const response = await fetch(`${GAS_URL}?action=get_batch_indicators&vk_id=${currentVkId}`);
         const res = await response.json();
@@ -1302,7 +1302,7 @@ async function init() {
         }
 
         fetchGlobalTickers(); 
-         // loadMarketStats();
+         // loаadMarketStats();
     // --------------------------------------
         
         // Заполняем ID в профиле сразу
