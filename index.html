@@ -1429,6 +1429,7 @@ async function init() {
         }
 
         fetchGlobalTickers(); 
+         loadMarketStats();
     // --------------------------------------
         
         // Заполняем ID в профиле сразу
@@ -1480,7 +1481,7 @@ async function init() {
         // Заполняем форму (с защитой от пустых данных)
         fillForm(res.data || { tickers_stocks: "", adr: "20" });
 
-        loadMarketStats();
+       
 
         const levelEl = document.getElementById('user-level');
         if (levelEl) {
