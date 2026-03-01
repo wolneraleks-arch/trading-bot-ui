@@ -1463,7 +1463,7 @@ async function init() {
         // Заполняем форму (с защитой от пустых данных)
         fillForm(res.data || { tickers_stocks: "", adr: "20" });
 
-        loadMarketStats();
+        loadMarketStats(window.isPremium);
 
         const levelEl = document.getElementById('user-level');
         if (levelEl) {
@@ -1486,7 +1486,7 @@ async function init() {
 
 
 
-async function loаadMarketStats() {
+async function loаadMarketStats(window.isPremium) {
     try {
         const response = await fetch(`${GAS_URL}?action=get_batch_indicators&vk_id=${currentVkId}`);
         const res = await response.json();
