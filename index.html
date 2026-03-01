@@ -1231,9 +1231,15 @@ async function loadMarketStats() {
          // --- БЛОК ОГРАНИЧЕНИЯ ---
             if (!window.isPremium) {
                 const allowed = ["GAZP", "CHMF"];
-                data = data.filter(item => allowed.includes(item.t.toUpperCase()));
-                console.log("⚠️ Режим демо: доступно только 2 тикера");
+
+                / Фильтруем, проверяя и поле 't', и поле 'ticker' (на всякий случай)
+                data = data.filter(item => {
+                    const tickerCode = (item.t || item.ticker || "").toUpperCase().trim();
+                    return allowed.includes(tickerCode);
+                });
+                console.log("🛡️ Данные после демо-фильтрации:", data);
             }
+               
             
             const symbol = "₽"; // Пока захардкодим для теста
 
