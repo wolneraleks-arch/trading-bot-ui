@@ -1663,6 +1663,23 @@ async function loadTickerStats() {
             // Обновляем градусники
             updateThermometer('adr-bar', 'adr-perc-val', d.adrPercent);
             updateThermometer('vol-bar', 'vol-perc-val', d.volPercent);
+
+            // Функция для красивого форматирования чисел (1000000 -> 1 000 000)
+          const fmt = (num) => Number(num).toLocaleString('ru-RU');
+
+            // Заполняем текстовую детализацию
+           document.getElementById('avg-vol-val').innerText = fmt(d.avgVol);
+           document.getElementById('max-vol-val').innerText = fmt(d.maxVol);
+           document.getElementById('curr-vol-val').innerText = fmt(d.currentVol);
+            document.getElementById('avg-adr-val').innerText = d.avgADR;
+
+          // Если текущий объем больше максимального за 30 дней - подсветим его синим или красным
+         if (d.currentVol > d.maxVol) {
+            document.getElementById('curr-vol-val').style.color = "#E64646"; // Рекорд!
+         } else {
+            document.getElementById('curr-vol-val').style.color = "#5181b8";
+              }
+            
             
             // Логика графика
             if (d.buy > 0 || d.sell > 0) {
