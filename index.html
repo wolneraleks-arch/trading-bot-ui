@@ -1651,6 +1651,10 @@ async function loadTickerStats() {
     document.getElementById('adr-perc-val').innerText = "⏳";
     document.getElementById('vol-perc-val').innerText = "⏳";
 
+    document.getElementById('avg-vol-val').innerText = "⏳";
+   document.getElementById('max-vol-val').innerText = "⏳";
+   document.getElementById('curr-vol-val').innerText = "⏳";
+
     try {
         const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
         const res = await response.json();
@@ -1667,18 +1671,24 @@ async function loadTickerStats() {
             // Функция для красивого форматирования чисел (1000000 -> 1 000 000)
           const fmt = (num) => Number(num).toLocaleString('ru-RU');
 
-            // Заполняем текстовую детализацию
-           document.getElementById('avg-vol-val').innerText = fmt(d.avgVol);
-           document.getElementById('max-vol-val').innerText = fmt(d.maxVol);
-           document.getElementById('curr-vol-val').innerText = fmt(d.currentVol);
+           // Проверяем наличие элементов перед записью
+        if (document.getElementById('avg-vol-val')) {
+            document.getElementById('avg-vol-val').innerText = fmt(d.avgVol);
+            document.getElementById('max-vol-val').innerText = fmt(d.maxVol);
+            document.getElementById('curr-vol-val').innerText = fmt(d.currentVol);
             document.getElementById('avg-adr-val').innerText = d.avgADR;
+            
+            // Визуальный акцент: если объем сегодня > среднего
+            document.getElementById('curr-vol-val').style.color = 
+                d.currentVol > d.avgVol ? "#E64646" : "#5181b8";
+        }
 
-          // Если текущий объем больше максимального за 30 дней - подсветим его синим или красным
-         if (d.currentVol > d.maxVol) {
-            document.getElementById('curr-vol-val').style.color = "#E64646"; // Рекорд!
-         } else {
-            document.getElementById('curr-vol-val').style.color = "#5181b8";
-              }
+         //  // Если текущий объем больше максимального за 30 дней - подсветим его синим или красным
+         // if (d.currentVol > d.maxVol) {
+         //    document.getElementById('curr-vol-val').style.color = "#E64646"; // Рекорд!
+         // } else {
+         //    document.getElementById('curr-vol-val').style.color = "#5181b8";
+         //      }
             
             
             // Логика графика
