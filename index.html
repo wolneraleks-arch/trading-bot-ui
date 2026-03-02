@@ -933,9 +933,9 @@ function updateThermometer(barId, textId, percentInput) {
           else {
         // ЛОГИКА ДЛЯ ОБЪЕМА (чем ближе к 100%, тем краснее)
         if (percent >= 100) { color = '#E64646'; status = "⚠️ Аномальный объем"; bgStatus = "#FFF1F1"; }
-        else if (percent >= 70) { color = '#FF9E00'; status = "📈 Высокий объем"; bgStatus = "#FFF9F0"; }
-        else if (percent >= 40) { color = '#4BB34B'; status = "📊 Средний объем"; bgStatus = "#F2FFF2"; }
-        else { color = '#818c99'; status = "💿 Низкий объем"; bgStatus = "#F5F5F5"; }
+        else if (percent >= 70) { color = '#FF9E00'; status = " Высокий объем"; bgStatus = "#FFF9F0"; }
+        else if (percent >= 40) { color = '#4BB34B'; status = " Средний объем"; bgStatus = "#F2FFF2"; }
+        else { color = '#818c99'; status = " Низкий объем"; bgStatus = "#F5F5F5"; }
     }
     }
 
