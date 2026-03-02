@@ -1236,8 +1236,14 @@ async function init() {
             }
         } 
 
+
+       const urlHash = window.location.hash;
+       const hashParams = new URLSearchParams(urlHash.substring(1));
+       const tgIdFromUrl = hashParams.get('tg_id') || ""; // Получаем tg_id или пустую строку
+        
+
         logStatus("☁️ Запрос к серверу (GAS)...");
-        const fetchUrl = `${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tribute_status=none`;
+        const fetchUrl = `${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tg_id=${tgIdFromUrl}&tribute_status=none`;
         
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000);
