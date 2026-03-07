@@ -1554,10 +1554,10 @@ function drawPieChart(buy, sell, symbol) {
 
     // Функция сокращения: 1.5B, 10.2M, 500K
     const formatVol = (num) => {
-        if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T'; // Триллионы
-        if (num >= 1e9)  return (num / 1e9).toFixed(2) + 'B';  // Миллиарды
-        if (num >= 1e6)  return (num / 1e6).toFixed(2) + 'M';  // Миллионы
-        if (num >= 1e3)  return (num / 1e3).toFixed(1) + 'K';  // Тысячи
+        if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T'; 
+        if (num >= 1e9)  return (num / 1e9).toFixed(2) + 'B';  
+        if (num >= 1e6)  return (num / 1e6).toFixed(2) + 'M';  
+        if (num >= 1e3)  return (num / 1e3).toFixed(1) + 'K';  
         return num.toFixed(0);
     };
 
@@ -1587,9 +1587,26 @@ function drawPieChart(buy, sell, symbol) {
                 }
             }
         },
-        plugins:
-    });
+        // ДОБАВЛЯЕМ ПЛАГИН И ЗАКРЫВАЕМ ВСЕ СКОБКИ:
+        plugins: [{
+            id: 'centerText',
+            afterDraw: (chart) => {
+                const { ctx, chartArea: { left, top, right, bottom } } = chart;
+                const centerX = (left + right) / 2;
+                const centerY = (top + bottom) / 2;
+
+                ctx.save();
+                ctx.font = "bold 20px sans-serif";
+                ctx.textBaseline = "middle";
+                ctx.textAlign = "center";
+                ctx.fillStyle = "#2c2d2e";
+                ctx.fillText(formatVol(total) + " " + symbol, centerX, centerY);
+                ctx.restore();
+            }
+        }]
+    }); // <-- Финальная скобка для new Chart
 }
+
 
 
 
