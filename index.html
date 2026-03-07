@@ -1547,19 +1547,27 @@ function drawPieChart(buy, sell, symbol) {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     
-    if (chartPie) chartPie.destroy(); // Удаляем старый график перед отрисовкой
-    
-    // Форматируем числа (например, 1250300 -> 1 250 300)
+    if (chartPie) chartPie.destroy();
+
+    const total = buy + sell;
+
+    // Красивое форматирование для центра (1.2M, 500K и т.д.)
+    const formatVol = (num) => {
+        if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+        if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+        if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
+        return num.toFixed(0);
+    };
+
     const fmt = (val) => new Intl.NumberFormat('ru-RU').format(val);
 
     chartPie = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: [`Покупки: ${fmt(buy)} ${symbol}`, `Продажи: ${fmt(sell)} ${symbol}`],
+            labels: [`Покупки`, `Продажи`],
             datasets: [{
                 data: [buy, sell],
-                backgroundColor: ['#4BB34B', '#E64646'], // Цвета VK (Зеленый / Красный)
-                hoverBackgroundColor: ['#52c352', '#ff4d4d'],
+                backgroundColor: ['#4BB34B', '#E64646'],
                 borderWidth: 2,
                 borderColor: '#ffffff'
             }]
@@ -1567,32 +1575,102 @@ function drawPieChart(buy, sell, symbol) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            cutout: '70%', // Толщина кольца
+            cutout: '75%', // Делаем кольцо чуть тоньше для текста
             plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        boxWidth: 12,
-                        padding: 15,
-                        font: { size: 13, weight: '600' },
-                        color: '#2c2d2e'
-                    }
-                },
+                legend: { position: 'bottom' },
                 tooltip: {
                     callbacks: {
-                        label: function(context) {
-                            let label = context.label || '';
-                            let value = context.raw || 0;
-                            let total = buy + sell;
-                            let percentage = Math.round((value / total) * 100);
-                            return ` ${fmt(value)} ${symbol} (${percentage}%)`;
-                        }
+                        label: (ctx) => ` ${fmt(ctx.raw)} ${symbol} (${Math.round(ctx.raw/total*100)}%)`
                     }
                 }
             }
-        }
+        },
+        // --- ПЛАГИН ДЛЯ ТЕКСТА В ЦЕНТРЕ ---
+        plugins: [{
+            id: 'centerText',
+            beforeDraw: function(chart) {
+                const { width, height, ctx } = chart;
+                ctx.restore();
+                
+                // Настройка шрифта для подписи "Всего"
+                ctx.font = "600 12px sans-serif";
+                ctx.textBaseline = "middle";
+                ctx.fillStyle = "#828282";
+                const textRow1 = "ВСЕГО";
+                const textRow1X = Math.round((width - ctx.measureText(textRow1).width) / 2);
+                const textRow1Y = height / 2 - 12;
+                ctx.fillText(textRow1, textRow1X, textRow1Y);
+
+                // Настройка шрифта для самой суммы
+                ctx.font = "bold 18px sans-serif";
+                ctx.fillStyle = "#2c2d2e";
+                const textRow2 = formatVol(total) + " " + symbol;
+                const textRow2X = Math.round((width - ctx.measureText(textRow2).width) / 2);
+                const textRow2Y = height / 2 + 10;
+                ctx.fillText(textRow2, textRow2X, textRow2Y);
+                
+                ctx.save();
+            }
+        }]
     });
 }
+
+
+
+
+
+    
+// function drawPieChart(buy, sell, symbol) {
+//     const canvas = document.getElementById('pieChart');
+//     if (!canvas) return;
+//     const ctx = canvas.getContext('2d');
+    
+//     if (chartPie) chartPie.destroy(); // Удаляем старый график перед отрисовкой
+    
+//     // Форматируем числа (например, 1250300 -> 1 250 300)
+//     const fmt = (val) => new Intl.NumberFormat('ru-RU').format(val);
+
+//     chartPie = new Chart(ctx, {
+//         type: 'doughnut',
+//         data: {
+//             labels: [`Покупки: ${fmt(buy)} ${symbol}`, `Продажи: ${fmt(sell)} ${symbol}`],
+//             datasets: [{
+//                 data: [buy, sell],
+//                 backgroundColor: ['#4BB34B', '#E64646'], // Цвета VK (Зеленый / Красный)
+//                 hoverBackgroundColor: ['#52c352', '#ff4d4d'],
+//                 borderWidth: 2,
+//                 borderColor: '#ffffff'
+//             }]
+//         },
+//         options: {
+//             responsive: true,
+//             maintainAspectRatio: false,
+//             cutout: '70%', // Толщина кольца
+//             plugins: {
+//                 legend: {
+//                     position: 'bottom',
+//                     labels: {
+//                         boxWidth: 12,
+//                         padding: 15,
+//                         font: { size: 13, weight: '600' },
+//                         color: '#2c2d2e'
+//                     }
+//                 },
+//                 tooltip: {
+//                     callbacks: {
+//                         label: function(context) {
+//                             let label = context.label || '';
+//                             let value = context.raw || 0;
+//                             let total = buy + sell;
+//                             let percentage = Math.round((value / total) * 100);
+//                             return ` ${fmt(value)} ${symbol} (${percentage}%)`;
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     });
+// }
 
 
 
