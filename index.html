@@ -1148,7 +1148,7 @@ async function init() {
         logStatus("Получение данных пользователя...");
         const urlParams = new URLSearchParams(window.location.search);
         currentVkId = urlParams.get('vk_user_id');
-        logStatus("этап 1.");
+        logStatus("Загрузка 1...");
 
         // Если ID нет, пробуем достать его через метод Bridge (запасной вариант)
         if (!currentVkId) {
@@ -1168,7 +1168,7 @@ async function init() {
         
         // Заполняем ID в профиле сразу
         const displayIdEl = document.getElementById('display-id');
-        logStatus("этап 2.");
+        logStatus("Загрузка ...");
         if (displayIdEl) displayIdEl.innerText = currentVkId;
 
         try {
