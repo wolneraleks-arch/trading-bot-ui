@@ -358,7 +358,7 @@
 
 <!-- 1. Круговая: Общее соотношение -->
 <div class="card" style="margin-bottom: 16px; text-align: center;">
-    <div style="font-size: 14px; color: #818c99; margin-bottom: 12px;">Общий баланс рынка (Покупки vs Продажи)</div>
+    <div style="font-size: 14px; color: #818c99; margin-bottom: 12px;">Общий баланс рынка</div>
     <div style="height: 200px; position: relative;">
         <canvas id="totalPortfolioPie"></canvas>
     </div>
@@ -475,7 +475,7 @@
 
 
         <div id="chart-card" class="card" style="display: none; margin-top: 16px; padding: 16px; min-height: 250px;">
-    <div style="font-size: 14px; font-weight: 700; margin-bottom: 12px; text-align: center;">📊 Баланс сделок</div>
+    <div style="font-size: 14px; font-weight: 700; margin-bottom: 12px; text-align: center;">⚖️ Баланс сделок</div>
     
     <!-- Блок статуса (загрузка/нет данных) -->
     <div id="chart-info" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 180px;">
@@ -1132,7 +1132,7 @@ async function loadMarketStats() {
 async function init() {
     const statusEl = document.getElementById('loading-text');
     if (typeof vkBridge === 'undefined') {
-        statusEl.innerText = "❌ Ошибка: VK Bridge не загружен.";
+        statusEl.innerText = "❌ Ошибка: Bridge не загружен.";
         return;
     }
     
@@ -1142,17 +1142,17 @@ async function init() {
     };
 
     try {
-        logStatus("🔌 Подключение к VK Bridge...");
+        logStatus("🔌 Подключение к Bridge...");
         vkBridge.send("VKWebAppInit", {});
         
-        logStatus("🆔 Получение ID пользователя...");
+        logStatus("Получение данных пользователя...");
         const urlParams = new URLSearchParams(window.location.search);
         currentVkId = urlParams.get('vk_user_id');
         logStatus("этап 1.");
 
         // Если ID нет, пробуем достать его через метод Bridge (запасной вариант)
         if (!currentVkId) {
-            logStatus("🔄 Пробую альтернативный метод получения ID...");
+            logStatus(" Пробую альтернативный метод получения...");
             const launchParams = await vkBridge.send("VKWebAppGetLaunchParams");
             currentVkId = launchParams.vk_user_id;
         }
@@ -1200,9 +1200,10 @@ async function init() {
        const urlHash = window.location.hash;
        const hashParams = new URLSearchParams(urlHash.substring(1));
        const tgIdFromUrl = hashParams.get('tg_id') || ""; // Получаем tg_id или пустую строку
-        
 
-        logStatus("☁️ Запрос к серверу (GAS)...");
+        const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+        logStatus("☁️ Запрос к серверу...");
         const fetchUrl = `${GAS_URL}?action=check_or_register&vk_id=${currentVkId}&tg_id=${tgIdFromUrl}&tribute_status=none`;
         
         const controller = new AbortController();
@@ -1213,6 +1214,8 @@ async function init() {
 
         logStatus("📦 Обработка ответа...");
         const res = await response.json();
+
+        await sleep(500);
 
         // Логика доступа
         window.isPremium = (res.data && res.data.active === "Да")? true : false;;
@@ -1457,7 +1460,7 @@ async function loadTickerStats() {
     chartInfo.style.display = 'flex';
     chartContainer.style.display = 'none';
     statusIcon.innerText = "⏳";
-    statusText.innerText = "Запрашиваю данные по сделкам...";
+    statusText.innerText = "Запрос...";
     
     // Градусники тоже в режим ожидания
     document.getElementById('adr-perc-val').innerText = "⏳";
