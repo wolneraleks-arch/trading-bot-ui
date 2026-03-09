@@ -1215,7 +1215,7 @@ async function init() {
         logStatus("📦 Обработка ответа...");
         const res = await response.json();
 
-        await sleep(500);
+        await sleep(1000);
 
         // Логика доступа
         window.isPremium = (res.data && res.data.active === "Да")? true : false;;
