@@ -509,10 +509,10 @@
         <span style="color: #818c99;">Макс. объем:</span>
         <span id="max-vol-val" style="font-weight: 700; color: #2c2d2e;">--</span>
     </div>
-    <!-- <div style="display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #f0f2f5; padding-bottom: 8px;">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #f0f2f5; padding-bottom: 8px;">
         <span style="color: #818c99;">Объем сегодня:</span>
         <span id="curr-vol-val" style="font-weight: 700; color: #5181b8;">--</span>
-    </div> -->
+    </div>
     <div style="display: flex; justify-content: space-between;">
         <span style="color: #818c99;">Средний АДР:</span>
         <span id="avg-adr-val" style="font-weight: 700;">--</span>
@@ -1465,7 +1465,7 @@ async function loadTickerStats() {
 
     document.getElementById('avg-vol-val').innerText = "⏳";
    document.getElementById('max-vol-val').innerText = "⏳";
-   // document.getElementById('curr-vol-val').innerText = "⏳";
+   document.getElementById('curr-vol-val').innerText = "⏳";
 
     try {
         const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
@@ -1487,12 +1487,12 @@ async function loadTickerStats() {
         if (document.getElementById('avg-vol-val')) {
             document.getElementById('avg-vol-val').innerText = fmt(d.avgVol);
             document.getElementById('max-vol-val').innerText = fmt(d.maxVol);
-            // document.getElementById('curr-vol-val').innerText = fmt(d.currentVol);
+            document.getElementById('curr-vol-val').innerText = fmt(d.currentVol);
             document.getElementById('avg-adr-val').innerText = d.avgADR;
             
             // Визуальный акцент: если объем сегодня > среднего
-            // document.getElementById('curr-vol-val').style.color = 
-            //     d.currentVol > d.avgVol ? "#E64646" : "#5181b8";
+            document.getElementById('curr-vol-val').style.color = 
+                d.currentVol > d.avgVol ? "#E64646" : "#5181b8";
         }
 
          //  // Если текущий объем больше максимального за 30 дней - подсветим его синим или красным
