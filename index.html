@@ -1758,7 +1758,7 @@ function drawPieChart(buy, sell, symbol) {
                             let value = context.raw || 0;
                             let total = buy + sell;
                             let percentage = Math.round((value / total) * 100);
-                            return ` ${fmt(value)} ${symbol} (${percentage}%)`;
+                            return ` ${symbol} (${percentage}%)`;
                         }
                     }
                 }
