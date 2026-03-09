@@ -1481,18 +1481,40 @@ async function loadTickerStats() {
             updateThermometer('vol-bar', 'vol-perc-val', d.volPercent);
 
             // Функция для красивого форматирования чисел (1000000 -> 1 000 000)
-          const fmt = (num) => Number(num).toLocaleString('ru-RU');
+          //const fmt = (num) => Number(num).toLocaleString('ru-RU');
+
+         const fmt = (val) => {
+        // Очищаем значение: оставляем только цифры и точку/запятую
+       let num = parseFloat(String(val).replace(/[^0-9,.-]/g, '').replace(',', '.'));
+    
+    // Если после очистки это всё еще не число, возвращаем "0" или "н/д"
+    if (isNaN(num)) return "0";
+    
+    // Форматируем красиво с пробелами
+    return new Intl.NumberFormat('ru-RU').format(num);
+   };
+            
 
            // Проверяем наличие элементов перед записью
         if (document.getElementById('avg-vol-val')) {
             document.getElementById('avg-vol-val').innerText = fmt(d.avgVol);
             document.getElementById('max-vol-val').innerText = fmt(d.maxVol);
+            
             document.getElementById('curr-vol-val').innerText = fmt(d.currentVol);
+
+            
             document.getElementById('avg-adr-val').innerText = d.avgADR;
+
+              let current = parseFloat(String(d.currentVol).replace(/[^0-9,.-]/g, '').replace(',', '.'));
+              let avg = parseFloat(String(d.avgVol).replace(/[^0-9,.-]/g, '').replace(',', '.'));
+            
             
             // Визуальный акцент: если объем сегодня > среднего
+            // document.getElementById('curr-vol-val').style.color = 
+            //     d.currentVol > d.avgVol ? "#E64646" : "#5181b8";
+
             document.getElementById('curr-vol-val').style.color = 
-                d.currentVol > d.avgVol ? "#E64646" : "#5181b8";
+               (current > avg) ? "#E64646" : "#5181b8";
         }
 
          //  // Если текущий объем больше максимального за 30 дней - подсветим его синим или красным
