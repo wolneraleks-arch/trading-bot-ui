@@ -2083,11 +2083,6 @@ function checkChanges() {
 async function saveData() {
     if (!window.isPremium) {
         showToast("❌ Сохранение доступно только с подпиской", true);
-        setTimeout(() => {
-            if (confirm("Хотите оформить подписку Tribute, чтобы сохранять настройки?")) {
-                openTribute();
-            }
-        }, 1500);
         return; 
     }
 
