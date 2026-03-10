@@ -2254,10 +2254,10 @@ async function saveData() {
     });
 
     // 3. Резервный тайм-аут (если мост "завис" и не выдал ни success ни catch)
-    setTimeout(() => {
-        addLog("⏳ Тайм-аут моста, форсируем переход...");
-        window.top.location.href = url;
-    }, 800);
+    // setTimeout(() => {
+    //     addLog("⏳ Тайм-аут моста, форсируем переход...");
+    //     window.top.location.href = url;
+    // }, 800);
 }
 
 
