@@ -1340,12 +1340,13 @@ function renderTopList(data, total) {
     if (!listCont) return;
     
     // Цвета для 7 акций + 1 для "Других"
-    const colors = ['#5181b8', '#4bb34b', '#ffc107', '#ff5722', '#9c27b0', '#00bcd4', '#3f51b5', '#818c99'];
+    // const colors = ['#5181b8', '#4bb34b', '#ffc107', '#ff5722', '#9c27b0', '#00bcd4', '#3f51b5', '#818c99'];
     
     let html = '';
     data.forEach((item, index) => {
         let perc = ((item.value / total) * 100).toFixed(1);
-        let dotColor = colors[index] || '#eee';
+        // let dotColor = colors[index] || '#eee';
+        let dotColor = getColorForTicker(item.label);
         
         // Если это не "Другие", пишем Название + Тикер
         let labelContent = item.label === "Другие" 
