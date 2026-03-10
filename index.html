@@ -2238,16 +2238,16 @@ async function saveData() {
     
     function openTribute() {
     const url = "https://vk.cc/cV0hga";
-    addLog("📱 Мобильный запуск оплаты...");
+//addLog("📱 Мобильный запуск оплаты...");
 
     // 1. Попытка через мост (для Android/iOS VK App)
     vkBridge.send("VKWebAppOpenURL", { "url": url })
-    .then(data => {
-        addLog("✅ Мост открыл: " + JSON.stringify(data));
-        // Если открылось - супер
-    })
+    // .then(data => {
+    //     addLog("✅ Мост открыл: " + JSON.stringify(data));
+    //     // Если открылось - супер
+    // })
     .catch(err => {
-        addLog("⚠️ Мост не смог, пробуем Redirect...");
+        //addLog("⚠️ Мост не смог, пробуем Redirect...");
         // 2. ЖЕСТКИЙ МЕТОД для мобилок:
         // Выбрасываем пользователя из фрейма прямо на сайт
         window.top.location.href = url;
