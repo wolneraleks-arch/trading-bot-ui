@@ -1406,9 +1406,9 @@ async function loadMarketOverview() {
             renderTopList(res.data.chartData, res.data.totalCap);
 
             // 3. Плавно проявляем список через 500мс
-            setTimeout(() => {
-                listCont.classList.add('visible');
-            }, 500);
+            // setTimeout(() => {
+            //     listCont.classList.add('visible');
+            // }, 500);
         }
     } catch (e) {
         console.error("Ошибка загрузки данных рынка:", e);
