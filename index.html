@@ -1444,7 +1444,7 @@ function drawMarketCapChart(dataArray, total) {
                             const item = dataArray[ctx.dataIndex];
                             const perc = ((ctx.raw / total) * 100).toFixed(1);
                             // Выводит: Газпром (GAZP): 1.2B ₽ (15%)
-                            return ` ${item.fullName} (${item.label}): ${formatFull(ctx.raw)} ₽ (${perc}%)`;
+                            return ` ${item.fullName}: ${formatFull(ctx.raw)} ₽ (${perc}%)`;
                         }
                     }
                 }
