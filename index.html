@@ -1320,32 +1320,93 @@ function renderTickerBadges(data) {
 }
 
 
+function renderTopList(data, total) {
+    const listCont = document.getElementById('top-stocks-list');
+    if (!listCont) return;
+    
+    // Цвета для 7 акций + 1 для "Других"
+    const colors = ['#5181b8', '#4bb34b', '#ffc107', '#ff5722', '#9c27b0', '#00bcd4', '#3f51b5', '#818c99'];
+    
+    let html = '';
+    data.forEach((item, index) => {
+        let perc = ((item.value / total) * 100).toFixed(1);
+        let dotColor = colors[index] || '#eee';
+        
+        // Если это не "Другие", пишем Название + Тикер
+        let labelContent = item.label === "Другие" 
+            ? `<b>Другие акции</b>` 
+            : `<div style="line-height: 1.2;">
+                 <b style="color: #2c2d2e; font-size: 14px;">${item.fullName}</b><br>
+                 <span style="color: #818c99; font-size: 11px;">${item.label}</span>
+               </div>`;
+
+        html += `
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #f0f2f5;">
+                <div style="display: flex; align-items: center;">
+                    <div style="width: 8px; height: 8px; border-radius: 50%; background: ${dotColor}; margin-right: 10px;"></div>
+                    ${labelContent}
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-weight: 700; font-size: 14px;">${perc}%</div>
+                </div>
+            </div>`;
+    });
+    listCont.innerHTML = html;
+}
+
+
+    
 
 let totalPortfolioChart = null;
+
+    
 //график капитализации
+async function loadMarketOverview() {
+    try {
+        const response = await fetch(`${GAS_URL}?action=get_market_cap`);
+        const res = await response.json();
+        
+        if (res.status === "success" && res.data) {
+            // 1. Рисуем сам круговой график
+            drawMarketCapChart(res.data.chartData, res.data.totalCap);
+            
+            // 2. ВОТ ЗДЕСЬ ВЫЗЫВАЕМ СПИСОК (renderTopList)
+            // Мы передаем те же данные, что и в график
+            renderTopList(res.data.chartData, res.data.totalCap);
+        }
+    } catch (e) {
+        console.error("Ошибка загрузки данных рынка:", e);
+    }
+}
+
+
+
+
 function drawMarketCapChart(dataArray, total) {
     const canvas = document.getElementById('marketCapPie');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     
-    if (totalPortfolioChart) totalPortfolioChart.destroy();
+    // Используем ту же глобальную переменную, что и в твоем коде
+    if (window.totalPortfolioChart) window.totalPortfolioChart.destroy();
 
-    // Формат для центра (Триллионы/Миллиарды)
     const formatFull = (num) => {
         if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
         if (num >= 1e9)  return (num / 1e9).toFixed(2) + 'B';
         return (num / 1e6).toFixed(1) + 'M';
     };
 
-    const fmt = (val) => new Intl.NumberFormat('ru-RU').format(val);
-
-    totalPortfolioChart = new Chart(ctx, {
+    window.totalPortfolioChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
             labels: dataArray.map(d => d.label),
             datasets: [{
                 data: dataArray.map(d => d.value),
-                backgroundColor: ['#5181b8', '#4bb34b', '#ffc107', '#ff5722', '#9c27b0', '#818c99'], // Разные цвета
+                // Расширенный набор цветов для 7 акций + 1 для "Других"
+                backgroundColor: [
+                    '#5181b8', '#4bb34b', '#ffc107', '#ff5722', 
+                    '#9c27b0', '#00bcd4', '#3f51b5', '#818c99'
+                ],
                 borderWidth: 1,
                 borderColor: '#fff'
             }]
@@ -1355,13 +1416,14 @@ function drawMarketCapChart(dataArray, total) {
             maintainAspectRatio: false,
             cutout: '70%',
             plugins: {
-                legend: { display: false }, // Скрываем легенду, чтобы не забивать экран
+                legend: { display: false },
                 tooltip: {
                     callbacks: {
                         label: (ctx) => {
-                            let val = ctx.raw;
-                            let perc = ((val / total) * 100).toFixed(1);
-                            return ` ${ctx.label}: ${formatFull(val)} ₽ (${perc}%)`;
+                            const item = dataArray[ctx.dataIndex];
+                            const perc = ((ctx.raw / total) * 100).toFixed(1);
+                            // Выводит: Газпром (GAZP): 1.2B ₽ (15%)
+                            return ` ${item.fullName} (${item.label}): ${formatFull(ctx.raw)} ₽ (${perc}%)`;
                         }
                     }
                 }
@@ -1372,7 +1434,7 @@ function drawMarketCapChart(dataArray, total) {
             afterDraw: (chart) => {
                 const { ctx, chartArea: { left, top, right, bottom } } = chart;
                 ctx.save();
-                ctx.font = "bold 18px sans-serif";
+                ctx.font = "bold 16px sans-serif"; // Чуть уменьшил, чтобы влезло с валютой
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 ctx.fillStyle = "#2c2d2e";
@@ -1385,10 +1447,71 @@ function drawMarketCapChart(dataArray, total) {
 
 
 
-
-
+    
 
     
+// function drawMarketCapChart(dataArray, total) {
+//     const canvas = document.getElementById('marketCapPie');
+//     if (!canvas) return;
+//     const ctx = canvas.getContext('2d');
+    
+//     if (totalPortfolioChart) totalPortfolioChart.destroy();
+
+//     // Формат для центра (Триллионы/Миллиарды)
+//     const formatFull = (num) => {
+//         if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
+//         if (num >= 1e9)  return (num / 1e9).toFixed(2) + 'B';
+//         return (num / 1e6).toFixed(1) + 'M';
+//     };
+
+//     const fmt = (val) => new Intl.NumberFormat('ru-RU').format(val);
+
+//     totalPortfolioChart = new Chart(ctx, {
+//         type: 'doughnut',
+//         data: {
+//             labels: dataArray.map(d => d.label),
+//             datasets: [{
+//                 data: dataArray.map(d => d.value),
+//                 backgroundColor: ['#5181b8', '#4bb34b', '#ffc107', '#ff5722', '#9c27b0', '#818c99'], // Разные цвета
+//                 borderWidth: 1,
+//                 borderColor: '#fff'
+//             }]
+//         },
+//         options: {
+//             responsive: true,
+//             maintainAspectRatio: false,
+//             cutout: '70%',
+//             plugins: {
+//                 legend: { display: false }, // Скрываем легенду, чтобы не забивать экран
+//                 tooltip: {
+
+//                     callbacks: {
+//                         label: (ctx) => {
+//                             let val = ctx.raw;
+//                             let perc = ((val / total) * 100).toFixed(1);
+//                             return ` ${ctx.label}: ${formatFull(val)} ₽ (${perc}%)`;
+//                         }
+//                     }
+//                 }
+//             }
+//         },
+//         plugins: [{
+//             id: 'centerTextCap',
+//             afterDraw: (chart) => {
+//                 const { ctx, chartArea: { left, top, right, bottom } } = chart;
+//                 ctx.save();
+//                 ctx.font = "bold 18px sans-serif";
+//                 ctx.textAlign = "center";
+//                 ctx.textBaseline = "middle";
+//                 ctx.fillStyle = "#2c2d2e";
+//                 ctx.fillText(formatFull(total) + " ₽", (left + right) / 2, (top + bottom) / 2);
+//                 ctx.restore();
+//             }
+//         }]
+//     });
+// }
+
+
 
 
 let chartPortfolioPie, chartBuyBar, chartSellBar;
@@ -1643,15 +1766,15 @@ async function loadTickerStats() {
 
 
     
-async function loadMarketOverview() {
-    try {
-        const response = await fetch(`${GAS_URL}?action=get_market_cap`);
-        const res = await response.json();
-        if (res.status === "success") {
-            drawMarketCapChart(res.data.chartData, res.data.totalCap);
-        }
-    } catch (e) { console.error("Ошибка загрузки капы:", e); }
-}
+// async function loadMarketOverview() {
+//     try {
+//         const response = await fetch(`${GAS_URL}?action=get_market_cap`);
+//         const res = await response.json();
+//         if (res.status === "success") {
+//             drawMarketCapChart(res.data.chartData, res.data.totalCap);
+//         }
+//     } catch (e) { console.error("Ошибка загрузки капы:", e); }
+// }
 
     
 
