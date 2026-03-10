@@ -1233,35 +1233,22 @@ async function init() {
 
         const response = await fetch(fetchUrl, { method: 'GET', mode: 'cors', signal: controller.signal });
         clearTimeout(timeoutId);
-
         logStatus("📦 Обработка ответа...");
         const res = await response.json();
-
         await sleep(1000);
-
         // Логика доступа
-        window.isPremium = (res.data && res.data.active === "Да")? true : false;;
+        window.isPremium = (res.data && res.data.active === "Да")? true : false;
         showView('view-main');
-
        console.log("💎 Статус подписки:", window.isPremium);
-
-          // // Заполняем форму данными (если их нет, передаем пустой объект, чтобы не было ошибки)
-          // if (typeof fillForm === "function") {
-          // fillForm(res.data || { tickers_stocks: "GAZP,CHMF", adr: "20" });
-          //    }
-
-        
         // Заполняем форму (с защитой от пустых данных)
         fillForm(res.data || { tickers_stocks: "", adr: "20" });
 
       // Запускаем графики
         if (typeof loadMarketStats === "function") {
            loadMarketStats();
+            loadMarketOverview();
         }
         
-
-        // loadMarketStats();
-
         const levelEl = document.getElementById('user-level');
         if (levelEl) {
             if (!window.isPremium) {
