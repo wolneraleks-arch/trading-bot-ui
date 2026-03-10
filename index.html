@@ -297,6 +297,17 @@
     transition: opacity 0.3s ease;
 }
 
+#top-stocks-list {
+    transition: opacity 0.8s ease-in-out;
+    opacity: 0; /* Изначально скрыт */
+}
+
+#top-stocks-list.visible {
+    opacity: 1; /* Показываем через класс */
+}
+
+        
+
     </style>
 </head>
 <body>
@@ -1393,6 +1404,11 @@ async function loadMarketOverview() {
             // 2. ВОТ ЗДЕСЬ ВЫЗЫВАЕМ СПИСОК (renderTopList)
             // Мы передаем те же данные, что и в график
             renderTopList(res.data.chartData, res.data.totalCap);
+
+            // 3. Плавно проявляем список через 500мс
+            setTimeout(() => {
+                listCont.classList.add('visible');
+            }, 500);
         }
     } catch (e) {
         console.error("Ошибка загрузки данных рынка:", e);
@@ -1440,6 +1456,13 @@ function drawMarketCapChart(dataArray, total) {
             responsive: true,
             maintainAspectRatio: false,
             cutout: '70%',
+
+            // --- ДОБАВЬ ЭТОТ БЛОК ---
+    animation: {
+        duration: 3000, // Длительность в мс (2 секунды)
+        animateRotate: true, // Вращение при появлении
+        animateScale: true   // Увеличение из центра
+    },
             plugins: {
                 legend: { display: false },
                 tooltip: {
