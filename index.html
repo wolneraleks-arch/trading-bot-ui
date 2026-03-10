@@ -2235,30 +2235,55 @@ async function saveData() {
         btn.disabled = false;
     }
 }
-    
-    function openTribute() {
-    const url = "https://vk.cc/cV0hga";
-//addLog("📱 Мобильный запуск оплаты...");
 
-    // 1. Попытка через мост (для Android/iOS VK App)
+
+function openTribute() {
+    const url = "https://vk.cc/cV0hga";
+
+    // 1. Попытка через мост
     vkBridge.send("VKWebAppOpenURL", { "url": url })
-    // .then(data => {
-    //     addLog("✅ Мост открыл: " + JSON.stringify(data));
-    //     // Если открылось - супер
-    // })
     .catch(err => {
-        //addLog("⚠️ Мост не смог, пробуем Redirect...");
-        // 2. ЖЕСТКИЙ МЕТОД для мобилок:
-        // Выбрасываем пользователя из фрейма прямо на сайт
+        // 2. Если мост не смог — редирект
         window.top.location.href = url;
     });
 
-    // 3. Резервный тайм-аут (если мост "завис" и не выдал ни success ни catch)
-    // setTimeout(() => {
-    //     addLog("⏳ Тайм-аут моста, форсируем переход...");
-    //     window.top.location.href = url;
-    // }, 800);
+    // 3. Резервный тайм-аут
+    setTimeout(() => {
+        window.top.location.href = url;
+    }, 800);
 }
+
+
+    
+//     function openTribute() {
+//     const url = "https://vk.cc/cV0hga";
+// //addLog("📱 Мобильный запуск оплаты...");
+
+//     // 1. Попытка через мост (для Android/iOS VK App)
+//     vkBridge.send("VKWebAppOpenURL", { "url": url })
+//     // .then(data => {
+//     //     addLog("✅ Мост открыл: " + JSON.stringify(data));
+//     //     // Если открылось - супер
+//     // })
+//     .catch(err => {
+//         //addLog("⚠️ Мост не смог, пробуем Redirect...");
+//         // 2. ЖЕСТКИЙ МЕТОД для мобилок:
+//         // Выбрасываем пользователя из фрейма прямо на сайт
+//         window.top.location.href = url;
+//     });
+
+//     // 3. Резервный тайм-аут (если мост "завис" и не выдал ни success ни catch)
+
+// // 3. Резервный тайм-аут
+//     setTimeout(() => {
+//         window.top.location.href = url;
+//     }, 800);
+        
+//     // setTimeout(() => {
+//     //     addLog("⏳ Тайм-аут моста, форсируем переход...");
+//     //     window.top.location.href = url;
+//     // }, 800);
+// }
 
 
    function addLog(msg) {
