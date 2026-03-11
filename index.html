@@ -1167,10 +1167,10 @@ async function loadMarketStats() {
             // Рисуем круговую баланса
 
 
-            const topB = [...data].sort((a,b) => b.b - a.b).slice(0, 15);
+            const topB = [...data].sort((a,b) => b.b - a.b).slice(0, 8);
             drawBarStats('topBuyBar', topB.map(i => i.n || i.t), topB.map(i => i.b), '#4BB34B', 'Покупки', symbol);
 
-            const topS = [...data].sort((a,b) => b.s - a.s).slice(0, 15);
+            const topS = [...data].sort((a,b) => b.s - a.s).slice(0, 8);
             drawBarStats('topSellBar', topS.map(i => i.n || i.t), topS.map(i => i.s), '#E64646', 'Продажи', symbol);
             
         }
