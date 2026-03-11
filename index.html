@@ -1593,67 +1593,11 @@ function drawMarketCapChart(dataArray, total) {
 
 let chartPortfolioPie, chartBuyBar, chartSellBar;
 
-// function drawPortfolioPie(buy, sell, symbol) {
-//     const canvas = document.getElementById('totalPortfolioPie');
-//     if (!canvas) return;
-//     const ctx = canvas.getContext('2d');
-//     if (chartPortfolioPie) chartPortfolioPie.destroy();
-
-//     const total = buy + sell;
-
-//     chartPortfolioPie = new Chart(ctx, {
-//         type: 'doughnut',
-//         data: {
-//             labels: ['Покупки', 'Продажи'],
-//             datasets: [{
-//                 data: [buy, sell],
-//                 backgroundColor: ['#4BB34B', '#E64646'],
-//                 borderWidth: 2,
-//                 borderColor: '#fff'
-//             }]
-//         },
-//         options: {
-//             responsive: true,
-//             maintainAspectRatio: false,
-//             cutout: '70%',
-//             plugins: {
-//                 legend: { position: 'bottom' },
-//                 tooltip: {
-//                     callbacks: {
-//                         label: (ctx) => {
-//                             const val = ctx.raw;
-//                             const perc = total > 0 ? Math.round((val / total) * 100) : 0;
-//                             return ` ${ctx.label}: ${val.toLocaleString()} ${symbol} (${perc}%)`;
-//                         }
-//                     }
-//                 }
-//             }
-//         },
-//         // Плагин для текста в центре
-//         plugins: [{
-//             id: 'centerText',
-//             afterDraw: (chart) => {
-//                 const { ctx, chartArea: { left, top, right, bottom } } = chart;
-//                 ctx.save();
-//                 ctx.font = "bold 16px sans-serif";
-//                 ctx.textAlign = "center";
-//                 ctx.textBaseline = "middle";
-//                 ctx.fillStyle = "#2c2d2e";
-//                 // Сокращаем общую сумму для центра (например, 1.2M)
-//                 const f = (n) => n >= 1e6 ? (n/1e6).toFixed(1)+'M' : n >= 1e3 ? (n/1e3).toFixed(1)+'K' : n;
-//                 ctx.fillText(f(total) + " " + symbol, (left + right) / 2, (top + bottom) / 2);
-//                 ctx.restore();
-//             }
-//         }]
-//     });
-// }
-
-
-
-    
 function drawPortfolioPie(buy, sell, symbol) {
     const ctx = document.getElementById('totalPortfolioPie').getContext('2d');
     if (chartPortfolioPie) chartPortfolioPie.destroy();
+
+    const total = buy + sell;
 
     chartPortfolioPie = new Chart(ctx, {
         type: 'doughnut',
@@ -1672,13 +1616,50 @@ function drawPortfolioPie(buy, sell, symbol) {
                 legend: { position: 'bottom' },
                 tooltip: {
                     callbacks: {
-                        label: (ctx) => ` ${ctx.raw.toLocaleString()} ${symbol}`
+                        label: (ctx) => {
+                            // Расчет процента
+                            const perc = total > 0 ? Math.round((ctx.raw / total) * 100) : 0;
+                            return ` ${ctx.label}: ${ctx.raw.toLocaleString()} ${symbol} (${perc}%)`;
+                        }
                     }
                 }
             }
         }
     });
 }
+
+
+
+
+    
+// function drawPortfolioPie(buy, sell, symbol) {
+//     const ctx = document.getElementById('totalPortfolioPie').getContext('2d');
+//     if (chartPortfolioPie) chartPortfolioPie.destroy();
+
+//     chartPortfolioPie = new Chart(ctx, {
+//         type: 'doughnut',
+//         data: {
+//             labels: ['Все покупки', 'Все продажи'],
+//             datasets: [{
+//                 data: [buy, sell],
+//                 backgroundColor: ['#4BB34B', '#E64646'],
+//                 borderWidth: 0
+//             }]
+//         },
+//         options: {
+//             responsive: true,
+//             maintainAspectRatio: false,
+//             plugins: {
+//                 legend: { position: 'bottom' },
+//                 tooltip: {
+//                     callbacks: {
+//                         label: (ctx) => ` ${ctx.raw.toLocaleString()} ${symbol}`
+//                     }
+//                 }
+//             }
+//         }
+//     });
+// }
 
 
 // function drawBarStats(canvasId, labels, values, color, labelName, symbol) {
