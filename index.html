@@ -1420,31 +1420,6 @@ async function loadMarketOverview() {
 }
 
 
-    
-// async function loadMarketOverview() {
-//     try {
-//         const response = await fetch(`${GAS_URL}?action=get_market_cap`);
-//         const res = await response.json();
-        
-//         if (res.status === "success" && res.data) {
-//             // 1. Рисуем сам круговой график
-//             drawMarketCapChart(res.data.chartData, res.data.totalCap);
-            
-//             // 2. ВОТ ЗДЕСЬ ВЫЗЫВАЕМ СПИСОК (renderTopList)
-//             // Мы передаем те же данные, что и в график
-//             renderTopList(res.data.chartData, res.data.totalCap);
-
-//             // 3. Плавно проявляем список через 500мс
-//             // setTimeout(() => {
-//             //     listCont.classList.add('visible');
-//             // }, 500);
-//         }
-//     } catch (e) {
-//         console.error("Ошибка загрузки данных рынка:", e);
-//     }
-// }
-
-
 
 
 function drawMarketCapChart(dataArray, total) {
