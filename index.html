@@ -1164,11 +1164,13 @@ async function loadMarketStats() {
 
             // Отрисовка
             drawPortfolioPie(totalBuy, totalSell, symbol);
+            // Рисуем круговую баланса
+             
 
-            const topB = [...data].sort((a,b) => b.b - a.b).slice(0, 15);
+            const topB = [...data].sort((a,b) => b.b - a.b).slice(0, 8);
             drawBarStats('topBuyBar', topB.map(i => i.n || i.t), topB.map(i => i.b), '#4BB34B', 'Покупки', symbol);
 
-            const topS = [...data].sort((a,b) => b.s - a.s).slice(0, 15);
+            const topS = [...data].sort((a,b) => b.s - a.s).slice(0, 8);
             drawBarStats('topSellBar', topS.map(i => i.n || i.t), topS.map(i => i.s), '#E64646', 'Продажи', symbol);
             
         }
@@ -1592,75 +1594,146 @@ function drawMarketCapChart(dataArray, total) {
 let chartPortfolioPie, chartBuyBar, chartSellBar;
 
 function drawPortfolioPie(buy, sell, symbol) {
-    const ctx = document.getElementById('totalPortfolioPie').getContext('2d');
+    const canvas = document.getElementById('totalPortfolioPie');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
     if (chartPortfolioPie) chartPortfolioPie.destroy();
+
+    const total = buy + sell;
 
     chartPortfolioPie = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['Все покупки', 'Все продажи'],
+            labels: ['Покупки', 'Продажи'],
             datasets: [{
                 data: [buy, sell],
                 backgroundColor: ['#4BB34B', '#E64646'],
-                borderWidth: 0
+                borderWidth: 2,
+                borderColor: '#fff'
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '70%',
             plugins: {
                 legend: { position: 'bottom' },
                 tooltip: {
                     callbacks: {
-                        label: (ctx) => ` ${ctx.raw.toLocaleString()} ${symbol}`
+                        label: (ctx) => {
+                            const val = ctx.raw;
+                            const perc = total > 0 ? Math.round((val / total) * 100) : 0;
+                            return ` ${ctx.label}: ${val.toLocaleString()} ${symbol} (${perc}%)`;
+                        }
                     }
                 }
             }
-        }
+        },
+        // Плагин для текста в центре
+        plugins: [{
+            id: 'centerText',
+            afterDraw: (chart) => {
+                const { ctx, chartArea: { left, top, right, bottom } } = chart;
+                ctx.save();
+                ctx.font = "bold 16px sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillStyle = "#2c2d2e";
+                // Сокращаем общую сумму для центра (например, 1.2M)
+                const f = (n) => n >= 1e6 ? (n/1e6).toFixed(1)+'M' : n >= 1e3 ? (n/1e3).toFixed(1)+'K' : n;
+                ctx.fillText(f(total) + " " + symbol, (left + right) / 2, (top + bottom) / 2);
+                ctx.restore();
+            }
+        }]
     });
 }
 
-function drawBarStats(canvasId, labels, values, color, labelName, symbol) {
-    const ctx = document.getElementById(canvasId).getContext('2d');
+
+
     
-    // Уничтожаем старый график перед созданием нового
+// function drawPortfolioPie(buy, sell, symbol) {
+//     const ctx = document.getElementById('totalPortfolioPie').getContext('2d');
+//     if (chartPortfolioPie) chartPortfolioPie.destroy();
+
+//     chartPortfolioPie = new Chart(ctx, {
+//         type: 'doughnut',
+//         data: {
+//             labels: ['Все покупки', 'Все продажи'],
+//             datasets: [{
+//                 data: [buy, sell],
+//                 backgroundColor: ['#4BB34B', '#E64646'],
+//                 borderWidth: 0
+//             }]
+//         },
+//         options: {
+//             responsive: true,
+//             maintainAspectRatio: false,
+//             plugins: {
+//                 legend: { position: 'bottom' },
+//                 tooltip: {
+//                     callbacks: {
+//                         label: (ctx) => ` ${ctx.raw.toLocaleString()} ${symbol}`
+//                     }
+//                 }
+//             }
+//         }
+//     });
+// }
+
+
+function drawBarStats(canvasId, labels, values, color, labelName, symbol) {
+    const el = document.getElementById(canvasId);
+    if (!el) return;
+    const ctx = el.getContext('2d');
+    
+    // Ограничиваем до 7 элементов, чтобы подписи не "разъезжались"
+    const limitedLabels = labels.slice(0, 7);
+    const limitedValues = values.slice(0, 7);
+
     if (canvasId === 'topBuyBar' && chartBuyBar) chartBuyBar.destroy();
     if (canvasId === 'topSellBar' && chartSellBar) chartSellBar.destroy();
 
     const newChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: labels,
+            labels: limitedLabels, // Теперь их точно 7
             datasets: [{
                 label: labelName,
-                data: values,
+                data: limitedValues, // И здесь точно 7
                 backgroundColor: color,
-                borderRadius: 6
+                borderRadius: 6,
+                barThickness: 20 // Фиксированная толщина, чтобы выглядело аккуратно
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            indexAxis: 'y', // Горизонтальные столбцы удобнее для тикеров
+            indexAxis: 'y', 
             plugins: {
-                legend: { display: false }
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => ` ${labelName}: ${(ctx.raw / 1e6).toFixed(2)}M ${symbol}`
+                    }
+                }
             },
             scales: {
-                // x: { ticks: { callback: (val) => val + symbol } }
-                // ... внутри options -> scales
-     x: { 
-    ticks: { 
-        callback: (val) => {
-            if (val >= 1e6) return (val / 1e6).toFixed(1) + 'M ' + symbol; // Миллионы
-            if (val >= 1e3) return (val / 1e3).toFixed(1) + 'K ' + symbol; // Тысячи
-            return val + ' ' + symbol;
-        },
-        maxRotation: 0, // Чтобы подписи не наклонялись
-        autoSkip: true, // Убирает лишние деления, если их слишком много
-        maxTicksLimit: 6 // Ограничивает количество делений на шкале
-      }
-    }
-
+                x: { 
+                    beginAtZero: true,
+                    ticks: { 
+                        callback: (val) => {
+                            if (val >= 1e6) return (val / 1e6).toFixed(1) + 'M';
+                            if (val >= 1e3) return (val / 1e3).toFixed(1) + 'K';
+                            return val;
+                        },
+                        maxTicksLimit: 5
+                    }
+                },
+                y: {
+                    ticks: {
+                        font: { weight: '600', size: 12 }
+                    }
+                }
             }
         }
     });
@@ -1668,6 +1741,58 @@ function drawBarStats(canvasId, labels, values, color, labelName, symbol) {
     if (canvasId === 'topBuyBar') chartBuyBar = newChart;
     else chartSellBar = newChart;
 }
+
+
+    
+
+// function drawBarStats(canvasId, labels, values, color, labelName, symbol) {
+//     const ctx = document.getElementById(canvasId).getContext('2d');
+    
+//     // Уничтожаем старый график перед созданием нового
+//     if (canvasId === 'topBuyBar' && chartBuyBar) chartBuyBar.destroy();
+//     if (canvasId === 'topSellBar' && chartSellBar) chartSellBar.destroy();
+
+//     const newChart = new Chart(ctx, {
+//         type: 'bar',
+//         data: {
+//             labels: labels,
+//             datasets: [{
+//                 label: labelName,
+//                 data: values,
+//                 backgroundColor: color,
+//                 borderRadius: 6
+//             }]
+//         },
+//         options: {
+//             responsive: true,
+//             maintainAspectRatio: false,
+//             indexAxis: 'y', // Горизонтальные столбцы удобнее для тикеров
+//             plugins: {
+//                 legend: { display: false }
+//             },
+//             scales: {
+//                 // x: { ticks: { callback: (val) => val + symbol } }
+//                 // ... внутри options -> scales
+//      x: { 
+//     ticks: { 
+//         callback: (val) => {
+//             if (val >= 1e6) return (val / 1e6).toFixed(1) + 'M ' + symbol; // Миллионы
+//             if (val >= 1e3) return (val / 1e3).toFixed(1) + 'K ' + symbol; // Тысячи
+//             return val + ' ' + symbol;
+//         },
+//         maxRotation: 0, // Чтобы подписи не наклонялись
+//         autoSkip: true, // Убирает лишние деления, если их слишком много
+//         maxTicksLimit: 6 // Ограничивает количество делений на шкале
+//       }
+//     }
+
+//             }
+//         }
+//     });
+
+//     if (canvasId === 'topBuyBar') chartBuyBar = newChart;
+//     else chartSellBar = newChart;
+// }
 
 
     
