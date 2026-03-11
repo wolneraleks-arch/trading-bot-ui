@@ -537,6 +537,10 @@
         <span style="color: #818c99;">Текущий объем (₽):</span>
         <span id="curr-vol-val" style="font-weight: 700; color: #5181b8;">--</span>
     </div>
+    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #f0f2f5; padding-bottom: 8px;">
+        <span style="color: #818c99;">Капитализация:</span>
+        <span id="curr-cup-val" style="font-weight: 700; color: #5181b8;">--</span>
+    </div>
     <div style="display: flex; justify-content: space-between;">
         <span style="color: #818c99;">Средний АДР:</span>
         <span id="avg-adr-val" style="font-weight: 700;">--</span>
@@ -548,10 +552,6 @@
     <div style="display: flex; justify-content: space-between; margin-top: 8px;">
         <span style="color: #818c99;">Ср. отклонение в падение:</span>
         <span id="avg-down-val" style="font-weight: 700; color: #e64646;">--</span>
-    </div>
-    <div style="display: flex; justify-content: space-between;">
-        <span style="color: #818c99;">Капитализация:</span>
-        <span id="avg-adr-val" style="font-weight: 700;">--</span>
     </div>
 
 </div>
@@ -1851,6 +1851,7 @@ async function loadTickerStats() {
     document.getElementById('avg-vol-val').innerText = "⏳";
    document.getElementById('max-vol-val').innerText = "⏳";
    document.getElementById('curr-vol-val').innerText = "⏳";
+    document.getElementById('curr-cup-val').innerText = "⏳";
 
     try {
         const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
@@ -1886,6 +1887,7 @@ async function loadTickerStats() {
             document.getElementById('max-vol-val').innerText = fmt(d.maxVol);
             
             document.getElementById('curr-vol-val').innerText = fmt(d.currentVol);
+            document.getElementById('curr-cup-val').innerText = fmt(d.currentCup);
 
             
             document.getElementById('avg-adr-val').innerText = d.avgADR;
