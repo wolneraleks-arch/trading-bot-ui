@@ -1165,13 +1165,18 @@ async function loadMarketStats() {
             // Отрисовка
             drawPortfolioPie(totalBuy, totalSell, symbol);
             // Рисуем круговую баланса
-             
+             // Рисуем ТОП покупок (передаем массивы тикеров и значений)
+drawBarStats('topBuyBar', d.buyTickers, d.buyValues, '#4BB34B', 'Покупки', "₽");
 
-            const topB = [...data].sort((a,b) => b.b - a.b).slice(0, 8);
-            drawBarStats('topBuyBar', topB.map(i => i.n || i.t), topB.map(i => i.b), '#4BB34B', 'Покупки', symbol);
+// Рисуем ТОП продаж
+drawBarStats('topSellBar', d.sellTickers, d.sellValues, '#E64646', 'Продажи', "₽");
 
-            const topS = [...data].sort((a,b) => b.s - a.s).slice(0, 8);
-            drawBarStats('topSellBar', topS.map(i => i.n || i.t), topS.map(i => i.s), '#E64646', 'Продажи', symbol);
+
+            // const topB = [...data].sort((a,b) => b.b - a.b).slice(0, 8);
+            // drawBarStats('topBuyBar', topB.map(i => i.n || i.t), topB.map(i => i.b), '#4BB34B', 'Покупки', symbol);
+
+            // const topS = [...data].sort((a,b) => b.s - a.s).slice(0, 8);
+            // drawBarStats('topSellBar', topS.map(i => i.n || i.t), topS.map(i => i.s), '#E64646', 'Продажи', symbol);
             
         }
     } catch (e) { 
