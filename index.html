@@ -1814,10 +1814,6 @@ function drawSimpleChart(labels, prices) {
     });
 }
 
-   
-
-    
-
 
 async function loadTickerStats() {
     const ticker = document.getElementById('stats_ticker_select').value;
@@ -1888,7 +1884,6 @@ async function loadTickerStats() {
             
             document.getElementById('curr-vol-val').innerText = fmt(d.currentVol);
             document.getElementById('curr-cup-val').innerText = fmt(d.currentCup);
-
             
             document.getElementById('avg-adr-val').innerText = d.avgADR;
 
@@ -1903,16 +1898,9 @@ async function loadTickerStats() {
             // document.getElementById('curr-vol-val').style.color = 
             //     d.currentVol > d.avgVol ? "#E64646" : "#5181b8";
 
-            document.getElementById('curr-vol-val').style.color = 
-               (current > avg) ? "#E64646" : "#5181b8";
+            // document.getElementById('curr-vol-val').style.color = 
+            //    (current > avg) ? "#E64646" : "#5181b8";
         }
-
-         //  // Если текущий объем больше максимального за 30 дней - подсветим его синим или красным
-         // if (d.currentVol > d.maxVol) {
-         //    document.getElementById('curr-vol-val').style.color = "#E64646"; // Рекорд!
-         // } else {
-         //    document.getElementById('curr-vol-val').style.color = "#5181b8";
-         //      }
             
             
             // Логика графика
