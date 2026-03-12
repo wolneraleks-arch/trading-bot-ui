@@ -1443,18 +1443,18 @@ let totalPortfolioChart = null;
 //     updateMarketCapView();
 // }
 
-// function updateMarketCapView() {
-//     const dataObj = marketCapData[currentCapView];
-//     if (!dataObj) return;
+function updateMarketCapView() {
+    const dataObj = marketCapData[currentCapView];
+    if (!dataObj) return;
 
-//     // Обновляем заголовок
-//     const titleEl = document.getElementById('market-cap-title');
-//     titleEl.innerText = currentCapView === 'stocks' ? "Капитализация Акций" : "Капитализация ОФЗ";
+    // Обновляем заголовок
+    const titleEl = document.getElementById('market-cap-title');
+    titleEl.innerText = currentCapView === 'stocks' ? "Капитализация Акций" : "Капитализация ОФЗ";
 
-//     // Отрисовка
-//     drawMarketCapChart(dataObj.chartData, dataObj.totalCap);
-//     renderTopList(dataObj.chartData, dataObj.totalCap);
-// }
+    // Отрисовка
+    drawMarketCapChart(dataObj.chartData, dataObj.totalCap);
+    renderTopList(dataObj.chartData, dataObj.totalCap);
+}
 
 
 
@@ -1468,6 +1468,7 @@ async function loadMarketOverview() {
     if (res.status === "success") {
         marketDataGlobal = res.data;
         renderMarketChart();
+        updateMarketCapView(); // Рисуем текущий вид
     }
 }
 
