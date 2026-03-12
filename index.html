@@ -1443,51 +1443,61 @@ let totalPortfolioChart = null;
 //     updateMarketCapView();
 // }
 
-function updateMarketCapView() {
-    const dataObj = marketCapData[currentCapView];
-    if (!dataObj) return;
+// function updateMarketCapView() {
+//     const dataObj = marketCapData[currentCapView];
+//     if (!dataObj) return;
 
-    // Обновляем заголовок
-    const titleEl = document.getElementById('market-cap-title');
-    titleEl.innerText = currentCapView === 'stocks' ? "Капитализация Акций" : "Капитализация ОФЗ";
+//     // Обновляем заголовок
+//     const titleEl = document.getElementById('market-cap-title');
+//     titleEl.innerText = currentCapView === 'stocks' ? "Капитализация Акций" : "Капитализация ОФЗ";
 
-    // Отрисовка
-    drawMarketCapChart(dataObj.chartData, dataObj.totalCap);
-    renderTopList(dataObj.chartData, dataObj.totalCap);
-}
-
-
+//     // Отрисовка
+//     drawMarketCapChart(dataObj.chartData, dataObj.totalCap);
+//     renderTopList(dataObj.chartData, dataObj.totalCap);
+// }
 
 
-let currentMarketType = 'stocks'; // по умолчанию акции
+
+let currentMarketType = 'stocks'; // Глобальная переменная
 let marketDataGlobal = null;
 
 async function loadMarketOverview() {
-    const response = await fetch(`${GAS_URL}?action=get_market_cap`);
-    const res = await response.json();
-    if (res.status === "success") {
-        marketDataGlobal = res.data;
-        renderMarketChart();
-        updateMarketCapView(); // Рисуем текущий вид
-    }
+    try {
+        const response = await fetch(`${GAS_URL}?action=get_market_cap`);
+        const res = await response.json();
+        if (res.status === "success" && res.data) {
+            marketDataGlobal = res.data;
+            renderMarketChart(); // Вызываем отрисовку
+        }
+    } catch (e) { console.error("Ошибка загрузки:", e); }
 }
 
 function switchMarketCap(direction) {
-    // Переключаем тип (туда-сюда)
+    // Переключаем тип
     currentMarketType = (currentMarketType === 'stocks') ? 'bonds' : 'stocks';
-    
-    // Обновляем заголовок
-    document.getElementById('market-cap-title').innerText = 
-        currentMarketType === 'stocks' ? "Капитализация Акций" : "Капитализация ОФЗ";
-        
     renderMarketChart();
 }
 
 function renderMarketChart() {
+    if (!marketDataGlobal) return;
     const currentData = marketDataGlobal[currentMarketType];
+    if (!currentData) return;
+
+    // Обновляем заголовок
+    document.getElementById('market-cap-title').innerText = 
+        currentMarketType === 'stocks' ? "Капитализация Акций" : "Капитализация ОФЗ";
+
+    const listCont = document.getElementById('top-stocks-list');
+    listCont.classList.remove('visible'); // Сбрасываем прозрачность для анимации
+
+    // Отрисовка
     drawMarketCapChart(currentData.chartData, currentData.totalCap);
     renderTopList(currentData.chartData, currentData.totalCap);
+
+    // Плавно проявляем подписи
+    setTimeout(() => { listCont.classList.add('visible'); }, 300);
 }
+
 
 
     
