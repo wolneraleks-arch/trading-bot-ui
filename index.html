@@ -305,6 +305,21 @@
 #top-stocks-list.visible {
     opacity: 1; /* Показываем через класс */
 }
+        .arrow-btn {
+    background: #f0f2f5;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #5181b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+.arrow-btn:hover { background: #e2e5eb; }
 
         
 
@@ -368,15 +383,32 @@
     <div class="section-title">📊 Обзор акций</div>
 
  
-<div class="card" style="margin-bottom: 16px; text-align: center; padding: 16px;">
+<!-- <div class="card" style="margin-bottom: 16px; text-align: center; padding: 16px;">
     <div style="font-size: 14px; color: #818c99; margin-bottom: 12px;">Текущая капитализация по акциям</div>
     <div style="height: 220px; position: relative;">
         <!-- ID должен совпадать с тем, что в функции drawMarketCapChart -->
-        <canvas id="marketCapPie"></canvas>
+       <!-- <canvas id="marketCapPie"></canvas>
     </div>
     <!-- Сюда добавим список текстом чуть позже -->
+   <!-- <div id="top-stocks-list" style="margin-top: 16px; text-align: left; font-size: 13px;"></div>
+</div> -->
+
+
+<div class="card" style="margin-bottom: 16px; text-align: center; padding: 16px;">
+    <!-- Заголовок со стрелками -->
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+        <button class="arrow-btn" onclick="switchMarketCap(-1)">❮</button>
+        <div id="market-cap-title" style="font-size: 14px; font-weight: 700; color: #2c2d2e;">Капитализация Акций</div>
+        <button class="arrow-btn" onclick="switchMarketCap(1)">❯</button>
+    </div>
+    
+    <div style="height: 220px; position: relative;">
+        <canvas id="marketCapPie"></canvas>
+    </div>
     <div id="top-stocks-list" style="margin-top: 16px; text-align: left; font-size: 13px;"></div>
 </div>
+
+    
 
 
 
@@ -1387,37 +1419,72 @@ function renderTopList(data, total) {
     listCont.innerHTML = html;
 }
 
-
-    
-
 let totalPortfolioChart = null;
 
-    
-//график капитализации
+
+let marketCapData = { stocks: null, bonds: null };
+let currentCapView = 'stocks'; // 'stocks' или 'bonds'
+
 async function loadMarketOverview() {
     try {
         const response = await fetch(`${GAS_URL}?action=get_market_cap`);
         const res = await response.json();
         
         if (res.status === "success" && res.data) {
-            const listCont = document.getElementById('top-stocks-list');
-            listCont.classList.remove('visible'); // Сбрасываем видимость
-            
-            // 1. Запускаем анимацию круга
-            drawMarketCapChart(res.data.chartData, res.data.totalCap);
-            
-            // 2. Генерируем HTML (он пока невидим из-за opacity: 0)
-            renderTopList(res.data.chartData, res.data.totalCap);
-            
-            // 3. Плавно проявляем список через 500мс
-            setTimeout(() => {
-                listCont.classList.add('visible');
-            }, 500);
+            marketCapData = res.data;
+            updateMarketCapView(); // Рисуем текущий вид
         }
-    } catch (e) {
-        console.error("Ошибка загрузки:", e);
-    }
+    } catch (e) { console.error("Ошибка загрузки рынка:", e); }
 }
+
+function switchMarketCap(dir) {
+    // Переключаем между 'stocks' и 'bonds'
+    currentCapView = (currentCapView === 'stocks') ? 'bonds' : 'stocks';
+    updateMarketCapView();
+}
+
+function updateMarketCapView() {
+    const dataObj = marketCapData[currentCapView];
+    if (!dataObj) return;
+
+    // Обновляем заголовок
+    const titleEl = document.getElementById('market-cap-title');
+    titleEl.innerText = currentCapView === 'stocks' ? "Капитализация Акций" : "Капитализация ОФЗ";
+
+    // Отрисовка
+    drawMarketCapChart(dataObj.chartData, dataObj.totalCap);
+    renderTopList(dataObj.chartData, dataObj.totalCap);
+}
+
+
+
+
+    
+//график капитализации
+// async function loadMarketOverview() {
+//     try {
+//         const response = await fetch(`${GAS_URL}?action=get_market_cap`);
+//         const res = await response.json();
+        
+//         if (res.status === "success" && res.data) {
+//             const listCont = document.getElementById('top-stocks-list');
+//             listCont.classList.remove('visible'); // Сбрасываем видимость
+            
+//             // 1. Запускаем анимацию круга
+//             drawMarketCapChart(res.data.chartData, res.data.totalCap);
+            
+//             // 2. Генерируем HTML (он пока невидим из-за opacity: 0)
+//             renderTopList(res.data.chartData, res.data.totalCap);
+            
+//             // 3. Плавно проявляем список через 500мс
+//             setTimeout(() => {
+//                 listCont.classList.add('visible');
+//             }, 500);
+//         }
+//     } catch (e) {
+//         console.error("Ошибка загрузки:", e);
+//     }
+// }
 
 
 
