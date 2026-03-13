@@ -456,19 +456,7 @@
     </label>
 </div>
 
-    
-    
-    <!-- <div class="card">
-        <label style="flex-direction: column; align-items: flex-start;">
-            Выберите тикер для анализа
-            <select id="stats_ticker_select" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #dce1e6; background: #f5f5f5; margin-top: 8px;" onchange="loadTickerStats()">
-                <option value="">-- Выберите из списка --</option>
-            </select>
-        </label>
-    </div> -->
 
-
-    
 
     <!-- Место для графика (позже подключим библиотеку) -->
     <div id="stats-container" style="display: none; padding-bottom: 80px;">
@@ -510,21 +498,7 @@
             Загрузка...
         </div>
     </div>
-
-        
-        <!-- <div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                <span style="font-size: 13px; font-weight: 600;">📊 Аномальный объем</span>
-                <span id="vol-perc-val" style="font-size: 13px; font-weight: 700; color: #4BB34B;">0%</span>
-            </div>
-            <div class="thermometer-track">
-                <div id="vol-bar" class="thermometer-fill" style="width: 0%; background: #4BB34B;"></div>
-                <div id="vol-status-text" style="font-size: 12px; font-weight: 600; margin-top: 6px; padding: 4px 8px; border-radius: 4px; display: inline-block;"></div>
-                <div class="thermometer-limit"></div>
-            </div>
-            <!-- <div style="font-size: 11px; color: #818c99; margin-top: 4px;">100% — превышение максимума за период</div> -->
-       <!-- </div> -->
-    </div>
+  </div>
 
     
     <!-- ... далее остальные блоки ... -->
@@ -1484,7 +1458,7 @@ let totalPortfolioChart = null;
 // }
 
 
-
+const CAP_VIEWS = ['stocks', 'bonds', 'corp']; // Массив состояний
 let currentMarketType = 'stocks'; // Глобальная переменная
 let marketDataGlobal = null;
 
@@ -1499,32 +1473,65 @@ async function loadMarketOverview() {
     } catch (e) { console.error("Ошибка загрузки:", e); }
 }
 
-function switchMarketCap(direction) {
-    // Переключаем тип
-    currentMarketType = (currentMarketType === 'stocks') ? 'bonds' : 'stocks';
+// function switchMarketCap(direction) {
+//     // Переключаем тип
+//     currentMarketType = (currentMarketType === 'stocks') ? 'bonds' : 'stocks';
+//     renderMarketChart();
+// }
+
+// function renderMarketChart() {
+//     if (!marketDataGlobal) return;
+//     const currentData = marketDataGlobal[currentMarketType];
+//     if (!currentData) return;
+
+//     // Обновляем заголовок
+//     document.getElementById('market-cap-title').innerText = 
+//         currentMarketType === 'stocks' ? "Капитализация Акций" : "Капитализация ОФЗ";
+
+//     const listCont = document.getElementById('top-stocks-list');
+//     listCont.classList.remove('visible'); // Сбрасываем прозрачность для анимации
+
+//     // Отрисовка
+//     drawMarketCapChart(currentData.chartData, currentData.totalCap);
+//     renderTopList(currentData.chartData, currentData.totalCap);
+
+//     // Плавно проявляем подписи
+//     setTimeout(() => { listCont.classList.add('visible'); }, 300);
+// }
+
+
+
+    function switchMarketCap(direction) {
+    let idx = CAP_VIEWS.indexOf(currentMarketType);
+    idx += direction;
+    
+    if (idx >= CAP_VIEWS.length) idx = 0;
+    if (idx < 0) idx = CAP_VIEWS.length - 1;
+    
+    currentMarketType = CAP_VIEWS[idx];
     renderMarketChart();
 }
 
 function renderMarketChart() {
     if (!marketDataGlobal) return;
     const currentData = marketDataGlobal[currentMarketType];
-    if (!currentData) return;
+    
+    const titles = {
+        'stocks': 'Капитализация Акций',
+        'bonds': 'Капитализация ОФЗ',
+        'corp': 'Корпоративные облигации'
+    };
 
-    // Обновляем заголовок
-    document.getElementById('market-cap-title').innerText = 
-        currentMarketType === 'stocks' ? "Капитализация Акций" : "Капитализация ОФЗ";
-
+    document.getElementById('market-cap-title').innerText = titles[currentMarketType];
+    
     const listCont = document.getElementById('top-stocks-list');
-    listCont.classList.remove('visible'); // Сбрасываем прозрачность для анимации
+    listCont.classList.remove('visible');
 
-    // Отрисовка
     drawMarketCapChart(currentData.chartData, currentData.totalCap);
     renderTopList(currentData.chartData, currentData.totalCap);
 
-    // Плавно проявляем подписи
     setTimeout(() => { listCont.classList.add('visible'); }, 300);
 }
-
 
 
     
@@ -1562,11 +1569,23 @@ function drawMarketCapChart(dataArray, total) {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     
-    // Используем ту же глобальную переменную, что и в твоем коде
     if (window.totalPortfolioChart) window.totalPortfolioChart.destroy();
 
-    // Генерируем массив цветов динамически по тикерам
-    const bgColors = dataArray.map(item => getColorForTicker(item.label));
+    // --- ЛОГИКА ЦВЕТОВ (с учетом типа рынка) ---
+    const bgColors = dataArray.map((item, index) => {
+        if (currentMarketType === 'bonds') {
+            // Темно-зеленые оттенки для ОФЗ
+            const greens = ['#1b5e20', '#2e7d32', '#388e3c', '#43a047', '#4caf50', '#66bb6a', '#81c784', '#a5d6a7'];
+            return greens[index] || '#1b5e20';
+        } 
+        if (currentMarketType === 'corp') {
+            // Темно-синие оттенки для Корпоративных
+            const blues = ['#0d47a1', '#1565c0', '#1976d2', '#1e88e5', '#2196f3', '#42a5f5', '#64b5f6', '#bbdefb'];
+            return blues[index] || '#0d47a1';
+        }
+        // Для акций используем твою карту цветов (SBER, GAZP и т.д.)
+        return getColorForTicker(item.label);
+    });
 
     const formatFull = (num) => {
         if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
@@ -1580,13 +1599,7 @@ function drawMarketCapChart(dataArray, total) {
             labels: dataArray.map(d => d.label),
             datasets: [{
                 data: dataArray.map(d => d.value),
-                // Расширенный набор цветов для 7 акций + 1 для "Других"
-              backgroundColor: bgColors,
-                
-                // backgroundColor: [
-                //     '#5181b8', '#4bb34b', '#ffc107', '#ff5722', 
-                //     '#9c27b0', '#00bcd4', '#3f51b5', '#818c99'
-                // ],
+                backgroundColor: bgColors,
                 borderWidth: 1,
                 borderColor: '#fff'
             }]
@@ -1595,13 +1608,11 @@ function drawMarketCapChart(dataArray, total) {
             responsive: true,
             maintainAspectRatio: false,
             cutout: '70%',
-
-            // --- ДОБАВЬ ЭТОТ БЛОК ---
-    animation: {
-        duration: 2000, // Длительность в мс (2 секунды)
-        animateRotate: true, // Вращение при появлении
-        animateScale: true   // Увеличение из центра
-    },
+            animation: {
+                duration: 2000, 
+                animateRotate: true, 
+                animateScale: true   
+            },
             plugins: {
                 legend: { display: false },
                 tooltip: {
@@ -1609,7 +1620,6 @@ function drawMarketCapChart(dataArray, total) {
                         label: (ctx) => {
                             const item = dataArray[ctx.dataIndex];
                             const perc = ((ctx.raw / total) * 100).toFixed(1);
-                            // Выводит: Газпром (GAZP): 1.2B ₽ (15%)
                             return ` ${item.fullName}: ${formatFull(ctx.raw)} ₽ (${perc}%)`;
                         }
                     }
@@ -1621,7 +1631,7 @@ function drawMarketCapChart(dataArray, total) {
             afterDraw: (chart) => {
                 const { ctx, chartArea: { left, top, right, bottom } } = chart;
                 ctx.save();
-                ctx.font = "bold 16px sans-serif"; // Чуть уменьшил, чтобы влезло с валютой
+                ctx.font = "bold 16px sans-serif";
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 ctx.fillStyle = "#2c2d2e";
@@ -1631,6 +1641,86 @@ function drawMarketCapChart(dataArray, total) {
         }]
     });
 }
+
+
+
+
+    
+// хорошая была читсо для офз и акц
+// function drawMarketCapChart(dataArray, total) {
+//     const canvas = document.getElementById('marketCapPie');
+//     if (!canvas) return;
+//     const ctx = canvas.getContext('2d');
+    
+//     // Используем ту же глобальную переменную, что и в твоем коде
+//     if (window.totalPortfolioChart) window.totalPortfolioChart.destroy();
+
+//     // Генерируем массив цветов динамически по тикерам
+//     const bgColors = dataArray.map(item => getColorForTicker(item.label));
+
+//     const formatFull = (num) => {
+//         if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
+//         if (num >= 1e9)  return (num / 1e9).toFixed(2) + 'B';
+//         return (num / 1e6).toFixed(1) + 'M';
+//     };
+
+//     window.totalPortfolioChart = new Chart(ctx, {
+//         type: 'doughnut',
+//         data: {
+//             labels: dataArray.map(d => d.label),
+//             datasets: [{
+//                 data: dataArray.map(d => d.value),
+//                 // Расширенный набор цветов для 7 акций + 1 для "Других"
+//               backgroundColor: bgColors,
+                
+//                 // backgroundColor: [
+//                 //     '#5181b8', '#4bb34b', '#ffc107', '#ff5722', 
+//                 //     '#9c27b0', '#00bcd4', '#3f51b5', '#818c99'
+//                 // ],
+//                 borderWidth: 1,
+//                 borderColor: '#fff'
+//             }]
+//         },
+//         options: {
+//             responsive: true,
+//             maintainAspectRatio: false,
+//             cutout: '70%',
+
+//             // --- ДОБАВЬ ЭТОТ БЛОК ---
+//     animation: {
+//         duration: 2000, // Длительность в мс (2 секунды)
+//         animateRotate: true, // Вращение при появлении
+//         animateScale: true   // Увеличение из центра
+//     },
+//             plugins: {
+//                 legend: { display: false },
+//                 tooltip: {
+//                     callbacks: {
+//                         label: (ctx) => {
+//                             const item = dataArray[ctx.dataIndex];
+//                             const perc = ((ctx.raw / total) * 100).toFixed(1);
+//                             // Выводит: Газпром (GAZP): 1.2B ₽ (15%)
+//                             return ` ${item.fullName}: ${formatFull(ctx.raw)} ₽ (${perc}%)`;
+//                         }
+//                     }
+//                 }
+//             }
+//         },
+//         plugins: [{
+//             id: 'centerTextCap',
+//             afterDraw: (chart) => {
+//                 const { ctx, chartArea: { left, top, right, bottom } } = chart;
+//                 ctx.save();
+//                 ctx.font = "bold 16px sans-serif"; // Чуть уменьшил, чтобы влезло с валютой
+//                 ctx.textAlign = "center";
+//                 ctx.textBaseline = "middle";
+//                 ctx.fillStyle = "#2c2d2e";
+//                 ctx.fillText(formatFull(total) + " ₽", (left + right) / 2, (top + bottom) / 2);
+//                 ctx.restore();
+//             }
+//         }]
+//     });
+// }
 
 
 
