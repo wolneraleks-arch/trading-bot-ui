@@ -1553,7 +1553,7 @@ async function loadMarketOverview() {
     
     currentMarketType = CAP_VIEWS[idx];
     renderMarketChart();
-}
+    }
 
 
     //старая версия без фбючей
@@ -1580,30 +1580,67 @@ async function loadMarketOverview() {
 
 
 
+
+
 function renderMarketChart() {
-    if (!marketDataGlobal || !marketDataGlobal[currentMarketType]) return;
+    if (!marketDataGlobal || !marketDataGlobal[currentMarketType]) {
+        console.warn("Нет данных для типа:", currentMarketType);
+        return;
+    }
     
     const currentData = marketDataGlobal[currentMarketType];
     const titleEl = document.getElementById('market-cap-title');
 
-    // 2. Добавляем название для фьючерсов
+    // Словарь заголовков (проверьте, чтобы были все 4)
     const titles = {
         'stocks': 'Капитализация Акций',
         'bonds': 'Капитализация ОФЗ',
         'corp': 'Корпоративные облигации',
-        'fut': 'Объем Фьючерсов' 
+        'fut': 'Объем Фьючерсов'
     };
     
     if (titleEl) titleEl.innerText = titles[currentMarketType];
 
-    const listCont = document.getElementById('top-stocks-list');
-    if (listCont) {
-        listCont.classList.remove('visible');
-        drawMarketCapChart(currentData.chartData, currentData.totalCap);
-        renderTopList(currentData.chartData, currentData.totalCap);
-        setTimeout(() => { listCont.classList.add('visible'); }, 300);
-    }
+    // Отрисовка графиков и списков
+    drawMarketCapChart(currentData.chartData, currentData.totalCap);
+    renderTopList(currentData.chartData, currentData.totalCap);
 }
+
+
+
+
+
+
+
+
+
+
+    
+
+// function renderMarketChart() {
+//     if (!marketDataGlobal || !marketDataGlobal[currentMarketType]) return;
+    
+//     const currentData = marketDataGlobal[currentMarketType];
+//     const titleEl = document.getElementById('market-cap-title');
+
+//     // 2. Добавляем название для фьючерсов
+//     const titles = {
+//         'stocks': 'Капитализация Акций',
+//         'bonds': 'Капитализация ОФЗ',
+//         'corp': 'Корпоративные облигации',
+//         'fut': 'Объем Фьючерсов' 
+//     };
+    
+//     if (titleEl) titleEl.innerText = titles[currentMarketType];
+
+//     const listCont = document.getElementById('top-stocks-list');
+//     if (listCont) {
+//         listCont.classList.remove('visible');
+//         drawMarketCapChart(currentData.chartData, currentData.totalCap);
+//         renderTopList(currentData.chartData, currentData.totalCap);
+//         setTimeout(() => { listCont.classList.add('visible'); }, 300);
+//     }
+// }
 
     
 
