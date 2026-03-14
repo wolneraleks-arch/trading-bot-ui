@@ -1777,11 +1777,11 @@ function drawMarketCapChart(dataArray, total) {
 
         // НОВОЕ: Оранжевая палитра для Фьючерсов
         if (currentMarketType === 'fut') {
-        const oranges = ['#e65100', '#ef6c00', '#f57c00', '#fb8c00', '#ff9800', '#ffa726', '#ffb74d'];
-        return oranges[index] || '#e65100';
-        }
-
-        
+    // Плавный переход: от желтого (#FFD54F) до насыщенного оранжевого (#EF6C00)
+    const orangeGradient = ['#FFD54F', '#FFCA28', '#FFB300', '#FB8C00', '#F57C00', '#EF6C00', '#E65100'];
+    return orangeGradient[index] || '#EF6C00';
+      }
+  
         // Для акций используем твою карту цветов (SBER, GAZP и т.д.)
         return getColorForTicker(item.label);
     });
