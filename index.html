@@ -1384,32 +1384,69 @@ function renderTickerBadges(data) {
     });
 }
 
+//старая версия без фьючей
+// function renderTopList(data, total) {
+//     const listCont = document.getElementById('top-stocks-list');
+//     if (!listCont) return;
+    
+//     // Цвета для 7 акций + 1 для "Других"
+//     // const colors = ['#5181b8', '#4bb34b', '#ffc107', '#ff5722', '#9c27b0', '#00bcd4', '#3f51b5', '#818c99'];
+    
+//     let html = '';
+//     data.forEach((item, index) => {
+//         let perc = ((item.value / total) * 100).toFixed(1);
+//         // let dotColor = colors[index] || '#eee';
+//         let dotColor = getColorForTicker(item.label);
+        
+//         // Если это не "Другие", пишем Название + Тикер
+//         let labelContent = item.label === "Другие" 
+//             ? `<b>Другие акции</b>` 
+//             : `<div style="line-height: 1.2;">
+//                  <b style="color: #2c2d2e; font-size: 14px;">${item.fullName}</b><br>
+//                  <span style="color: #818c99; font-size: 11px;">${item.label}</span>
+//                </div>`;
+
+//         html += `
+//             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #f0f2f5;">
+//                 <div style="display: flex; align-items: center;">
+//                     <div style="width: 8px; height: 8px; border-radius: 50%; background: ${dotColor}; margin-right: 10px;"></div>
+//                     ${labelContent}
+//                 </div>
+//                 <div style="text-align: right;">
+//                     <div style="font-weight: 700; font-size: 14px;">${perc}%</div>
+//                 </div>
+//             </div>`;
+//     });
+//     listCont.innerHTML = html;
+// }
+
+
 
 function renderTopList(data, total) {
     const listCont = document.getElementById('top-stocks-list');
     if (!listCont) return;
     
-    // Цвета для 7 акций + 1 для "Других"
-    // const colors = ['#5181b8', '#4bb34b', '#ffc107', '#ff5722', '#9c27b0', '#00bcd4', '#3f51b5', '#818c99'];
-    
     let html = '';
-    data.forEach((item, index) => {
+    data.forEach((item) => {
         let perc = ((item.value / total) * 100).toFixed(1);
-        // let dotColor = colors[index] || '#eee';
-        let dotColor = getColorForTicker(item.label);
+        let dotColor = getColorForTicker(item.label); // getColorForTicker подхватит логику выше
         
-        // Если это не "Другие", пишем Название + Тикер
+        // Доп. инфо для фьючерсов (Дата экспирации)
+        let extraInfo = (currentMarketType === 'fut' && item.date) 
+            ? `<span style="color: #ff9800; font-size: 10px;">📅 Эксп: ${item.date}</span>` 
+            : `<span style="color: #818c99; font-size: 11px;">${item.label}</span>`;
+
         let labelContent = item.label === "Другие" 
-            ? `<b>Другие акции</b>` 
+            ? `<b>Остальные активы</b>` 
             : `<div style="line-height: 1.2;">
                  <b style="color: #2c2d2e; font-size: 14px;">${item.fullName}</b><br>
-                 <span style="color: #818c99; font-size: 11px;">${item.label}</span>
+                 ${extraInfo}
                </div>`;
 
         html += `
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #f0f2f5;">
                 <div style="display: flex; align-items: center;">
-                    <div style="width: 8px; height: 8px; border-radius: 50%; background: ${dotColor}; margin-right: 10px;"></div>
+                    <div style="width: 10px; height: 10px; border-radius: 50%; background: ${dotColor}; margin-right: 10px;"></div>
                     ${labelContent}
                 </div>
                 <div style="text-align: right;">
@@ -1419,6 +1456,12 @@ function renderTopList(data, total) {
     });
     listCont.innerHTML = html;
 }
+
+
+
+
+
+    
 
 let totalPortfolioChart = null;
 
@@ -1458,7 +1501,7 @@ let totalPortfolioChart = null;
 // }
 
 
-const CAP_VIEWS = ['stocks', 'bonds', 'corp']; // Массив состояний
+const CAP_VIEWS = ['stocks', 'bonds', 'corp', 'fut']; // Массив состояний
 let currentMarketType = 'stocks'; // Глобальная переменная
 let marketDataGlobal = null;
 
@@ -1512,26 +1555,57 @@ async function loadMarketOverview() {
     renderMarketChart();
 }
 
-function renderMarketChart() {
-    if (!marketDataGlobal) return;
-    const currentData = marketDataGlobal[currentMarketType];
+
+    //старая версия без фбючей
+// function renderMarketChart() {
+//     if (!marketDataGlobal) return;
+//     const currentData = marketDataGlobal[currentMarketType];
     
+//     const titles = {
+//         'stocks': 'Капитализация Акций',
+//         'bonds': 'Капитализация ОФЗ',
+//         'corp': 'Капитализация внебюджетных (коммерческих) облигаций'
+//     };
+
+//     document.getElementById('market-cap-title').innerText = titles[currentMarketType];
+    
+//     const listCont = document.getElementById('top-stocks-list');
+//     listCont.classList.remove('visible');
+
+//     drawMarketCapChart(currentData.chartData, currentData.totalCap);
+//     renderTopList(currentData.chartData, currentData.totalCap);
+
+//     setTimeout(() => { listCont.classList.add('visible'); }, 300);
+// }
+
+
+
+function renderMarketChart() {
+    if (!marketDataGlobal || !marketDataGlobal[currentMarketType]) return;
+    
+    const currentData = marketDataGlobal[currentMarketType];
+    const titleEl = document.getElementById('market-cap-title');
+
+    // 2. Добавляем название для фьючерсов
     const titles = {
         'stocks': 'Капитализация Акций',
         'bonds': 'Капитализация ОФЗ',
-        'corp': 'Капитализация внебюджетных (коммерческих) облигаций'
+        'corp': 'Корпоративные облигации',
+        'fut': 'Объем Фьючерсов' 
     };
-
-    document.getElementById('market-cap-title').innerText = titles[currentMarketType];
     
+    if (titleEl) titleEl.innerText = titles[currentMarketType];
+
     const listCont = document.getElementById('top-stocks-list');
-    listCont.classList.remove('visible');
-
-    drawMarketCapChart(currentData.chartData, currentData.totalCap);
-    renderTopList(currentData.chartData, currentData.totalCap);
-
-    setTimeout(() => { listCont.classList.add('visible'); }, 300);
+    if (listCont) {
+        listCont.classList.remove('visible');
+        drawMarketCapChart(currentData.chartData, currentData.totalCap);
+        renderTopList(currentData.chartData, currentData.totalCap);
+        setTimeout(() => { listCont.classList.add('visible'); }, 300);
+    }
 }
+
+    
 
 
     
@@ -1583,6 +1657,14 @@ function drawMarketCapChart(dataArray, total) {
             const blues = ['#0d47a1', '#1565c0', '#1976d2', '#1e88e5', '#2196f3', '#42a5f5', '#64b5f6', '#bbdefb'];
             return blues[index] || '#0d47a1';
         }
+
+        // НОВОЕ: Оранжевая палитра для Фьючерсов
+        if (currentMarketType === 'fut') {
+        const oranges = ['#e65100', '#ef6c00', '#f57c00', '#fb8c00', '#ff9800', '#ffa726', '#ffb74d'];
+        return oranges[index] || '#e65100';
+        }
+
+        
         // Для акций используем твою карту цветов (SBER, GAZP и т.д.)
         return getColorForTicker(item.label);
     });
