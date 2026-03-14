@@ -867,16 +867,40 @@
   //const getColorForTicker = (ticker) => TICKER_COLORS[ticker] || '#9c27b0'; 
 
     // Обновите функцию получения цвета
+
 const getColorForTicker = (ticker) => {
-    if (TICKER_COLORS[ticker]) return TICKER_COLORS[ticker];
-    
-    // Если тикер содержит "ОФЗ" или "SU" — возвращаем темно-зеленый
-    if (ticker.includes("ОФЗ") || ticker.startsWith("SU")) {
-        return TICKER_COLORS['ОФЗ_DEFAULT'];
+    // 1. Проверяем, на каком мы сейчас экране
+    if (currentMarketType === 'fut') {
+        return '#e65100'; // Оранжевый для фьючерсов
     }
     
-    return '#9c27b0'; // Дефолтный синий для остальных
+    // 2. Ищем в твоей карте (Сбер, Газпром и т.д.)
+    if (TICKER_COLORS[ticker]) return TICKER_COLORS[ticker];
+    
+    // 3. Проверка на ОФЗ
+    if (ticker.includes("ОФЗ") || ticker.startsWith("SU")) {
+        return TICKER_COLORS['ОФЗ_DEFAULT'] || '#1b5e20';
+    }
+    
+    // 4. Все остальное (включая Корпоративные, если для них нет своей проверки)
+    if (currentMarketType === 'corp') return '#0d47a1'; // Темно-синий
+    
+    return '#9c27b0'; 
 };
+
+
+
+ // старая без фьючей   
+// const getColorForTicker = (ticker) => {
+//     if (TICKER_COLORS[ticker]) return TICKER_COLORS[ticker];
+    
+//     // Если тикер содержит "ОФЗ" или "SU" — возвращаем темно-зеленый
+//     if (ticker.includes("ОФЗ") || ticker.startsWith("SU")) {
+//         return TICKER_COLORS['ОФЗ_DEFAULT'];
+//     }
+    
+//     return '#9c27b0'; // Дефолтный синий для остальных
+// };
 
     function validateTickers(value, limit) {
     // Разделяем строку по запятым, убираем пробелы
