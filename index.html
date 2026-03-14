@@ -1446,24 +1446,33 @@ function renderTickerBadges(data) {
 
 
 
+
+
 function renderTopList(data, total) {
     const listCont = document.getElementById('top-stocks-list');
     if (!listCont) return;
     
     let html = '';
     data.forEach((item) => {
-        let perc = ((item.value / total) * 100).toFixed(1);
-        let dotColor = getColorForTicker(item.label); // getColorForTicker подхватит логику выше
+        let perc = (total > 0) ? ((item.value / total) * 100).toFixed(1) : "0";
+        let dotColor = getColorForTicker(item.label);
         
-        // Доп. инфо для фьючерсов (Дата экспирации)
-        let extraInfo = (currentMarketType === 'fut' && item.date) 
-            ? `<span style="color: #ff9800; font-size: 10px;">📅 Эксп: ${item.date}</span>` 
-            : `<span style="color: #818c99; font-size: 11px;">${item.label}</span>`;
+        // Безопасная проверка даты для фьючерсов
+        let extraInfo = "";
+        if (currentMarketType === 'fut') {
+            // Если дата есть — показываем, если нет — тикер
+            extraInfo = item.date 
+                ? `<span style="color: #ff9800; font-size: 10px;">📅 Эксп: ${item.date}</span>` 
+                : `<span style="color: #818c99; font-size: 11px;">${item.label}</span>`;
+        } else {
+            // Для всех остальных (акции, ОФЗ, корп) — просто тикер
+            extraInfo = `<span style="color: #818c99; font-size: 11px;">${item.label}</span>`;
+        }
 
-        let labelContent = item.label === "Другие" 
+        let labelContent = (item.label === "Другие") 
             ? `<b>Остальные активы</b>` 
             : `<div style="line-height: 1.2;">
-                 <b style="color: #2c2d2e; font-size: 14px;">${item.fullName}</b><br>
+                 <b style="color: #2c2d2e; font-size: 14px;">${item.fullName || item.label}</b><br>
                  ${extraInfo}
                </div>`;
 
@@ -1480,6 +1489,48 @@ function renderTopList(data, total) {
     });
     listCont.innerHTML = html;
 }
+
+
+
+
+
+
+    
+
+// function renderTopList(data, total) {
+//     const listCont = document.getElementById('top-stocks-list');
+//     if (!listCont) return;
+    
+//     let html = '';
+//     data.forEach((item) => {
+//         let perc = ((item.value / total) * 100).toFixed(1);
+//         let dotColor = getColorForTicker(item.label); // getColorForTicker подхватит логику выше
+        
+//         // Доп. инфо для фьючерсов (Дата экспирации)
+//         let extraInfo = (currentMarketType === 'fut' && item.date) 
+//             ? `<span style="color: #ff9800; font-size: 10px;">📅 Эксп: ${item.date}</span>` 
+//             : `<span style="color: #818c99; font-size: 11px;">${item.label}</span>`;
+
+//         let labelContent = item.label === "Другие" 
+//             ? `<b>Остальные активы</b>` 
+//             : `<div style="line-height: 1.2;">
+//                  <b style="color: #2c2d2e; font-size: 14px;">${item.fullName}</b><br>
+//                  ${extraInfo}
+//                </div>`;
+
+//         html += `
+//             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #f0f2f5;">
+//                 <div style="display: flex; align-items: center;">
+//                     <div style="width: 10px; height: 10px; border-radius: 50%; background: ${dotColor}; margin-right: 10px;"></div>
+//                     ${labelContent}
+//                 </div>
+//                 <div style="text-align: right;">
+//                     <div style="font-weight: 700; font-size: 14px;">${perc}%</div>
+//                 </div>
+//             </div>`;
+//     });
+//     listCont.innerHTML = html;
+// }
 
 
 
@@ -1628,6 +1679,11 @@ function renderMarketChart() {
     // Отрисовка графиков и списков
     drawMarketCapChart(currentData.chartData, currentData.totalCap);
     renderTopList(currentData.chartData, currentData.totalCap);
+    // В конце функции renderMarketChart
+ setTimeout(() => { 
+    document.getElementById('top-stocks-list').classList.add('visible'); 
+ }, 300);
+
 }
 
 
