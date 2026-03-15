@@ -1739,8 +1739,8 @@ function renderMarketChart() {
     const titles = {
         'stocks': 'Капитализация Акций',
         'bonds': 'Капитализация ОФЗ',
-        'corp': 'Корпоративные облигации',
-        'fut': 'Объем Фьючерсов'
+        'corp': 'Капитализация внебюджетных (коммерческих) облигаций',
+        'fut': 'Капитализация по Фьючерсам'
     };
     
     if (titleEl) titleEl.innerText = titles[currentMarketType];
@@ -2350,7 +2350,7 @@ async function loadTickerStats() {
     chartInfo.style.display = 'flex';
     chartContainer.style.display = 'none';
     statusIcon.innerText = "⏳";
-    statusText.innerText = "Запрос...";
+    statusText.innerText = "Загрузка...";
     
     // Градусники тоже в режим ожидания
     document.getElementById('adr-perc-val').innerText = "⏳";
