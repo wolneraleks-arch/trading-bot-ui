@@ -2476,6 +2476,7 @@ if (userTickersCodes.length > 0) {
         // Ищем тикер в глобальном списке, чтобы узнать его тип
         const found = globalTickers.find(item => item.ticker.trim().toUpperCase() === code.trim().toUpperCase());
         
+        
         // Добавляем в список ТОЛЬКО если тип совпадает с текущей вкладкой
         if (found && found.type === currentAssetType) {
             const opt = document.createElement('option');
@@ -2531,7 +2532,7 @@ if (userTickersCodes.length > 0) {
             }
         }
     });
-
+console.log(globalTickers)
     if (count > 0) {
         select.appendChild(groupAll);
     }
