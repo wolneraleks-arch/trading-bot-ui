@@ -2519,7 +2519,10 @@ if (userTickersCodes.length > 0) {
         if (item.type !== currentAssetType) return;
         
         const isUserTicker = userTickersCodes.includes(tickerUpper);
-        const isAllowedInDemo = currentAssetType === 'stocks' ? demoTickers.includes(tickerUpper) : demoFutures.includes(tickerUpper);
+
+        const cleanTicker = item.ticker.trim().toUpperCase();
+        const isAllowedInDemo = currentAssetType === 'stocks' ? demoTickers.map(t => t.toUpperCase()).includes(cleanTicker) : demoFutures.map(t => t.toUpperCase()).includes(cleanTicker);
+        //const isAllowedInDemo = currentAssetType === 'stocks' ? demoTickers.includes(tickerUpper) : demoFutures.includes(tickerUpper);
         //const isAllowedInDemo = demoTickers.includes(tickerUpper); //старая весрия без фьючей
 
         if (!isUserTicker) {
