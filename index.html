@@ -573,6 +573,33 @@
 
 </div>
 
+        <!-- Секция только для фьючерсов (скрыта по умолчанию) -->
+<div id="forts-details-card" style="display: none;">
+    <div class="section-title">👥 Позиции участников (Открытый интерес)</div>
+    <div class="card" style="padding: 16px; margin-bottom: 20px; background: #f9f9f9;">
+        <!-- Физические лица -->
+        <div style="font-weight: 600; color: #5181b8; margin-bottom: 10px;">Физические лица:</div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="color: #818c99;">Long / Short:</span>
+            <span id="pos-fiz-ls" style="font-weight: 700;">-- / --</span>
+        </div>
+        
+        <div style="border-top: 1px solid #eee; margin: 8px 0;"></div>
+        
+        <!-- Юридические лица -->
+        <div style="font-weight: 600; color: #4bb34b; margin-bottom: 10px;">Юридические лица:</div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="color: #818c99;">Long / Short:</span>
+            <span id="pos-jur-ls" style="font-weight: 700;">-- / --</span>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; margin-top: 8px; border-top: 1px dashed #ccc; padding-top: 8px;">
+            <span style="color: #818c99;">Всего счетов:</span>
+            <span id="pos-accounts-total" style="font-weight: 700;">--</span>
+        </div>
+    </div>
+</div>
+
     
 
 
@@ -2238,6 +2265,7 @@ async function loadTickerStats() {
     const chartContainer = document.getElementById('chart-container');
     const statusText = document.getElementById('chart-status-text');
     const statusIcon = document.getElementById('chart-status-icon');
+     const fortsCard = document.getElementById('forts-details-card');
     
     if (!ticker) {
         container.style.display = 'none';
@@ -2286,7 +2314,7 @@ async function loadTickerStats() {
         const res = await response.json();
 
        console.log("Полный ответ от сервера:", res.data);
-
+  
         if (res.status === "success") {
             const d = res.data;
 
@@ -2327,6 +2355,16 @@ async function loadTickerStats() {
 
             document.getElementById('avg-up-val').innerText = "+" + d.avgUp;
             document.getElementById('avg-down-val').innerText = "-" + d.avgDown;
+
+
+             if (res.status === "success" && isForts && d.fortsData) {
+    fortsCard.style.display = 'block'; // Показываем карточку
+    document.getElementById('pos-fiz-ls').innerText = d.fortsData.fiz;
+    document.getElementById('pos-jur-ls').innerText = d.fortsData.jur;
+    document.getElementById('pos-accounts-total').innerText = d.fortsData.accounts;
+     } else {
+    fortsCard.style.display = 'none'; // Прячем для акций
+      }
 
               let current = parseFloat(String(d.currentVol).replace(/[^0-9,.-]/g, '').replace(',', '.'));
               let avg = parseFloat(String(d.avgVol).replace(/[^0-9,.-]/g, '').replace(',', '.'));
