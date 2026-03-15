@@ -2243,10 +2243,27 @@ async function loadTickerStats() {
         container.style.display = 'none';
         return;
     }
+
+   // 1. Сначала определяем тип актива (isForts)
+    const selectedTickerObj = globalTickers.find(t => t.ticker === ticker);
+    const isForts = selectedTickerObj ? selectedTickerObj.type === 'forts' : false;
+ // 2. Теперь меняем подпись (так как isForts уже существует)
+    const cupValEl = document.getElementById('curr-cup-val');
+    if (cupValEl) {
+        // Ищем родительский контейнер или соседний span с текстом
+        const label = cupValEl.previousElementSibling; 
+        if (label) label.innerText = isForts ? "Открытый интерес (серия):" : "Капитализация (₽):";
+    }
+
+
+   // В fetch добавь &isForts=${isForts}
+  // const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&vk_id=${currentVkId}`);
+
+    document.getElementById('stats-container').style.display = 'block';
+    document.getElementById('chart-card').style.display = 'block';
     
     container.style.display = 'block';
      chartCard.style.display = 'block';
-    
     
     // Включаем режим ожидания (песочные часы)
     chartInfo.style.display = 'flex';
@@ -2264,7 +2281,8 @@ async function loadTickerStats() {
     document.getElementById('curr-cup-val').innerText = "⏳";
 
     try {
-        const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
+        const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&vk_id=${currentVkId}`);
+        //const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
         const res = await response.json();
 
        console.log("Полный ответ от сервера:", res.data);
@@ -2289,7 +2307,6 @@ async function loadTickerStats() {
     // Форматируем красиво с пробелами
     return new Intl.NumberFormat('ru-RU').format(num);
    };
-            
 
            // Проверяем наличие элементов перед записью
         if (document.getElementById('avg-vol-val')) {
@@ -2306,17 +2323,7 @@ async function loadTickerStats() {
 
               let current = parseFloat(String(d.currentVol).replace(/[^0-9,.-]/g, '').replace(',', '.'));
               let avg = parseFloat(String(d.avgVol).replace(/[^0-9,.-]/g, '').replace(',', '.'));
-            
-            
-            // Визуальный акцент: если объем сегодня > среднего
-            // document.getElementById('curr-vol-val').style.color = 
-            //     d.currentVol > d.avgVol ? "#E64646" : "#5181b8";
-
-            // document.getElementById('curr-vol-val').style.color = 
-            //    (current > avg) ? "#E64646" : "#5181b8";
-        }
-            
-            
+        }       
             // Логика графика
             if (d.buy > 0 || d.sell > 0) {
                 // ДАННЫЕ ЕСТЬ
