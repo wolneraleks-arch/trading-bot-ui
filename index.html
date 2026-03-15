@@ -624,6 +624,28 @@
             </div>
         </div>
     </div>
+    
+<div style="margin-top: 16px; padding-top: 12px; border-top: 2px solid #f0f2f5;">
+    <div style="font-weight: 700; font-size: 13px; color: #2c2d2e; margin-bottom: 10px; text-align: center;">📊 Общий баланс рынка (ОИ)</div>
+    <div style="display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 10px; border-radius: 10px; border: 1px solid #e7e8ec;">
+        <div style="text-align: left;">
+            <div style="font-size: 11px; color: #4bb34b; font-weight: 600;">Всего LONG</div>
+            <div id="oi-total-l" style="font-weight: 800; font-size: 14px;">--</div>
+        </div>
+        <div style="width: 2px; height: 30px; background: #f0f2f5;"></div>
+        <div style="text-align: right;">
+            <div style="font-size: 11px; color: #e64646; font-weight: 600;">Всего SHORT</div>
+            <div id="oi-total-s" style="font-weight: 800; font-size: 14px;">--</div>
+        </div>
+    </div>
+    <!-- Мини-индикатор общего перекоса -->
+    <div id="oi-total-bias-bar" style="height: 4px; background: #eee; margin-top: 8px; border-radius: 2px; overflow: hidden; display: flex;">
+        <div id="oi-total-bar-l" style="width: 50%; background: #4bb34b; transition: width 0.3s;"></div>
+        <div id="oi-total-bar-s" style="width: 50%; background: #e64646; transition: width 0.3s;"></div>
+    </div>
+</div>
+
+    
 </div>
 
 
@@ -2425,7 +2447,23 @@ async function loadTickerStats() {
     document.getElementById('oi-jur-ln').innerText = d.oi.jurAccL + ' счетов';
     document.getElementById('oi-jur-sn').innerText = d.oi.jurAccS + ' счетов';
 
-               updateOIBars('fiz', d.oi.fizL, d.oi.fizS);
+    const totalLong = d.oi.fizL + d.oi.jurL;
+    const totalShort = d.oi.fizS + d.oi.jurS;
+    
+    // Выводим итоговые числа
+    document.getElementById('oi-total-l').innerText = fmt(totalLong);
+    document.getElementById('oi-total-s').innerText = fmt(totalShort);
+
+    // Считаем процент для общей полоски
+    const grandTotal = totalLong + totalShort;
+    if (grandTotal > 0) {
+        const totalLPerc = (totalLong / grandTotal * 100).toFixed(0);
+        document.getElementById('oi-total-bar-l').style.width = totalLPerc + '%';
+        document.getElementById('oi-total-bar-s').style.width = (100 - totalLPerc) + '%';
+    }
+               
+
+     updateOIBars('fiz', d.oi.fizL, d.oi.fizS);
     updateOIBars('jur', d.oi.jurL, d.oi.jurS);
    } else {
     document.getElementById('forts-details-card').style.display = 'none';
