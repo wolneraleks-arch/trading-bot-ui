@@ -450,8 +450,8 @@
         <!-- Выберите тикер для анализа -->
 
         <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-    <button id="btn-stocks" class="tab-btn active" onclick="setAssetType('stocks')">📈 Акции</button>
-    <button id="btn-forts" class="tab-btn" onclick="setAssetType('forts')">⛓️ Фьючерсы</button>
+    <button id="btn-stocks" class="tab-btn active" onclick="setAssetType('stocks')">Акции</button>
+    <button id="btn-forts" class="tab-btn" onclick="setAssetType('forts')">Фьючерсы</button>
       </div>
         <!-- ПОЛЕ ПОИСКА -->
         <input type="text" id="ticker_search" placeholder="🔍 Поиск по названию или тикеру..." 
@@ -575,7 +575,7 @@
 
         <!-- Секция только для фьючерсов (скрыта по умолчанию) -->
 <div id="forts-details-card" style="display: none; margin-bottom: 20px;">
-    <div class="section-title">👥 Позиции участников (ОИ)</div>
+    <div class="section-title">👥 Открытые Позиции </div>
     <div class="card" style="padding: 16px;">
         <!-- Физлица -->
          <!-- В блоке Физлиц -->
@@ -779,7 +779,7 @@
    <div class="card" style="font-size: 14px; line-height: 1.5;">
         <div style="margin-bottom: 12px;">
             <b>Капитализация:</b><br>
-            По акциям отражается текущая капитализация. По облигациям отражается текущая капитализация без учета НКД (помогает оценить рыночную стоимость самого тела долга). По фьючерсам учитывает кол-во открытых позиций, шаг цены и его стоимость при расчете открытого интереса.    
+            По акциям отражается текущая капитализация. По облигациям отражается текущая капитализация без учета НКД (помогает оценить рыночную стоимость самого тела долга). По фьючерсам учитывает кол-во открытых позиций, шаг цены и его стоимость при расчете открытого интереса (в скобках указывается кол-во открытых позиций).    
             <!-- <span style="color: #4bb34b;">1.5K</span> (тысячи), <span style="color: #4bb34b;">2.1M</span> (миллионы), <span style="color: #4bb34b;">8.5B</span> (миллиарды), <span style="color: #4bb34b;">23.5Т</span> (триллионы). -->
         </div>
        <div style="margin-bottom: 12px;">
