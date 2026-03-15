@@ -321,7 +321,13 @@
 }
 .arrow-btn:hover { background: #e2e5eb; }
 
-        
+        .tab-btn {
+    flex: 1; padding: 10px; border: 1px solid #dce1e6; border-radius: 8px;
+    background: #fff; cursor: pointer; font-weight: 600; color: #818c99;
+}
+.tab-btn.active {
+    background: #5181b8; color: #fff; border-color: #5181b8;
+}
 
     </style>
 </head>
@@ -441,7 +447,12 @@
     <div class="section-title">Аналитика по тикерам</div>
     <div class="card">
     <label style="flex-direction: column; align-items: flex-start; position: relative;">
-        Выберите тикер для анализа
+        <!-- Выберите тикер для анализа -->
+
+        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+    <button id="btn-stocks" class="tab-btn active" onclick="setAssetType('stocks')">📈 Акции</button>
+    <button id="btn-forts" class="tab-btn" onclick="setAssetType('forts')">⛓️ Фьючерсы</button>
+      </div>
         <!-- ПОЛЕ ПОИСКА -->
         <input type="text" id="ticker_search" placeholder="🔍 Поиск по названию или тикеру..." 
                style="width: 100%; padding: 10px; border-radius: 8px 8px 0 0; border: 1px solid #dce1e6; border-bottom: none; margin-top: 8px; outline: none;"
@@ -2338,168 +2349,9 @@ async function loadTickerStats() {
     }
 }
 
-
-    
-// async function loadMarketOverview() {
-//     try {
-//         const response = await fetch(`${GAS_URL}?action=get_market_cap`);
-//         const res = await response.json();
-//         if (res.status === "success") {
-//             drawMarketCapChart(res.data.chartData, res.data.totalCap);
-//         }
-//     } catch (e) { console.error("Ошибка загрузки капы:", e); }
-// }
-
     
 
 let chartPie = null; // Глобальная переменная для графика
-
-// С ПОДПИСЬЮ СУММЫ В ЦЕНТРЕ КРУГА
-// function drawPieChart(buy, sell, symbol) {
-//     const canvas = document.getElementById('pieChart');
-//     if (!canvas) return;
-//     const ctx = canvas.getContext('2d');
-    
-//     if (chartPie) chartPie.destroy();
-
-//     const total = buy + sell;
-
-//     // Функция сокращения: 1.5B, 10.2M, 500K
-//     const formatVol = (num) => {
-//         if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T'; 
-//         if (num >= 1e9)  return (num / 1e9).toFixed(2) + 'B';  
-//         if (num >= 1e6)  return (num / 1e6).toFixed(2) + 'M';  
-//         if (num >= 1e3)  return (num / 1e3).toFixed(1) + 'K';  
-//         return num.toFixed(0);
-//     };
-
-//     const fmt = (val) => new Intl.NumberFormat('ru-RU').format(val);
-
-//     chartPie = new Chart(ctx, {
-//         type: 'doughnut',
-//         data: {
-//             labels: [`Покупки`, `Продажи`],
-//             datasets: [{
-//                 data: [buy, sell],
-//                 backgroundColor: ['#4BB34B', '#E64646'],
-//                 borderWidth: 2,
-//                 borderColor: '#ffffff'
-//             }]
-//         },
-//         options: {
-//             responsive: true,
-//             maintainAspectRatio: false,
-//             cutout: '75%', 
-//             plugins: {
-//                 legend: { position: 'bottom' },
-//                 tooltip: {
-//                     callbacks: {
-//                         label: (ctx) => ` ${fmt(ctx.raw)} ${symbol} (${Math.round(ctx.raw/total*100)}%)`
-//                     }
-//                 }
-//             }
-//         },
-//         // ДОБАВЛЯЕМ ПЛАГИН И ЗАКРЫВАЕМ ВСЕ СКОБКИ:
-//         plugins: [{
-//             id: 'centerText',
-//             afterDraw: (chart) => {
-//                 const { ctx, chartArea: { left, top, right, bottom } } = chart;
-//                 const centerX = (left + right) / 2;
-//                 const centerY = (top + bottom) / 2;
-
-//                 ctx.save();
-//                 ctx.font = "bold 20px sans-serif";
-//                 ctx.textBaseline = "middle";
-//                 ctx.textAlign = "center";
-//                 ctx.fillStyle = "#2c2d2e";
-//                 ctx.fillText(formatVol(total) + " " + symbol, centerX, centerY);
-//                 ctx.restore();
-//             }
-//         }]
-//     }); // <-- Финальная скобка для new Chart
-// }
-
-
-
-
-
-    
-// function drawPieChart(buy, sell, symbol) {
-//     const canvas = document.getElementById('pieChart');
-//     if (!canvas) return;
-//     const ctx = canvas.getContext('2d');
-    
-//     if (chartPie) chartPie.destroy();
-
-//     const total = buy + sell;
-
-//     // Красивое форматирование для центра (1.2M, 500K и т.д.)
-//     const formatVol = (num) => {
-//         if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
-//         if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
-//         if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
-//         return num.toFixed(0);
-//     };
-
-//     const fmt = (val) => new Intl.NumberFormat('ru-RU').format(val);
-
-//     chartPie = new Chart(ctx, {
-//         type: 'doughnut',
-//         data: {
-//             labels: [`Покупки`, `Продажи`],
-//             datasets: [{
-//                 data: [buy, sell],
-//                 backgroundColor: ['#4BB34B', '#E64646'],
-//                 borderWidth: 2,
-//                 borderColor: '#ffffff'
-//             }]
-//         },
-//         options: {
-//             responsive: true,
-//             maintainAspectRatio: false,
-//             cutout: '75%', // Делаем кольцо чуть тоньше для текста
-//             plugins: {
-//                 legend: { position: 'bottom' },
-//                 tooltip: {
-//                     callbacks: {
-//                         label: (ctx) => ` ${fmt(ctx.raw)} ${symbol} (${Math.round(ctx.raw/total*100)}%)`
-//                     }
-//                 }
-//             }
-//         },
-//         // --- ПЛАГИН ДЛЯ ТЕКСТА В ЦЕНТРЕ ---
-//         plugins: [{
-//             id: 'centerText',
-//             beforeDraw: function(chart) {
-//                 const { width, height, ctx } = chart;
-//                 ctx.restore();
-                
-//                 // Настройка шрифта для подписи "Всего"
-//                 // ctx.font = "600 12px sans-serif";
-//                 // ctx.textBaseline = "middle";
-//                 // ctx.fillStyle = "#828282";
-//                 // const textRow1 = "ВСЕГО";
-//                 // const textRow1X = Math.round((width - ctx.measureText(textRow1).width) / 2);
-//                 // const textRow1Y = height / 2 - 12;
-//                 // ctx.fillText(textRow1, textRow1X, textRow1Y);
-
-//                 // Настройка шрифта для самой суммы
-//                 ctx.font = "bold 18px sans-serif";
-//                 ctx.fillStyle = "#2c2d2e";
-//                 const textRow2 = formatVol(total) + " " + symbol;
-//                 const textRow2X = Math.round((width - ctx.measureText(textRow2).width) / 2);
-//                 const textRow2Y = height / 2 + 10;
-//                 ctx.fillText(textRow2, textRow2X, textRow2Y);
-                
-//                 ctx.save();
-//             }
-//         }]
-//     });
-// }
-
-
-
-
 
     
 function drawPieChart(buy, sell, symbol) {
@@ -2585,6 +2437,31 @@ async function fetchGlobalTickers() {
 const demoTickers = ["ALRS","MGNT","MSNG","GAZP","MOEX","FEES","HYDR","CHMF","SNGS","GMKN","TATN","PLZL","KMAZ","YDEX","UNAC","VSMO"];
 
 
+
+let currentAssetType = 'stocks'; // Глобальная переменная состояния
+const demoFutures = ["RIH6", "SiH6", "BRJ6"]; // Список фьючерсов для демо-доступа
+
+function setAssetType(type) {
+    currentAssetType = type;
+    
+    // Переключаем активный класс у кнопок
+    document.getElementById('btn-stocks').classList.toggle('active', type === 'stocks');
+    document.getElementById('btn-forts').classList.toggle('active', type === 'forts');
+    
+    // Очищаем поиск и перерисовываем список
+    document.getElementById('ticker_search').value = "";
+    updateStatsTickers(); 
+}
+
+
+
+
+
+
+
+    
+
+    
 function updateStatsTickers() {
     const select = document.getElementById('stats_ticker_select');
     if (!select) return;
@@ -2619,8 +2496,11 @@ function updateStatsTickers() {
         // УСЛОВИЕ: 
         // 1. Тикера нет в "Моих"
         // 2. Если НЕ премиум, то тикер должен быть в списке demoTickers
+        if (item.type !== currentAssetType) return;
+        
         const isUserTicker = userTickersCodes.includes(tickerUpper);
-        const isAllowedInDemo = demoTickers.includes(tickerUpper);
+        const isAllowedInDemo = currentAssetType === 'stocks' ? demoTickers.includes(tickerUpper) : demoFutures.includes(tickerUpper);
+        //const isAllowedInDemo = demoTickers.includes(tickerUpper); //старая весрия без фьючей
 
         if (!isUserTicker) {
             if (window.isPremium || isAllowedInDemo) {
