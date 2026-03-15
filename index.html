@@ -2252,7 +2252,7 @@ async function loadTickerStats() {
     if (cupValEl) {
         // Ищем родительский контейнер или соседний span с текстом
         const label = cupValEl.previousElementSibling; 
-        if (label) label.innerText = isForts ? "Открытый интерес (серия):" : "Капитализация (₽):";
+        if (label) label.innerText = isForts ? "Открытый интерес :" : "Капитализация (₽):";
     }
 
 
@@ -2314,7 +2314,14 @@ async function loadTickerStats() {
             document.getElementById('max-vol-val').innerText = fmt(d.maxVol);
             
             document.getElementById('curr-vol-val').innerText = fmt(d.currentVol);
-            document.getElementById('curr-cup-val').innerText = fmt(d.currentCup);
+            if (typeof d.currentCup === 'string' && d.currentCup.includes('(')) {
+    // Если сервер уже прислал готовую строку со скобками
+    document.getElementById('curr-cup-val').innerText = d.currentCup;
+   } else {
+    // Если это обычное число (для акций)
+    document.getElementById('curr-cup-val').innerText = fmt(d.currentCup);
+   }
+            // document.getElementById('curr-cup-val').innerText = fmt(d.currentCup);
             
             document.getElementById('avg-adr-val').innerText = d.avgADR;
 
