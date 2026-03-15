@@ -2453,7 +2453,8 @@ const demoTickers = ["ALRS","MGNT","MSNG","GAZP","MOEX","FEES","HYDR","CHMF","SN
 
 
 let currentAssetType = 'stocks'; // Глобальная переменная состояния
-const demoFutures = ["RIH6", "SiH6", "BRJ6"]; // Список фьючерсов для демо-доступа
+// const demoFutures = ["RIH6", "SiH6", "BRJ6"]; // Список фьючерсов для демо-доступа
+    const demoFuturesPrefixes = ["RI", "SI", "BR"]; 
 
 function setAssetType(type) {
     currentAssetType = type;
@@ -2535,10 +2536,21 @@ if (userTickersCodes.length > 0) {
         const isUserTicker = userTickersCodes.includes(tickerUpper);
 
         const cleanTicker = item.ticker.trim().toUpperCase();
-        const isAllowedInDemo = currentAssetType === 'stocks' ? demoTickers.map(t => t.toUpperCase()).includes(cleanTicker) : demoFutures.map(t => t.toUpperCase()).includes(cleanTicker);
+        let isAllowedInDemo = false;
+        // const isAllowedInDemo = currentAssetType === 'stocks' ? demoTickers.map(t => t.toUpperCase()).includes(cleanTicker) : demoFutures.map(t => t.toUpperCase()).includes(cleanTicker);
         //const isAllowedInDemo = currentAssetType === 'stocks' ? demoTickers.includes(tickerUpper) : demoFutures.includes(tickerUpper);
         //const isAllowedInDemo = demoTickers.includes(tickerUpper); //старая весрия без фьючей
 
+
+   if (currentAssetType === 'stocks') {
+    // Для акций оставляем строгий список
+    isAllowedInDemo = demoTickers.map(t => t.toUpperCase()).includes(cleanTicker);
+   } else {
+    // Для фьючерсов проверяем ПРЕФИКС (начало строки)
+    isAllowedInDemo = demoFuturesPrefixes.some(prefix => cleanTicker.startsWith(prefix));
+  }
+
+        
         if (!isUserTicker) {
             if (window.isPremium || isAllowedInDemo) {
                 const opt = document.createElement('option');
