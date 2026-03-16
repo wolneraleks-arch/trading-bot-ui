@@ -586,8 +586,8 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
             <span style="font-weight: 600; color: #2c2d2e;">Физические лица</span>
             <span id="oi-fiz-total" style="font-size: 12px; color: #818c99;"></span>
-     <div id="oi-fiz-bias" style="font-size: 11px; text-align: center; font-weight: 600; margin-bottom: 12px;">--</div>
         </div>
+        <div id="oi-fiz-bias" style="font-size: 11px; text-align: center; font-weight: 600; margin-bottom: 12px;">--</div>
         <div style="display: flex; gap: 8px; margin-bottom: 16px;">
             <div style="flex: 1; background: #f0f9f0; padding: 8px; border-radius: 8px; text-align: center;">
                 <div style="font-size: 11px; color: #4bb34b;">Long (лоты)</div>
@@ -1822,7 +1822,9 @@ function updateOIBars(prefix, long, short) {
     
 
 async function loadTickerStats() {
-    const ticker = document.getElementById('stats_ticker_select').value;
+    const ticker = document.getElementById('stats_ticker_select').value.trim().toUpperCase();
+
+    // const ticker = document.getElementById('stats_ticker_select').value;
     const container = document.getElementById('stats-container');
     const chartCard = document.getElementById('chart-card');
     
