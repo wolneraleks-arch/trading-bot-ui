@@ -8,7 +8,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
     <!-- "https://cdnjs.cloudflare.com/ajax/libs/Chart.js -->
-
     
     <style>
         
@@ -2071,8 +2070,7 @@ async function fetchGlobalTickers() {
 
 
 const demoTickers = ["ALRS","MGNT","MSNG","GAZP","MOEX","FEES","HYDR","CHMF","SNGS","GMKN","TATN","PLZL","KMAZ","YDEX","UNAC","VSMO"];
-
-
+const demoBonds = ["SU26238", "SU26207"]; 
 
 let currentAssetType = 'stocks'; // Глобальная переменная состояния
 // const demoFutures = ["RIH6", "SiH6", "BRJ6"]; // Список фьючерсов для демо-доступа
@@ -2173,14 +2171,20 @@ if (userTickersCodes.length > 0) {
         //const isAllowedInDemo = demoTickers.includes(tickerUpper); //старая весрия без фьючей
 
 
-   if (currentAssetType === 'stocks') {
-    // Для акций оставляем строгий список
-    isAllowedInDemo = demoTickers.map(t => t.toUpperCase()).includes(cleanTicker);
-   } else {
-    // Для фьючерсов проверяем ПРЕФИКС (начало строки)
-    isAllowedInDemo = demoFuturesPrefixes.some(prefix => cleanTicker.startsWith(prefix));
-  }
+  //  if (currentAssetType === 'stocks') {
+  //   // Для акций оставляем строгий список
+  //   isAllowedInDemo = demoTickers.map(t => t.toUpperCase()).includes(cleanTicker);
+  //  } else {
+  //   // Для фьючерсов проверяем ПРЕФИКС (начало строки)
+  //   isAllowedInDemo = demoFuturesPrefixes.some(prefix => cleanTicker.startsWith(prefix));
+  // }
 
+// В цикле globalTickers.forEach:
+const isAllowedInDemo = (currentAssetType === 'stocks') 
+    ? demoTickers.map(t => t.toUpperCase()).includes(cleanTicker)
+    : (currentAssetType === 'forts')
+    ? demoFuturesPrefixes.some(prefix => cleanTicker.startsWith(prefix))
+    : demoBonds.includes(cleanTicker); // Для облигаций
         
         if (!isUserTicker) {
             if (window.isPremium || isAllowedInDemo) {
