@@ -2115,7 +2115,7 @@ function updateStatsTickers() {
     // 1. Группа "Мои тикеры"
 if (userTickersCodes.length > 0) {
     const groupUser = document.createElement('optgroup');
-    groupUser.label = currentAssetType === 'stocks' ? "⭐ Мои акции" : "⭐ Мои фьючерсы";
+    groupUser.label = currentAssetType === 'stocks' ? "⭐ Мои тикеры" : "⭐ Мои тикеры";
     
     let userCount = 0;
     userTickersCodes.forEach(code => {
