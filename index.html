@@ -1844,6 +1844,10 @@ async function loadTickerStats() {
    // 1. Сначала определяем тип актива (isForts)
     const selectedTickerObj = globalTickers.find(t => t.ticker === ticker);
     const isForts = selectedTickerObj ? selectedTickerObj.type === 'forts' : false;
+    const isBonds = selectedTickerObj ? selectedTickerObj.type === 'bonds' : false;
+
+
+    
  // 2. Теперь меняем подпись (так как isForts уже существует)
     const cupValEl = document.getElementById('curr-cup-val');
     if (cupValEl) {
@@ -1878,7 +1882,7 @@ async function loadTickerStats() {
     document.getElementById('curr-cup-val').innerText = "⏳";
 
     try {
-        const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&vk_id=${currentVkId}`);
+        const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&isBonds=${isBonds}&vk_id=${currentVkId}`);
         //const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
         const res = await response.json();
 
