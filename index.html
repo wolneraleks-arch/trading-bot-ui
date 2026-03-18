@@ -452,6 +452,7 @@
         <div style="display: flex; gap: 8px; margin-bottom: 12px;">
     <button id="btn-stocks" class="tab-btn active" onclick="setAssetType('stocks')">Акции</button>
     <button id="btn-forts" class="tab-btn" onclick="setAssetType('forts')">Фьючерсы</button>
+    <button id="btn-bonds" class="tab-btn" onclick="setAssetType('bonds')">Облигации</button>   
       </div>
         <!-- ПОЛЕ ПОИСКА -->
         <input type="text" id="ticker_search" placeholder="🔍 Поиск по названию или тикеру..." 
@@ -2083,6 +2084,7 @@ function setAssetType(type) {
     // Переключаем активный класс у кнопок
     document.getElementById('btn-stocks').classList.toggle('active', type === 'stocks');
     document.getElementById('btn-forts').classList.toggle('active', type === 'forts');
+    document.getElementById('btn-bonds').classList.toggle('active', type === 'bonds');
     
     // Очищаем поиск и перерисовываем список
     document.getElementById('ticker_search').value = "";
