@@ -2100,9 +2100,17 @@ function updateStatsTickers() {
     const rawUser = document.getElementById('in_tickers_stocks').value || "";
     const userTickersCodes = rawUser.split(',').map(t => t.trim().toUpperCase()).filter(t => t);
 
-    select.innerHTML = `<option value="">-- Выберите ${currentAssetType === 'stocks' ? 'акцию' : 'фьючерс'} --</option>`;
+    //select.innerHTML = `<option value="">-- Выберите ${currentAssetType === 'stocks' ? 'акцию' : 'фьючерс'} --</option>`;
    // select.innerHTML = '<option value="">-- Выберите акцию --</option>';
 
+    // Определяем текст подписи в зависимости от типа
+     const assetNames = {
+    'stocks': 'акцию',
+    'forts': 'фьючерс',
+    'bonds': 'облигацию'
+      };
+     const label = assetNames[currentAssetType] || 'актив';
+     select.innerHTML = `<option value="">-- Выберите ${label} --</option>`;
     
     // 1. Группа "Мои тикеры"
 if (userTickersCodes.length > 0) {
