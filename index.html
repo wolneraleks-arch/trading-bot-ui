@@ -2133,21 +2133,7 @@ if (userTickersCodes.length > 0) {
     
     if (userCount > 0) select.appendChild(groupUser);
 }
-    
-    
-    // 1. Группа "Мои тикеры" (Оставляем как есть, так как юзер сам их вписал)
-    // if (userTickersCodes.length > 0) {
-    //     const groupUser = document.createElement('optgroup');
-    //     groupUser.label = "⭐ Мои тикеры";
-    //     userTickersCodes.forEach(code => {
-    //         const opt = document.createElement('option');
-    //         opt.value = code;
-    //         const found = globalTickers.find(item => item.ticker === code);
-    //         opt.textContent = found ? found.name : code;
-    //         groupUser.appendChild(opt);
-    //     });
-    //     select.appendChild(groupUser);
-    // }
+
 
     // 2. Группа "Весь рынок" с учетом ДЕМО-ОГРАНИЧЕНИЙ
     const groupAll = document.createElement('optgroup');
@@ -2179,12 +2165,14 @@ if (userTickersCodes.length > 0) {
   //   isAllowedInDemo = demoFuturesPrefixes.some(prefix => cleanTicker.startsWith(prefix));
   // }
 
-// В цикле globalTickers.forEach:
-const isAllowedInDemo = (currentAssetType === 'stocks') 
-    ? demoTickers.map(t => t.toUpperCase()).includes(cleanTicker)
-    : (currentAssetType === 'forts')
-    ? demoFuturesPrefixes.some(prefix => cleanTicker.startsWith(prefix))
-    : demoBonds.includes(cleanTicker); // Для облигаций
+ if (currentAssetType === 'stocks') {
+            isAllowedInDemo = demoTickers.map(t => t.toUpperCase()).includes(cleanTicker);
+        } else if (currentAssetType === 'forts') {
+            isAllowedInDemo = demoFuturesPrefixes.some(prefix => cleanTicker.startsWith(prefix.toUpperCase()));
+        } else if (currentAssetType === 'bonds') {
+            // Проверка на существование массива demoBonds, чтобы не было ошибки
+            isAllowedInDemo = (typeof demoBonds !== 'undefined') && demoBonds.includes(cleanTicker);
+        }
         
         if (!isUserTicker) {
             if (window.isPremium || isAllowedInDemo) {
