@@ -2077,7 +2077,7 @@ async function fetchGlobalTickers() {
 
 
 const demoTickers = ["ALRS","MGNT","MSNG","GAZP","MOEX","FEES","HYDR","CHMF","SNGS","GMKN","TATN","PLZL","KMAZ","YDEX","UNAC","VSMO"];
-const demoBonds = ["SU26238", "SU26207"]; 
+const demoBonds = ["SU26238RMFS4", "SU26219RMFS4"]; 
 
 let currentAssetType = 'stocks'; // Глобальная переменная состояния
 // const demoFutures = ["RIH6", "SiH6", "BRJ6"]; // Список фьючерсов для демо-доступа
@@ -2179,6 +2179,7 @@ if (userTickersCodes.length > 0) {
         } else if (currentAssetType === 'bonds') {
             // Проверка на существование массива demoBonds, чтобы не было ошибки
             isAllowedInDemo = (typeof demoBonds !== 'undefined') && demoBonds.includes(cleanTicker);
+           //isAllowedInDemo = demoBonds.some(prefix => cleanTicker.startsWith(prefix.toUpperCase()));
         }
         
         if (!isUserTicker) {
