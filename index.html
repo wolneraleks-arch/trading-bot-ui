@@ -1883,11 +1883,11 @@ async function loadTickerStats() {
        // const url = `${GAS_URL}${launchParams}${separator}action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&isBonds=${isBonds}&vk_id=${currentVkId}`;
 
         
-        //const response = await fetch(`${GAS_URL}?${launchParams}&action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&isBonds=${isBonds}&vk_id=${currentVkId}`);
+        const response = await fetch(`${GAS_URL}?&action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&isBonds=${isBonds}&vk_id=${currentVkId}`);
 
           // const response = await fetch(url);
         
-        const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
+        //const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
         const res = await response.json();
 
        console.log("Полный ответ от сервера:", res.data);
@@ -2180,7 +2180,7 @@ if (userTickersCodes.length > 0) {
         } else if (currentAssetType === 'bonds') {
             // Проверка на существование массива demoBonds, чтобы не было ошибки
             isAllowedInDemo = (typeof demoBonds !== 'undefined') && demoBonds.includes(cleanTicker);
-           //isAllowedInDemo = demoBonds.some(prefix => cleanTicker.startsWith(prefix.toUpperCase()));
+           // isAllowedInDemo = demoBonds.some(prefix => cleanTicker.startsWith(prefix.toUpperCase())); //новая версия
         }
         
         if (!isUserTicker) {
