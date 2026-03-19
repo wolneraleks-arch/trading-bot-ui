@@ -1882,7 +1882,10 @@ async function loadTickerStats() {
     document.getElementById('curr-cup-val').innerText = "⏳";
 
     try {
-        const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&isBonds=${isBonds}&vk_id=${currentVkId}`);
+        // Получаем все параметры после знака ? в URL приложения
+         const launchParams = window.location.search; 
+        
+        const response = await fetch(`${GAS_URL}${launchParams}?action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&isBonds=${isBonds}&vk_id=${currentVkId}`);
         //const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
         const res = await response.json();
 
