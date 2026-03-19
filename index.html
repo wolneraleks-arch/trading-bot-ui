@@ -1334,7 +1334,7 @@ async function init() {
 
         // Если ID нет, пробуем достать его через метод Bridge (запасной вариант)
         if (!currentVkId) {
-            logStatus(" Загрузка 2...");
+            logStatus(" Загрузка 2... Запустите в ВК");
             const launchParams = await vkBridge.send("VKWebAppGetLaunchParams");
             currentVkId = launchParams.vk_user_id;
         }
