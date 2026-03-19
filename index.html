@@ -1842,7 +1842,8 @@ async function loadTickerStats() {
     }
 
    // 1. Сначала определяем тип актива (isForts)
-    const selectedTickerObj = globalTickers.find(t => t.ticker === ticker);
+    //const selectedTickerObj = globalTickers.find(t => t.ticker === ticker);
+    const selectedTickerObj = globalTickers.find(t => t.ticker.trim().toUpperCase() === ticker.trim().toUpperCase());
     const isForts = selectedTickerObj ? selectedTickerObj.type === 'forts' : false;
     const isBonds = selectedTickerObj ? selectedTickerObj.type === 'bonds' : false;
 
