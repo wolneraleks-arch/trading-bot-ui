@@ -1855,13 +1855,6 @@ async function loadTickerStats() {
         const label = cupValEl.previousElementSibling; 
         if (label) label.innerText = isForts ? "Открытый интерес :" : "Капитализация (₽):";
     }
-
-
-   // В fetch добавь &isForts=${isForts}
-  // const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&vk_id=${currentVkId}`);
-
-    // document.getElementById('stats-container').style.display = 'block';
-    // document.getElementById('chart-card').style.display = 'block';
     
     container.style.display = 'block';
      chartCard.style.display = 'block';
@@ -1885,7 +1878,7 @@ async function loadTickerStats() {
         // Получаем все параметры после знака ? в URL приложения
          const launchParams = window.location.search; 
         
-        const response = await fetch(`${GAS_URL}${launchParams}&action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&isBonds=${isBonds}&vk_id=${currentVkId}`);
+        const response = await fetch(`${GAS_URL}?${launchParams}&action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&isBonds=${isBonds}&vk_id=${currentVkId}`);
         //const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
         const res = await response.json();
 
