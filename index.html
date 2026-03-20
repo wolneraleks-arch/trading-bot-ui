@@ -1045,19 +1045,6 @@ const getColorForTicker = (ticker) => {
 };
 
 
-
- // старая без фьючей   
-// const getColorForTicker = (ticker) => {
-//     if (TICKER_COLORS[ticker]) return TICKER_COLORS[ticker];
-    
-//     // Если тикер содержит "ОФЗ" или "SU" — возвращаем темно-зеленый
-//     if (ticker.includes("ОФЗ") || ticker.startsWith("SU")) {
-//         return TICKER_COLORS['ОФЗ_DEFAULT'];
-//     }
-    
-//     return '#9c27b0'; // Дефолтный синий для остальных
-// };
-
     function validateTickers(value, limit) {
     // Разделяем строку по запятым, убираем пробелы
     const parts = value.split(',');
@@ -1095,62 +1082,6 @@ const getColorForTicker = (ticker) => {
 });
 
 
-
-// function switchTab(tabId, el) {
-//     // 1. Переключаем контент вкладок
-//     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-//     const target = document.getElementById('tab-' + tabId);
-//     if (target) target.classList.add('active');
-
-//     // 2. Красим иконки в меню
-//     document.querySelectorAll('.tab-item').forEach(i => i.classList.remove('active'));
-//     el.classList.add('active');
-    
-//     // 3. УПРАВЛЕНИЕ КНОПКОЙ СОХРАНЕНИЯ
-//     const saveContainer = document.querySelector('.save-container');
-//     if (saveContainer) {
-//         if (tabId === 'help') {
-//             // В справке кнопка всегда скрыта (там нечего сохранять)
-//             saveContainer.classList.remove('visible');
-//         } else {
-//             // В Профиле и Настройках вызываем проверку изменений. 
-//             // Если что-то было изменено — кнопка выплывет сама через .visible
-//             checkChanges(); 
-//         }
-//     }
-// }
-
-
-
-// function displayDemoStats() {
-//     const rawTickers = document.getElementById('in_tickers_stocks').value || "";
-//     const labels = rawTickers.split(',').map(t => t.trim().toUpperCase()).filter(t => t);
-
-//     if (labels.length === 0) return;
-
-//     // Генерируем тестовые данные
-//     const buyData = labels.map(() => Math.floor(Math.random() * 100));
-//     const sellData = labels.map(() => Math.floor(Math.random() * 100));
-
-//     // Находим "Героев дня" для информеров
-//     const maxBuyIndex = buyData.indexOf(Math.max(...buyData));
-//     const maxSellIndex = sellData.indexOf(Math.max(...sellData));
-
-    // // Отрисовываем информеры
-    // updateBadges([
-    //     { label: "🚀 Лидер покупок", value: labels[maxBuyIndex], sub: buyData[maxBuyIndex] + " млн", type: "up" },
-    //     { label: "📉 Лидер продаж", value: labels[maxSellIndex], sub: sellData[maxSellIndex] + " млн", type: "down" },
-    //     { label: "🔥 Активность", value: "Высокая", sub: "125% ADR", type: "up" }
-    // ]);
-
-//     // Рисуем графики (твои старые функции)
-//     const totalBuy = buyData.reduce((a, b) => a + b, 0);
-//     const totalSell = sellData.reduce((a, b) => a + b, 0);
-//     drawPortfolioPie(totalBuy, totalSell);
-//     drawBarStats('topBuyBar', labels, buyData, '#4BB34B', 'Покупка');
-//     drawBarStats('topSellBar', labels, sellData, '#E64646', 'Продажа');
-// }
-
 function updateBadges(badges) {
     const container = document.getElementById('stats-badges-container');
     if (!container) return;
@@ -1165,11 +1096,6 @@ function updateBadges(badges) {
         </div>
     `).join('');
 }
-
-
-
-
-
 
     
 // Универсальная функция для обновления любого "градусника"
@@ -1219,10 +1145,6 @@ function updateThermometer(barId, textId, percentInput) {
 }
 
 
-
-
-    
-
      function switchTab(tabId, el) {
     // 1. Переключаем контент вкладок
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -1235,14 +1157,6 @@ function updateThermometer(barId, textId, percentInput) {
     
     // 3. УПРАВЛЕНИЕ КНОПКОЙ СОХРАНЕНИЯ И СПЕЦ. ЛОГИКА
     const saveContainer = document.querySelector('.save-container');
-    //          if (tabId === 'stats') {
-    //     updateStatsTickers();
-    //     // Даем вкладке время отобразиться
-    //     setTimeout(() => {
-    //         displayDemoStats(); 
-    //     }, 150); // 150мс достаточно
-    //     if (saveContainer) saveContainer.classList.remove('visible');
-    // }
 
                      if (tabId === 'stats') {
         // 1. Обновляем выпадающий список тикеров
@@ -1257,13 +1171,6 @@ function updateThermometer(barId, textId, percentInput) {
         if (saveContainer) saveContainer.classList.remove('visible');
     }
 
-
-    // if (tabId === 'stats') {
-    //     // При переходе в статистику обновляем список доступных тикеров
-    //     updateStatsTickers();
-    //      displayDemoStats(); // ЗАПУСКАЕМ ТЕСТОВЫЕ ГРАФИКИ
-    //     if (saveContainer) saveContainer.classList.remove('visible');
-    // } 
     else if (tabId === 'help') {
         if (saveContainer) saveContainer.classList.remove('visible');
     } else {
@@ -1271,43 +1178,6 @@ function updateThermometer(barId, textId, percentInput) {
         if (saveContainer) checkChanges(); 
     }
 }
-
-
-
-
-
-
-
-
-
-    
-// // 2. Столбчатая диаграмма (Объемы)
-// function drawBarChart(volumes) {
-//     const ctx = document.getElementById('barChart').getContext('2d');
-//     if (chartBar) chartBar.destroy();
-
-//     chartBar = new Chart(ctx, {
-//         type: 'bar',
-//         data: {
-//             labels: volumes.map((_, i) => i + 1), // Просто номера дней
-//             datasets: [{
-//                 label: 'Объем млн руб.',
-//                 data: volumes,
-//                 backgroundColor: 'rgba(0, 119, 255, 0.6)',
-//                 borderRadius: 4
-//             }]
-//         },
-//         options: {
-//             responsive: true,
-//             maintainAspectRatio: false,
-//             scales: {
-//                 x: { display: false }, // Скрываем подписи дней для чистоты
-//                 y: { grid: { display: false } }
-//             },
-//             plugins: { legend: { display: false } }
-//         }
-//     });
-// }
 
 
 
