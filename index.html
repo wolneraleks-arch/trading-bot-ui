@@ -1173,7 +1173,12 @@ function updateThermometer(barId, textId, percentInput) {
 
     else if (tabId === 'help') {
         if (saveContainer) saveContainer.classList.remove('visible');
-    } else {
+    } 
+    else if (tabId === 'calc') {
+        console.log("Открыт калькулятор. Доступно тикеров:", globalTickers.length);
+        updateCalcTickers(); 
+    }
+    else {
         // В Профиле и Настройках проверяем изменения
         if (saveContainer) checkChanges(); 
     }
