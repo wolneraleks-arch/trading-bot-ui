@@ -2312,8 +2312,46 @@ console.log(globalTickers)
     }
 }
 
+//______________________________________________________________________________________________________
+
+    function updateCalcTickers() {
+    const type = document.getElementById('calc-asset-type').value;
+    const nameSelect = document.getElementById('calc-name-select');
+    nameSelect.innerHTML = '<option value="">-- Выберите --</option>';
+
+    // Берем данные из твоего глобального массива
+    const filtered = globalTickers.filter(t => t.type === type);
+    
+    filtered.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.ticker; // В значение кладем тикер
+        opt.textContent = item.name; // В текст - название
+        nameSelect.appendChild(opt);
+    });
+}
+
+function syncCalcTicker() {
+    const select = document.getElementById('calc-name-select');
+    document.getElementById('calc-ticker').value = select.value; // Тикер подставляется сам
+    calculateTrade();
+}
+
+    
+    // ___________________________________________________________________________
 
 
+
+
+
+
+
+
+
+
+
+
+
+    
     
 
 function showToast(message, isError = false) {
