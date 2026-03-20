@@ -451,7 +451,8 @@
         <div style="display: flex; gap: 8px; margin-bottom: 12px;">
     <button id="btn-stocks" class="tab-btn active" onclick="setAssetType('stocks')">Акции</button>
     <button id="btn-forts" class="tab-btn" onclick="setAssetType('forts')">Фьючерсы</button>
-    <button id="btn-bonds" class="tab-btn" onclick="setAssetType('bonds')">Гос Облигации</button>   
+    <button id="btn-bonds" class="tab-btn" onclick="setAssetType('bonds')">Гос Облигации</button>
+    <button id="btn-corpbonds" class="tab-btn" onclick="setAssetType('corpbonds')">Корп Облигации</button>          
       </div>
         <!-- ПОЛЕ ПОИСКА -->
         <input type="text" id="ticker_search" placeholder="🔍 Поиск по названию или тикеру..." 
@@ -1846,7 +1847,7 @@ async function loadTickerStats() {
     const selectedTickerObj = globalTickers.find(t => t.ticker.trim().toUpperCase() === ticker.trim().toUpperCase());
     const isForts = selectedTickerObj ? selectedTickerObj.type === 'forts' : false;
     const isBonds = selectedTickerObj ? selectedTickerObj.type === 'bonds' : false;
-
+    const iscorpBonds = selectedTickerObj ? selectedTickerObj.type === 'corpBonds' : false;
 
     
  // 2. Теперь меняем подпись (так как isForts уже существует)
@@ -1883,7 +1884,7 @@ async function loadTickerStats() {
        // const url = `${GAS_URL}${launchParams}${separator}action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&isBonds=${isBonds}&vk_id=${currentVkId}`;
 
         
-        const response = await fetch(`${GAS_URL}?&action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&isBonds=${isBonds}&vk_id=${currentVkId}`);
+        const response = await fetch(`${GAS_URL}?&action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&isBonds=${isBonds}&iscorpBonds=${iscorpBonds}&vk_id=${currentVkId}`);
 
           // const response = await fetch(url);
         
@@ -2078,7 +2079,9 @@ async function fetchGlobalTickers() {
 
 
 const demoTickers = ["ALRS","MGNT","MSNG","GAZP","MOEX","FEES","HYDR","CHMF","SNGS","GMKN","TATN","PLZL","KMAZ","YDEX","UNAC","VSMO"];
-const demoBonds = ["SU26238RMFS4", "SU26219RMFS4"]; 
+const demoBonds = ["SU26238RMFS4", "SU26219RMFS4"];
+    const democorpBonds = ["BYM000001925", "RU000A0JWTL6","RU000A0ZYLU6","RU000A0ZYLG5"];
+    
 
 let currentAssetType = 'stocks'; // Глобальная переменная состояния
 // const demoFutures = ["RIH6", "SiH6", "BRJ6"]; // Список фьючерсов для демо-доступа
@@ -2091,6 +2094,7 @@ function setAssetType(type) {
     document.getElementById('btn-stocks').classList.toggle('active', type === 'stocks');
     document.getElementById('btn-forts').classList.toggle('active', type === 'forts');
     document.getElementById('btn-bonds').classList.toggle('active', type === 'bonds');
+    document.getElementById('btn-corpbonds').classList.toggle('active', type === 'corpbonds');
     
     // Очищаем поиск и перерисовываем список
     document.getElementById('ticker_search').value = "";
@@ -2180,7 +2184,12 @@ if (userTickersCodes.length > 0) {
         } else if (currentAssetType === 'bonds') {
             // Проверка на существование массива demoBonds, чтобы не было ошибки
             isAllowedInDemo = (typeof demoBonds !== 'undefined') && demoBonds.includes(cleanTicker);
-           // isAllowedInDemo = demoBonds.some(prefix => cleanTicker.startsWith(prefix.toUpperCase())); //новая версия
+          
+        }
+        else if (currentAssetType === 'corpbonds') {
+            // Проверка на существование массива demoBonds, чтобы не было ошибки
+            isAllowedInDemo = (typeof democorpBonds !== 'undefined') && democorpBonds.includes(cleanTicker);
+         
         }
         
         if (!isUserTicker) {
