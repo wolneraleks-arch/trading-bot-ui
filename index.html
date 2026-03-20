@@ -1847,7 +1847,7 @@ async function loadTickerStats() {
     const selectedTickerObj = globalTickers.find(t => t.ticker.trim().toUpperCase() === ticker.trim().toUpperCase());
     const isForts = selectedTickerObj ? selectedTickerObj.type === 'forts' : false;
     const isBonds = selectedTickerObj ? selectedTickerObj.type === 'bonds' : false;
-    const iscorpBonds = selectedTickerObj ? selectedTickerObj.type === 'corpBonds' : false;
+    const iscorpBonds = selectedTickerObj ? selectedTickerObj.type === 'corpbonds' : false;
 
     
  // 2. Теперь меняем подпись (так как isForts уже существует)
