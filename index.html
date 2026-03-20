@@ -327,6 +327,10 @@
 .tab-btn.active {
     background: #5181b8; color: #fff; border-color: #5181b8;
 }
+         
+    .input-label { font-size: 12px; color: #818c99; margin-top: 10px; display: block; }
+    .main-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #dce1e6; margin-top: 4px; box-sizing: border-box; }
+    .res-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
 
     </style>
 </head>
@@ -627,19 +631,94 @@
             </div>
         </div>
     </div>    
+  </div>
+      
+  </div>
 </div>
 
 
-    
 
+
+<div id="tab-calc" class="tab-content" style="display: none; padding: 16px;">
+    <div class="section-title">🧮 Трейд-калькулятор</div>
+    
+    <div class="card" style="padding: 16px;">
+        <!-- 1. Тип актива -->
+        <label class="input-label">Тип актива</label>
+        <select id="calc-asset-type" class="main-input" onchange="updateCalcTickers()">
+            <option value="stocks">Акции</option>
+            <option value="forts">Фьючерсы</option>
+        </select>
+
+        <!-- 2. Выбор названия -->
+        <label class="input-label">Название актива</label>
+        <select id="calc-name-select" class="main-input" onchange="syncCalcTicker()">
+            <option value="">-- Выберите --</option>
+        </select>
+
+        <!-- 3. Тикер (только чтение) -->
+        <label class="input-label">Тикер (код)</label>
+        <input type="text" id="calc-ticker" class="main-input" readonly style="background: #f0f2f5; color: #818c99;">
+
+        <div style="display: flex; gap: 8px;">
+            <div style="flex: 1;">
+                <!-- 4. Направление -->
+                <label class="input-label">Направление</label>
+                <select id="calc-direction" class="main-input">
+                    <option value="long">Лонг 📈</option>
+                    <option value="short">Шорт 📉</option>
+                </select>
+            </div>
+            <div style="flex: 1;">
+                <!-- 5. Цена входа -->
+                <label class="input-label">Цена входа</label>
+                <input type="number" id="calc-price-in" class="main-input" placeholder="0.00" oninput="calculateTrade()">
+            </div>
+        </div>
+
+        <!-- 6 & 7. Доходность и значение -->
+        <div style="display: flex; gap: 8px;">
+            <div style="flex: 1.5;">
+                <label class="input-label">Тип доходности</label>
+                <select id="calc-yield-type" class="main-input">
+                    <option value="daily">Дневная %</option>
+                    <option value="annual">Годовая %</option>
+                    <option value="fact">Фактическая (абс)</option>
+                </select>
+            </div>
+            <div style="flex: 1;">
+                <label class="input-label">Значение (%)</label>
+                <input type="number" id="calc-yield-val" class="main-input" value="1" oninput="calculateTrade()">
+            </div>
+        </div>
+
+        <!-- 8. Дата входа -->
+        <label class="input-label">Дата входа</label>
+        <input type="date" id="calc-date-in" class="main-input">
+
+        <div style="display: flex; gap: 8px;">
+            <div style="flex: 1;">
+                <label class="input-label">Налог (%)</label>
+                <input type="number" id="calc-tax" class="main-input" value="13" oninput="calculateTrade()">
+            </div>
+            <div style="flex: 1;">
+                <label class="input-label">Комиссия (%)</label>
+                <input type="number" id="calc-fee" class="main-input" value="0.03" oninput="calculateTrade()">
+            </div>
+        </div>
+    </div>
+
+    <!-- 11. ИТОГИ -->
+    <div class="section-title">📊 Результаты расчета</div>
+    <div class="card" style="padding: 16px; background: #f9faff; border: 1px solid #e1e8ff;">
+        <div class="res-row"><span>Цена выхода:</span> <b id="res-price-out">--</b></div>
+        <div class="res-row"><span>Годовая доходн.:</span> <b id="res-yield-annual">--</b></div>
+        <div class="res-row"><span>Дневная доходн.:</span> <b id="res-yield-daily">--</b></div>
+        <div class="res-row"><span>Вероятность:</span> <b id="res-prob" style="color: #5181b8;">-- %</b></div>
+    </div>
+</div>
 
         
-</div>
-
-
-</div>
-
-
         
 <!-- Объединенная вкладка: НАСТРОЙКИ -->
 <div id="tab-settings" class="tab-content">
@@ -913,6 +992,11 @@
         <div class="tab-icon">❓</div>
         <div>Справка</div>
     </div>
+    <div class="tab-item" onclick="switchTab('calc', this)">
+    <div class="tab-icon">🧮</div>
+    <div>Калькул</div>
+     </div>
+
 </div>
 
 
