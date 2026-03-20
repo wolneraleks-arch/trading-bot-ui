@@ -2117,7 +2117,8 @@ function updateStatsTickers() {
      const assetNames = {
     'stocks': 'акцию',
     'forts': 'фьючерс',
-    'bonds': 'облигацию'
+    'bonds': 'облигацию',
+         'corpbonds': 'корп. облигацию' 
       };
      const label = assetNames[currentAssetType] || 'актив';
      select.innerHTML = `<option value="">-- Выберите ${label} --</option>`;
