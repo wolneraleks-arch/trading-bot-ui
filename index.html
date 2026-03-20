@@ -2169,15 +2169,6 @@ if (userTickersCodes.length > 0) {
         //const isAllowedInDemo = currentAssetType === 'stocks' ? demoTickers.includes(tickerUpper) : demoFutures.includes(tickerUpper);
         //const isAllowedInDemo = demoTickers.includes(tickerUpper); //старая весрия без фьючей
 
-
-  //  if (currentAssetType === 'stocks') {
-  //   // Для акций оставляем строгий список
-  //   isAllowedInDemo = demoTickers.map(t => t.toUpperCase()).includes(cleanTicker);
-  //  } else {
-  //   // Для фьючерсов проверяем ПРЕФИКС (начало строки)
-  //   isAllowedInDemo = demoFuturesPrefixes.some(prefix => cleanTicker.startsWith(prefix));
-  // }
-
  if (currentAssetType === 'stocks') {
             isAllowedInDemo = demoTickers.map(t => t.toUpperCase()).includes(cleanTicker);
         } else if (currentAssetType === 'forts') {
@@ -2185,7 +2176,6 @@ if (userTickersCodes.length > 0) {
         } else if (currentAssetType === 'bonds') {
             // Проверка на существование массива demoBonds, чтобы не было ошибки
             isAllowedInDemo = (typeof demoBonds !== 'undefined') && demoBonds.includes(cleanTicker);
-          
         }
         else if (currentAssetType === 'corpbonds') {
             // Проверка на существование массива demoBonds, чтобы не было ошибки
