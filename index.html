@@ -2200,19 +2200,17 @@ function updateCalcTickers() {
     const typeSelect = document.getElementById('calc-asset-type');
     if (!nameSelect || !typeSelect) return;
 
+    if (!globalTickers || globalTickers.length === 0) {
+        nameSelect.innerHTML = '<option value="">⏳ Загрузка базы...</option>';
+        return;
+    }
+
     const selectedType = typeSelect.value.trim().toLowerCase();
     nameSelect.innerHTML = '<option value="">-- Выберите актив --</option>';
-
-    // Посмотрим в консоли, какие типы вообще есть в массиве
-    const typesInArray = [...new Set(globalTickers.map(t => t.type))];
-    console.log("Доступные типы в базе:", typesInArray);
-    console.log("Ищем тип:", selectedType);
 
     const filtered = globalTickers.filter(t => 
         String(t.type || "").trim().toLowerCase() === selectedType
     );
-
-    console.log(`Найдено для калькулятора: ${filtered.length} шт.`);
 
     filtered.forEach(item => {
         const opt = document.createElement('option');
@@ -2221,6 +2219,7 @@ function updateCalcTickers() {
         nameSelect.appendChild(opt);
     });
 }
+
 
  
   //   function updateCalcTickers() {
