@@ -581,6 +581,11 @@
         <!-- Секция только для фьючерсов (скрыта по умолчанию) -->
 <div id="forts-details-card" style="display: none; margin-bottom: 20px;">
     <div class="section-title">👥 Открытые Позиции </div>
+
+    <div id="oi-history-container" style="height: 180px; width: 100%; margin-bottom: 20px;">
+        <canvas id="oiHistoryChart"></canvas>
+    </div>
+    
     <div class="card" style="padding: 16px;">
         <!-- Физлица -->
          <!-- В блоке Физлиц -->
@@ -630,12 +635,8 @@
                 <div id="oi-jur-sn" style="font-size: 10px; color: #818c99;">-- счетов</div>
             </div>
         </div>
+        
     </div>
-
-    <!-- Контейнер для графика истории Oткрытого интереса фьюч -->
-   <div id="oi-history-container" style="margin-bottom: 20px; height: 180px; width: 100%;">
-    <canvas id="oiHistoryChart"></canvas>
-   </div>
 
   </div>
       
