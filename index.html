@@ -718,7 +718,7 @@
                 <input type="number" id="calc-tax" class="main-input" value="13" oninput="calculateTrade()">
             </div>
             <div style="flex: 1;">
-                <label class="input-label">Комиссия (%)</label>
+                <label class="input-label" id="label-fee">Комиссия (%)</label>
                 <input type="number" id="calc-fee" class="main-input" value="0.03" oninput="calculateTrade()">
             </div>
             
@@ -2376,6 +2376,8 @@ console.log(globalTickers)
     function updateCalcTickers() {
     const typeSelect = document.getElementById('calc-asset-type');
     const nameSelect = document.getElementById('calc-name-select');
+        const labelFee = document.getElementById('label-fee');
+    const inputFee = document.getElementById('calc-fee');
     
     if (!typeSelect || !nameSelect) return;
 
@@ -2385,6 +2387,16 @@ console.log(globalTickers)
     if (!globalTickers || globalTickers.length === 0) {
         nameSelect.innerHTML = '<option value="">⏳ Загрузка базы...</option>';
         return;
+    }
+        
+        if (typeSelect.value === 'forts') {
+        labelFee.innerText = "Комиссия брокера (₽ за контр.)";
+        // Можно сразу поставить стандартное значение для фьючерсов, например 0.45 руб
+        if (inputFee.value == "0.03") inputFee.value = "0.45"; 
+    } 
+        else {
+        labelFee.innerText = "Комиссия (%)";
+        if (inputFee.value == "0.45") inputFee.value = "0.03";
     }
 
     // Группа для вывода
