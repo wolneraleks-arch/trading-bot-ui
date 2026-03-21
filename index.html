@@ -2154,7 +2154,7 @@ function drawSimpleOIChart(history) {
             labels: history.map(d => d.date),
             datasets: [
                 {
-                    label: 'Юрлица (Long)',
+                    label: 'Юрлица (Short)',
                     data: history.map(d => d.jurShort),
                     borderColor: '#0077ff', // Синий
                     backgroundColor: 'transparent',
@@ -2163,7 +2163,7 @@ function drawSimpleOIChart(history) {
                     pointRadius: 2
                 },
                 {
-                    label: 'Физлица (Long)',
+                    label: 'Физлица (Short)',
                     data: history.map(d => d.fizShort),
                     borderColor: '#ff9500', // Оранжевый
                     backgroundColor: 'transparent',
