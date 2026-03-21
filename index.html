@@ -585,6 +585,9 @@
     <div id="oi-history-container" style="height: 180px; width: 100%; margin-bottom: 20px;">
         <canvas id="oiHistoryChart"></canvas>
     </div>
+    <div id="oi-history-container" style="height: 180px; width: 100%; margin-bottom: 20px;">
+        <canvas id="oiHistoryChartShort"></canvas>
+    </div>
     
     <div class="card" style="padding: 16px;">
         <!-- Физлица -->
@@ -2138,7 +2141,7 @@ function drawSimpleOIChart(history) {
 }
 
     function drawSimpleOIChartShort(history) {
-    const canvas = document.getElementById('oiHistoryChart');
+    const canvas = document.getElementById('oiHistoryChartShort');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     
