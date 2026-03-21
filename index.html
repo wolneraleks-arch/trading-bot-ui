@@ -2144,8 +2144,9 @@ function drawSimpleOIChart(history) {
     const canvas = document.getElementById('oiHistoryChartShort');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    
-    if (window.oiChart) window.oiChart.destroy();
+
+        if (window.oiChartShort) window.oiChartShort.destroy();
+    // if (window.oiChart) window.oiChart.destroy();
 
     window.oiChart = new Chart(ctx, {
         type: 'line',
