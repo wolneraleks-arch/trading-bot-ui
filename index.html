@@ -2027,6 +2027,11 @@ async function fetchGlobalTickers() {
             globalTickers = res.data;
             console.log("✅ В массиве globalTickers элементов:", globalTickers.length);
             updateStatsTickers(); // Сразу вызываем обновление списка
+            // ЕСЛИ ПОЛЬЗОВАТЕЛЬ УЖЕ В КАЛЬКУЛЯТОРЕ - ЗАПОЛНЯЕМ СПИСОК
+            const calcTab = document.getElementById('tab-calc');
+            if (calcTab && calcTab.style.display !== 'none') {
+                updateCalcTickers();
+            }
         } else {
             console.error("❌ Ошибка в формате данных:", res);
         }
