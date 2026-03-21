@@ -2329,42 +2329,105 @@ console.log(globalTickers)
 //______________________________________________________________________________________________________
 
 
-function updateCalcTickers() {
+// function updateCalcTickers() {
+//     const typeSelect = document.getElementById('calc-asset-type');
+//     const nameSelect = document.getElementById('calc-name-select');
+    
+//     // Проверка: видит ли скрипт эти элементы?
+//     if (!typeSelect || !nameSelect) {
+//         console.error("❌ Элементы калькулятора не найдены в DOM!");
+//         return;
+//     }
+
+//     const selectedType = typeSelect.value.trim().toLowerCase();
+//     //console.log("🔍 Фильтруем тикеры для типа:", selectedType);
+
+//     nameSelect.innerHTML = '<option value="">-- Выберите актив --</option>';
+
+//     if (!globalTickers || globalTickers.length === 0) {
+//         nameSelect.innerHTML = '<option value="">⏳ Загрузка базы...</option>';
+//         return;
+//     }
+
+//     / Группа для вывода
+//     const groupAll = document.createElement('optgroup');
+//     groupAll.label = window.isPremium ? "📈 Доступные активы" : "🔒 Демо-доступ";
+
+//     const filtered = globalTickers.filter(t => 
+//         String(t.type || "").trim().toLowerCase() === selectedType
+//     );
+
+//     console.log("✅ Найдено подходящих тикеров:", filtered.length);
+
+//     if (filtered.length === 0) {
+//         nameSelect.innerHTML = '<option value="">-- Ничего не найдено --</option>';
+//     }
+
+//     filtered.forEach(item => {
+//         const opt = document.createElement('option');
+//         opt.value = item.ticker;
+//         opt.textContent = item.name;
+//         nameSelect.appendChild(opt);
+//     });
+// }
+
+
+
+    function updateCalcTickers() {
     const typeSelect = document.getElementById('calc-asset-type');
     const nameSelect = document.getElementById('calc-name-select');
     
-    // Проверка: видит ли скрипт эти элементы?
-    if (!typeSelect || !nameSelect) {
-        console.error("❌ Элементы калькулятора не найдены в DOM!");
-        return;
-    }
+    if (!typeSelect || !nameSelect) return;
 
     const selectedType = typeSelect.value.trim().toLowerCase();
-    console.log("🔍 Фильтруем тикеры для типа:", selectedType);
-
-    nameSelect.innerHTML = '<option value="">-- Выберите актив --</option>';
+    nameSelect.innerHTML = `<option value="">-- Выберите актив --</option>`;
 
     if (!globalTickers || globalTickers.length === 0) {
         nameSelect.innerHTML = '<option value="">⏳ Загрузка базы...</option>';
         return;
     }
 
-    const filtered = globalTickers.filter(t => 
-        String(t.type || "").trim().toLowerCase() === selectedType
-    );
+    // Группа для вывода
+    const groupAll = document.createElement('optgroup');
+    groupAll.label = window.isPremium ? "📈 Доступные активы" : "🔒 Демо-доступ";
+    
+    let count = 0;
 
-    console.log("✅ Найдено подходящих тикеров:", filtered.length);
+    globalTickers.forEach(item => {
+        // 1. Фильтр по типу (stocks, forts, bonds, corpbonds)
+        if (String(item.type || "").toLowerCase() !== selectedType) return;
 
-    if (filtered.length === 0) {
-        nameSelect.innerHTML = '<option value="">-- Ничего не найдено --</option>';
-    }
+        const cleanTicker = item.ticker.trim().toUpperCase();
+        let isAllowedInDemo = false;
 
-    filtered.forEach(item => {
-        const opt = document.createElement('option');
-        opt.value = item.ticker;
-        opt.textContent = item.name;
-        nameSelect.appendChild(opt);
+        // 2. ЛОГИКА ДЕМО-ДОСТУПА (копия из твоей функции статистики)
+        if (selectedType === 'stocks') {
+            isAllowedInDemo = demoTickers.map(t => t.toUpperCase()).includes(cleanTicker);
+        } else if (selectedType === 'forts') {
+            // Для фьючерсов проверяем по префиксам (AL, BR, Si и т.д.)
+            isAllowedInDemo = typeof demoFuturesPrefixes !== 'undefined' && 
+                demoFuturesPrefixes.some(prefix => cleanTicker.startsWith(prefix.toUpperCase()));
+        } else if (selectedType === 'bonds') {
+            isAllowedInDemo = (typeof demoBonds !== 'undefined') && demoBonds.includes(cleanTicker);
+        } else if (selectedType === 'corpbonds') {
+            isAllowedInDemo = (typeof democorpBonds !== 'undefined') && democorpBonds.includes(cleanTicker);
+        }
+
+        // 3. Добавляем, если Премиум или входит в Демо
+        if (window.isPremium || isAllowedInDemo) {
+            const opt = document.createElement('option');
+            opt.value = item.ticker;
+            opt.textContent = item.name;
+            groupAll.appendChild(opt);
+            count++;
+        }
     });
+
+    if (count > 0) {
+        nameSelect.appendChild(groupAll);
+    } else if (!window.isPremium) {
+        nameSelect.innerHTML = '<option value="">🔒 Доступно в полной версии</option>';
+    }
 }
 
 
