@@ -2676,8 +2676,10 @@ console.log(globalTickers)
         // 3. РАСЧЕТ "ГРЯЗНОЙ" ПРИБЫЛИ (с учетом налога и всех комиссий)
         const taxFactor = 1 - (taxPerc / 100);
         // Сначала накручиваем налог на чистую прибыль, затем добавляем расходы
-        const grossProfitNeeded = (targetProfitNet / taxFactor) + totalCosts;
-
+        // const grossProfitNeeded = (targetProfitNet / taxFactor) + totalCosts;
+         
+         const grossProfitNeeded = (targetProfitNet / taxFactor)+ exchangeFeeRub + brokerFeeRub
+         
         // 4. ДИСТАНЦИЯ В ЦЕНЕ
         // Сколько пунктов нужно пройти, чтобы заработать grossProfitNeeded рублей
         // const pointsQty = grossProfitNeeded / s.stepPrice;
