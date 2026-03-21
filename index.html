@@ -630,7 +630,13 @@
                 <div id="oi-jur-sn" style="font-size: 10px; color: #818c99;">-- счетов</div>
             </div>
         </div>
-    </div>    
+    </div>
+
+    <!-- Контейнер для графика истории Oткрытого интереса фьюч -->
+   <div id="oi-history-container" style="margin-bottom: 20px; height: 180px; width: 100%;">
+    <canvas id="oiHistoryChart"></canvas>
+   </div>
+
   </div>
       
   </div>
@@ -1919,6 +1925,12 @@ async function loadTickerStats() {
 
      updateOIBars('fiz', d.oi.fizL, d.oi.fizS);
     updateOIBars('jur', d.oi.jurL, d.oi.jurS);
+               
+     if (d.oi.history && d.oi.history.length > 0) {
+        // Вызываем функцию отрисовки (которую мы обсуждали ранее)
+        drawOIHistoryChart(d.oi.history);
+         drawSimpleOIChart(d.oi.history);
+    }
    } else {
     document.getElementById('forts-details-card').style.display = 'none';
    }
@@ -2073,6 +2085,121 @@ function setAssetType(type) {
 }
     
 
+
+
+
+function drawOIHistoryChart(historyData) {
+    const canvas = document.getElementById('oiHistoryChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    // Очистка старого графика
+    if (window.oiChart) window.oiChart.destroy();
+
+    // Подготовка данных
+    const labels = historyData.map(d => d.date.split('-').slice(1).reverse().join('.')); // ДД.ММ
+    const longData = historyData.map(d => d.jurL);
+    const shortData = historyData.map(d => d.jurS);
+
+    window.oiChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Юр. Long',
+                    data: longData,
+                    borderColor: '#4bb34b', // Ваш зеленый
+                    backgroundColor: 'rgba(75, 179, 75, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    borderWidth: 2
+                },
+                {
+                    label: 'Юр. Short',
+                    data: shortData,
+                    borderColor: '#e64646', // Ваш красный
+                    backgroundColor: 'rgba(230, 70, 70, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    borderWidth: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+                legend: { display: false },
+                tooltip: { mode: 'index', intersect: false } 
+            },
+            scales: {
+                x: { ticks: { maxRotation: 0, font: { size: 9 } }, grid: { display: false } },
+                y: { display: false }
+            }
+        }
+    });
+}
+
+
+
+
+
+    
+function drawSimpleOIChart(history) {
+    const canvas = document.getElementById('oiHistoryChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    if (window.oiChart) window.oiChart.destroy();
+
+    window.oiChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: history.map(d => d.date),
+            datasets: [
+                {
+                    label: 'Юрлица (Long)',
+                    data: history.map(d => d.jurLong),
+                    borderColor: '#0077ff', // Синий
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    pointRadius: 2
+                },
+                {
+                    label: 'Физлица (Long)',
+                    data: history.map(d => d.fizLong),
+                    borderColor: '#ff9500', // Оранжевый
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    pointRadius: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: true, position: 'top', labels: { size: 10 } }
+            },
+            scales: {
+                x: { grid: { display: false }, ticks: { font: { size: 9 } } },
+                y: { ticks: { font: { size: 9 } } }
+            }
+        }
+    });
+}
+
+
+
+
+
+
+    
     
 function updateStatsTickers() {
     const select = document.getElementById('stats_ticker_select');
