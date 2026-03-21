@@ -2255,33 +2255,72 @@ function updateCalcTickers() {
 
 
     
-async function syncCalcTicker() {
-    const ticker = document.getElementById('calc-name-select').value;
+// async function syncCalcTicker() {
+//     const ticker = document.getElementById('calc-name-select').value;
+//     if (!ticker) return;
+
+//     document.getElementById('calc-ticker').value = ticker;
+
+//     // 1. Ставим дату "Сегодня"
+//     const today = new Date().toISOString().split('T')[0];
+//     document.getElementById('calc-date-in').value = today;
+
+//     try {
+//         const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
+//         const res = await response.json();
+        
+//         if (res.status === "success" && res.data) {
+//             window.currentCalcData = res.data; // Сохраняем ADR и Цену
+            
+//             // 2. Подставляем текущую цену (Last) в поле "Цена входа"
+//             if (res.data.currentLast > 0) {
+//                 document.getElementById('calc-price-in').value = res.data.currentLast;
+//             }
+            
+//             console.log(`✅ Данные загружены. ADR: ${res.data.avgADR}, Цена: ${res.data.currentLast}`);
+//             calculateTrade(); // Первый авто-расчет
+//         }
+//     } catch (e) { console.error(e); }
+// }
+
+    async function syncCalcTicker() {
+    const select = document.getElementById('calc-name-select');
+    const ticker = select.value;
     if (!ticker) return;
 
     document.getElementById('calc-ticker').value = ticker;
 
-    // 1. Ставим дату "Сегодня"
-    const today = new Date().toISOString().split('T')[0];
+    // 1. Устанавливаем дату "Сегодня" корректно
+    const now = new Date();
+    const today = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
     document.getElementById('calc-date-in').value = today;
 
     try {
+        // 2. Запрос к серверу
         const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
         const res = await response.json();
         
         if (res.status === "success" && res.data) {
-            window.currentCalcData = res.data; // Сохраняем ADR и Цену
+            const d = res.data;
+            window.currentCalcData = d; // Сохраняем ADR для вероятности
+
+            // 3. Подставляем цену (пробуем разные варианты ключей из GAS)
+            const livePrice = d.currentLast || d.last || 0;
             
-            // 2. Подставляем текущую цену (Last) в поле "Цена входа"
-            if (res.data.currentLast > 0) {
-                document.getElementById('calc-price-in').value = res.data.currentLast;
+            if (livePrice > 0) {
+                document.getElementById('calc-price-in').value = livePrice;
+                console.log(`✅ Цена для ${ticker} подставлена: ${livePrice}`);
+            } else {
+                console.warn("⚠️ Цена от сервера пришла 0");
             }
             
-            console.log(`✅ Данные загружены. ADR: ${res.data.avgADR}, Цена: ${res.data.currentLast}`);
-            calculateTrade(); // Первый авто-расчет
+            calculateTrade(); // Сразу считаем
         }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+        console.error("Ошибка в syncCalcTicker:", e);
+    }
 }
+
 
 
 
