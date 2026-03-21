@@ -332,6 +332,13 @@
     .main-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #dce1e6; margin-top: 4px; box-sizing: border-box; }
     .res-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
 
+        #calc-name-select {
+    display: block !important;
+    min-height: 40px;
+    background: white;
+}
+
+
     </style>
 </head>
 <body>
@@ -2196,21 +2203,34 @@ console.log(globalTickers)
 
 
 function updateCalcTickers() {
-    const nameSelect = document.getElementById('calc-name-select');
     const typeSelect = document.getElementById('calc-asset-type');
-    if (!nameSelect || !typeSelect) return;
+    const nameSelect = document.getElementById('calc-name-select');
+    
+    // Проверка: видит ли скрипт эти элементы?
+    if (!typeSelect || !nameSelect) {
+        console.error("❌ Элементы калькулятора не найдены в DOM!");
+        return;
+    }
+
+    const selectedType = typeSelect.value.trim().toLowerCase();
+    console.log("🔍 Фильтруем тикеры для типа:", selectedType);
+
+    nameSelect.innerHTML = '<option value="">-- Выберите актив --</option>';
 
     if (!globalTickers || globalTickers.length === 0) {
         nameSelect.innerHTML = '<option value="">⏳ Загрузка базы...</option>';
         return;
     }
 
-    const selectedType = typeSelect.value.trim().toLowerCase();
-    nameSelect.innerHTML = '<option value="">-- Выберите актив --</option>';
-
     const filtered = globalTickers.filter(t => 
         String(t.type || "").trim().toLowerCase() === selectedType
     );
+
+    console.log("✅ Найдено подходящих тикеров:", filtered.length);
+
+    if (filtered.length === 0) {
+        nameSelect.innerHTML = '<option value="">-- Ничего не найдено --</option>';
+    }
 
     filtered.forEach(item => {
         const opt = document.createElement('option');
@@ -2220,23 +2240,6 @@ function updateCalcTickers() {
     });
 }
 
-
- 
-  //   function updateCalcTickers() {
-  //   const type = document.getElementById('calc-asset-type').value;
-  //   const nameSelect = document.getElementById('calc-name-select');
-  //   nameSelect.innerHTML = '<option value="">-- Выберите --</option>';
-
-  //   // Берем данные из твоего глобального массива
-  //   const filtered = globalTickers.filter(t => t.type === type);
-    
-  //   filtered.forEach(item => {
-  //       const opt = document.createElement('option');
-  //       opt.value = item.ticker; // В значение кладем тикер
-  //       opt.textContent = item.name; // В текст - название
-  //       nameSelect.appendChild(opt);
-  //   });
-  // }
 
 
 async function syncCalcTicker() {
