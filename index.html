@@ -2272,6 +2272,68 @@ function updateCalcTickers() {
 }
 
 
+// норм но без налога и комиссий
+// function calculateTrade() {
+//     const priceIn = parseFloat(document.getElementById('calc-price-in').value) || 0;
+//     const yieldVal = parseFloat(document.getElementById('calc-yield-val').value) || 0;
+//     const yieldType = document.getElementById('calc-yield-type').value;
+//     const direction = document.getElementById('calc-direction').value;
+//     const dateInVal = document.getElementById('calc-date-in').value;
+
+//     if (priceIn <= 0 || !dateInVal) return;
+
+//     // 1. Считаем ДНИ (разница дат)
+//     const dateIn = new Date(dateInVal);
+//     const today = new Date();
+//     today.setHours(0,0,0,0);
+//     dateIn.setHours(0,0,0,0);
+//     let days = Math.ceil((today - dateIn) / (1000 * 60 * 60 * 24));
+//     if (days <= 0) days = 1;
+//     document.getElementById('res-days').innerText = days;
+
+//     // 2. Считаем ЦЕЛЬ (MovePoints) в РУБЛЯХ/ПУНКТАХ
+//     let movePoints = 0;
+    
+//     if (yieldType === 'daily') {
+//         // yieldVal тут — это желаемый % в день
+//         movePoints = priceIn * (yieldVal / 100);
+//     } else if (yieldType === 'annual') {
+//         // yieldVal тут — желаемый % в год. 
+//         // Цель в деньгах = (Цена * %годовых / 365) * кол-во дней сделки
+//         movePoints = (priceIn * (yieldVal / 100) / 365) * days;
+//     } else if (yieldType === 'fact') {
+//         // В режиме "Фактическая" yieldVal — это просто пункты (твои 20 руб из примера)
+//         // Если хочешь тут тоже %, надо изменить формулу на: movePoints = priceIn * (yieldVal / 100);
+//         movePoints = priceIn * (yieldVal / 100);
+//     }
+
+//     // 3. ЦЕНА ВЫХОДА
+//     const taxFactor = 1 - (taxPerc / 100); // например, 0.87
+// const feeFactor = (brokerFeePerc + exchangeFeePerc) / 100; // например, 0.0006 (0.06%)
+
+// // Чтобы получить NetProfit чистыми, грязное движение должно быть:
+// let requiredGross = targetNetProfit / taxFactor; 
+// movePoints = requiredGross + (priceIn * feeFactor * 2); 
+
+//     const priceOut = (direction === 'long') ? (priceIn + movePoints) : (priceIn - movePoints);
+
+//     // 4. РАСЧЕТ ИТОГОВОЙ ДОХОДНОСТИ (Твоя логика)
+//     // Факт профит в % относительно входа (чистое движение цены)
+//     const factYieldPerc = (movePoints / priceIn) * 100;
+    
+//     // Дневная доходность = Общий % / Количество дней
+//     const dailyResult = factYieldPerc / days;
+    
+//     // Годовая доходность = Дневная * 365
+//     const annualResult = dailyResult * 365;
+
+//     // 5. ВЫВОД
+//     document.getElementById('res-price-out').innerText = priceOut.toLocaleString('ru-RU', {maximumFractionDigits: 4});
+//     document.getElementById('res-yield-daily').innerText = dailyResult.toFixed(3) + " %";
+//     document.getElementById('res-yield-annual').innerText = annualResult.toFixed(2) + " %";
+    
+//     updateProbability(movePoints);
+// }
 
 function calculateTrade() {
     const priceIn = parseFloat(document.getElementById('calc-price-in').value) || 0;
@@ -2279,10 +2341,17 @@ function calculateTrade() {
     const yieldType = document.getElementById('calc-yield-type').value;
     const direction = document.getElementById('calc-direction').value;
     const dateInVal = document.getElementById('calc-date-in').value;
+    const assetType = document.getElementById('calc-asset-type').value; // 'stocks' или 'forts'
+
+    // Получаем проценты из инпутов
+    const taxPerc = parseFloat(document.getElementById('calc-tax').value) || 0;
+    const brokerFeePerc = parseFloat(document.getElementById('calc-fee').value) || 0;
+    // Пока сетки нет: для акций 0.03%, для фьючерсов поставим заглушку 0.01%
+    const exchangeFeePerc = (assetType === 'stocks') ? 0.03 : 0.01;
 
     if (priceIn <= 0 || !dateInVal) return;
 
-    // 1. Считаем ДНИ (разница дат)
+    // 1. Считаем ДНИ
     const dateIn = new Date(dateInVal);
     const today = new Date();
     today.setHours(0,0,0,0);
@@ -2291,33 +2360,30 @@ function calculateTrade() {
     if (days <= 0) days = 1;
     document.getElementById('res-days').innerText = days;
 
-    // 2. Считаем ЦЕЛЬ (MovePoints) в РУБЛЯХ/ПУНКТАХ
-    let movePoints = 0;
-    
+    // 2. Считаем ЧИСТУЮ ЦЕЛЬ (Profit) в рублях
+    let targetNetProfit = 0;
     if (yieldType === 'daily') {
-        // yieldVal тут — это желаемый % в день
-        movePoints = priceIn * (yieldVal / 100);
+        targetNetProfit = priceIn * (yieldVal / 100);
     } else if (yieldType === 'annual') {
-        // yieldVal тут — желаемый % в год. 
-        // Цель в деньгах = (Цена * %годовых / 365) * кол-во дней сделки
-        movePoints = (priceIn * (yieldVal / 100) / 365) * days;
+        targetNetProfit = (priceIn * (yieldVal / 100) / 365) * days;
     } else if (yieldType === 'fact') {
-        // В режиме "Фактическая" yieldVal — это просто пункты (твои 20 руб из примера)
-        // Если хочешь тут тоже %, надо изменить формулу на: movePoints = priceIn * (yieldVal / 100);
-        movePoints = priceIn * (yieldVal / 100);
+        targetNetProfit = priceIn * (yieldVal / 100);
     }
 
-    // 3. ЦЕНА ВЫХОДА
+    // 3. УЧЕТ НАЛОГА И КОМИССИЙ (Инверсия: считаем, сколько надо пройти "грязными")
+    const taxFactor = 1 - (taxPerc / 100); 
+    const feeFactor = (brokerFeePerc + exchangeFeePerc) / 100;
+
+    // Чтобы получить NetProfit чистыми, нужно перекрыть комиссии и налог
+    let requiredGross = targetNetProfit / taxFactor; 
+    let movePoints = requiredGross + (priceIn * feeFactor * 2); 
+
+    // ЦЕНА ВЫХОДА
     const priceOut = (direction === 'long') ? (priceIn + movePoints) : (priceIn - movePoints);
 
-    // 4. РАСЧЕТ ИТОГОВОЙ ДОХОДНОСТИ (Твоя логика)
-    // Факт профит в % относительно входа (чистое движение цены)
+    // 4. ИТОГОВАЯ ДОХОДНОСТЬ (для вывода)
     const factYieldPerc = (movePoints / priceIn) * 100;
-    
-    // Дневная доходность = Общий % / Количество дней
     const dailyResult = factYieldPerc / days;
-    
-    // Годовая доходность = Дневная * 365
     const annualResult = dailyResult * 365;
 
     // 5. ВЫВОД
@@ -2327,7 +2393,6 @@ function calculateTrade() {
     
     updateProbability(movePoints);
 }
-
 
 
 
