@@ -1928,7 +1928,7 @@ async function loadTickerStats() {
                
      if (d.oi.history && d.oi.history.length > 0) {
         // Вызываем функцию отрисовки (которую мы обсуждали ранее)
-        drawOIHistoryChart(d.oi.history);
+        // drawOIHistoryChart(d.oi.history);
          drawSimpleOIChart(d.oi.history);
     }
    } else {
@@ -2083,68 +2083,6 @@ function setAssetType(type) {
     document.getElementById('ticker_search').value = "";
     updateStatsTickers(); 
 }
-    
-
-
-
-
-function drawOIHistoryChart(historyData) {
-    const canvas = document.getElementById('oiHistoryChart');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    
-    // Очистка старого графика
-    if (window.oiChart) window.oiChart.destroy();
-
-    // Подготовка данных
-    const labels = historyData.map(d => d.date.split('-').slice(1).reverse().join('.')); // ДД.ММ
-    const longData = historyData.map(d => d.jurL);
-    const shortData = historyData.map(d => d.jurS);
-
-    window.oiChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Юр. Long',
-                    data: longData,
-                    borderColor: '#4bb34b', // Ваш зеленый
-                    backgroundColor: 'rgba(75, 179, 75, 0.1)',
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 0,
-                    borderWidth: 2
-                },
-                {
-                    label: 'Юр. Short',
-                    data: shortData,
-                    borderColor: '#e64646', // Ваш красный
-                    backgroundColor: 'rgba(230, 70, 70, 0.1)',
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 0,
-                    borderWidth: 2
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { 
-                legend: { display: false },
-                tooltip: { mode: 'index', intersect: false } 
-            },
-            scales: {
-                x: { ticks: { maxRotation: 0, font: { size: 9 } }, grid: { display: false } },
-                y: { display: false }
-            }
-        }
-    });
-}
-
-
-
 
 
     
