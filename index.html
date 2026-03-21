@@ -2189,42 +2189,144 @@ console.log(globalTickers)
 
 //______________________________________________________________________________________________________
 
-    function updateCalcTickers() {
-    const type = document.getElementById('calc-asset-type').value;
-    const nameSelect = document.getElementById('calc-name-select');
-    nameSelect.innerHTML = '<option value="">-- Выберите --</option>';
 
-    // Берем данные из твоего глобального массива
-    const filtered = globalTickers.filter(t => t.type === type);
-    
+function updateCalcTickers() {
+    const nameSelect = document.getElementById('calc-name-select');
+    const typeSelect = document.getElementById('calc-asset-type');
+    if (!nameSelect || !typeSelect) return;
+
+    const selectedType = typeSelect.value.trim().toLowerCase();
+    nameSelect.innerHTML = '<option value="">-- Выберите актив --</option>';
+
+    // Посмотрим в консоли, какие типы вообще есть в массиве
+    const typesInArray = [...new Set(globalTickers.map(t => t.type))];
+    console.log("Доступные типы в базе:", typesInArray);
+    console.log("Ищем тип:", selectedType);
+
+    const filtered = globalTickers.filter(t => 
+        String(t.type || "").trim().toLowerCase() === selectedType
+    );
+
+    console.log(`Найдено для калькулятора: ${filtered.length} шт.`);
+
     filtered.forEach(item => {
         const opt = document.createElement('option');
-        opt.value = item.ticker; // В значение кладем тикер
-        opt.textContent = item.name; // В текст - название
+        opt.value = item.ticker;
+        opt.textContent = item.name;
         nameSelect.appendChild(opt);
     });
 }
 
-function syncCalcTicker() {
-    const select = document.getElementById('calc-name-select');
-    document.getElementById('calc-ticker').value = select.value; // Тикер подставляется сам
-    calculateTrade();
+ 
+  //   function updateCalcTickers() {
+  //   const type = document.getElementById('calc-asset-type').value;
+  //   const nameSelect = document.getElementById('calc-name-select');
+  //   nameSelect.innerHTML = '<option value="">-- Выберите --</option>';
+
+  //   // Берем данные из твоего глобального массива
+  //   const filtered = globalTickers.filter(t => t.type === type);
+    
+  //   filtered.forEach(item => {
+  //       const opt = document.createElement('option');
+  //       opt.value = item.ticker; // В значение кладем тикер
+  //       opt.textContent = item.name; // В текст - название
+  //       nameSelect.appendChild(opt);
+  //   });
+  // }
+
+
+async function syncCalcTicker() {
+    const ticker = document.getElementById('calc-name-select').value;
+    document.getElementById('calc-ticker').value = ticker;
+    
+    // Подгружаем ADR и Vol для расчетов вероятности
+    const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
+    const res = await response.json();
+    if (res.data) {
+        window.currentCalcData = res.data; // Сохраняем во временную переменную
+        calculateTrade();
+    }
+}
+
+
+    
+// function syncCalcTicker() {
+//     const select = document.getElementById('calc-name-select');
+//     document.getElementById('calc-ticker').value = select.value; // Тикер подставляется сам
+//     calculateTrade();
+// }
+
+
+
+function calculateTrade() {
+    const priceIn = parseFloat(document.getElementById('calc-price-in').value) || 0;
+    const yieldVal = parseFloat(document.getElementById('calc-yield-val').value) || 0;
+    const yieldType = document.getElementById('calc-yield-type').value; // daily, annual, fact
+    const direction = document.getElementById('calc-direction').value; // long, short
+    const tax = parseFloat(document.getElementById('calc-tax').value) || 0;
+    const fee = parseFloat(document.getElementById('calc-fee').value) || 0;
+
+    if (priceIn <= 0) return;
+
+    let targetPoints = 0;
+
+    // 1. Считаем целевую прибыль в пунктах/рублях
+    if (yieldType === 'daily') {
+        targetPoints = priceIn * (yieldVal / 100);
+    } else if (yieldType === 'annual') {
+        targetPoints = priceIn * ((yieldVal / 365) / 100);
+    } else {
+        targetPoints = yieldVal; // Фиксированное значение
+    }
+
+    // 2. Считаем цену выхода
+    let priceOut = (direction === 'long') ? (priceIn + targetPoints) : (priceIn - targetPoints);
+
+    // 3. Считаем доходность (чистую, за вычетом комиссии и налога)
+    const totalFee = (priceIn + priceOut) * (fee / 100);
+    const grossProfit = Math.abs(priceOut - priceIn);
+    const netProfit = (grossProfit - totalFee) * (1 - tax / 100);
+
+    // 4. Выводим результаты в HTML
+    document.getElementById('res-price-out').innerText = priceOut.toLocaleString('ru-RU', {minimumFractionDigits: 2});
+    
+    const dailyPerc = (netProfit / priceIn) * 100;
+    document.getElementById('res-yield-daily').innerText = dailyPerc.toFixed(3) + " %";
+    document.getElementById('res-yield-annual').innerText = (dailyPerc * 365).toFixed(2) + " %";
+
+    // 5. Расчет вероятности (если данные ADR загружены)
+    updateProbability(targetPoints);
+}
+
+
+    function updateProbability(targetPoints) {
+    const probEl = document.getElementById('res-prob');
+    
+    // Берем ADR из того, что прислал сервер в syncCalcTicker
+    // (Я сохранил это в window.currentCalcData в предыдущем совете)
+    const adr = (window.currentCalcData && window.currentCalcData.avgADR) ? parseFloat(window.currentCalcData.avgADR) : 0;
+
+    if (adr <= 0) {
+        probEl.innerText = "-- %";
+        return;
+    }
+
+    // Логика: если цель = 1 ADR, вероятность 50%. Если цель 0.2 ADR — вероятность 90%.
+    let ratio = targetPoints / adr;
+    let probability = 100 - (ratio * 50); 
+    
+    if (probability > 98) probability = 98;
+    if (probability < 2) probability = 2;
+
+    probEl.innerText = Math.round(probability) + " %";
+    
+    // Красим в зависимости от шансов
+    probEl.style.color = probability > 65 ? "#4bb34b" : (probability > 40 ? "#f0b33e" : "#e64646");
 }
 
     
+    
     // ___________________________________________________________________________
-
-
-
-
-
-
-
-
-
-
-
-
 
     
     
