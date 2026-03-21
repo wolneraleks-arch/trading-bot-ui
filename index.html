@@ -2581,13 +2581,28 @@ function updateCalcTickers() {
         const totalCommRub = nominal * (exchangeFee + brokerFee) * 2; // Вход + Выход
 
         // Целевая прибыль в рублях (считаем от ГО)
-        let targetProfitRub = 0;
-        if (yieldType === 'annual') {
-            targetProfitRub = (s.go * (yieldVal / 100) / 365) * days;
-        } else {
-            // Для 'daily' и 'fact' считаем как % от ГО
-            targetProfitRub = s.go * (yieldVal / 100);
-        }
+
+      let targetProfitRub = 0;
+       let ratePerDay = yieldVal / 100;
+
+       if (yieldType === 'annual') {
+       targetProfitRub = (s.go * ratePerDay / 365) * days;
+     } else if (yieldType === 'daily') {
+    // ТЕПЕРЬ УМНОЖАЕМ НА ДНИ:
+    targetProfitRub = (s.go * ratePerDay) * days;
+      } else {
+    // 'fact' - фиксированная сумма за весь период
+    targetProfitRub = s.go * ratePerDay;
+     }
+
+        
+        // let targetProfitRub = 0;
+        // if (yieldType === 'annual') {
+        //     targetProfitRub = (s.go * (yieldVal / 100) / 365) * days;
+        // } else {
+        //     // Для 'daily' и 'fact' считаем как % от ГО
+        //     targetProfitRub = s.go * (yieldVal / 100);
+        // }
 
         // Чистая прибыль должна учитывать налог
         const taxFactor = 1 - (taxPerc / 100);
@@ -2604,8 +2619,23 @@ function updateCalcTickers() {
     } else {
         // --- ЛОГИКА ДЛЯ АКЦИЙ (Твоя старая) ---
         const exchangeFeePerc = 0.03; 
-        let targetNetProfit = priceIn * (yieldVal / 100);
-        if (yieldType === 'annual') targetNetProfit = (priceIn * (yieldVal / 100) / 365) * days;
+        // let targetNetProfit = priceIn * (yieldVal / 100);
+
+        let ratePerDay = yieldVal / 100;
+      let targetNetProfit = 0;
+
+       if (yieldType === 'annual') {
+    targetNetProfit = (priceIn * ratePerDay / 365) * days;
+          } else if (yieldType === 'daily') {
+    // ТЕПЕРЬ УМНОЖАЕМ НА ДНИ:
+    targetNetProfit = (priceIn * ratePerDay) * days;
+         } else {
+    // 'fact'
+    targetNetProfit = priceIn * ratePerDay;
+         }
+
+        
+        // if (yieldType === 'annual') targetNetProfit = (priceIn * (yieldVal / 100) / 365) * days;
 
         const taxFactor = 1 - (taxPerc / 100); 
         const feeFactor = (brokerFeePerc + exchangeFeePerc) / 100;
