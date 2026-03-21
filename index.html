@@ -2271,85 +2271,93 @@ function updateCalcTickers() {
     }
 }
 
-function calculateTrade() {
+// function calculateTrade() {
+//     const priceIn = parseFloat(document.getElementById('calc-price-in').value) || 0;
+//     const priceOut = parseFloat(document.getElementById('res-price-out').innerText.replace(/\s/g, '').replace(',', '.')) || 0;
+    
+//     // 1. Считаем количество дней
+//     const dateInVal = document.getElementById('calc-date-in').value;
+//     if (!dateInVal || priceIn <= 0) return;
+    
+//     const dateIn = new Date(dateInVal);
+//     const today = new Date();
+//     // Разница в днях (минимум 1 день, чтобы не делить на 0)
+//     let days = Math.ceil(Math.abs(today - dateIn) / (1000 * 60 * 60 * 24));
+//     if (days < 1) days = 1;
+//     document.getElementById('res-days').innerText = days;
+
+//     // 2. Расчет чистой прибыли в % (Фактическая доходность)
+//     // (Цена выхода - Цена входа) / Цена входа * 100
+//     const factYield = ((priceOut - priceIn) / priceIn) * 100;
+    
+//     // 3. Дневная доходность (Факт / Кол-во дней)
+//     const dailyYield = factYield / days;
+    
+//     // 4. Годовая доходность (Дневная * 365)
+//     const annualYield = dailyYield * 365;
+
+//     // Вывод результатов
+//     document.getElementById('res-yield-daily').innerText = dailyYield.toFixed(3) + " %";
+//     document.getElementById('res-yield-annual').innerText = annualYield.toFixed(2) + " %";
+    
+//     // Фактическая в процентах (можно добавить отдельную строку или заменить текущую)
+//     console.log("Фактическая доходность сделки:", factYield.toFixed(2) + "%");
+// }
+
+    function calculateTrade() {
     const priceIn = parseFloat(document.getElementById('calc-price-in').value) || 0;
-    const priceOut = parseFloat(document.getElementById('res-price-out').innerText.replace(/\s/g, '').replace(',', '.')) || 0;
-    
-    // 1. Считаем количество дней
+    const yieldVal = parseFloat(document.getElementById('calc-yield-val').value) || 0;
+    const yieldType = document.getElementById('calc-yield-type').value;
+    const direction = document.getElementById('calc-direction').value;
     const dateInVal = document.getElementById('calc-date-in').value;
-    if (!dateInVal || priceIn <= 0) return;
-    
+
+    if (priceIn <= 0 || !dateInVal) return;
+
+    // 1. Считаем количество дней (Сегодня - Дата входа)
     const dateIn = new Date(dateInVal);
     const today = new Date();
-    // Разница в днях (минимум 1 день, чтобы не делить на 0)
-    let days = Math.ceil(Math.abs(today - dateIn) / (1000 * 60 * 60 * 24));
-    if (days < 1) days = 1;
-    document.getElementById('res-days').innerText = days;
+    today.setHours(0,0,0,0); // Обнуляем время для точности разницы дат
+    dateIn.setHours(0,0,0,0);
 
-    // 2. Расчет чистой прибыли в % (Фактическая доходность)
-    // (Цена выхода - Цена входа) / Цена входа * 100
-    const factYield = ((priceOut - priceIn) / priceIn) * 100;
+    let diffTime = today.getTime() - dateIn.getTime();
+    let days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (days <= 0) days = 1; // Если купили сегодня, считаем как 1 день
     
-    // 3. Дневная доходность (Факт / Кол-во дней)
-    const dailyYield = factYield / days;
+    const daysEl = document.getElementById('res-days');
+    if (daysEl) daysEl.innerText = days;
+
+    // 2. Считаем Ход цены (Profit Points) в зависимости от выбора пользователя
+    let movePoints = 0;
+    if (yieldType === 'daily') {
+        movePoints = priceIn * (yieldVal / 100);
+    } else if (yieldType === 'annual') {
+        movePoints = priceIn * ((yieldVal / 365) / 100);
+    } else {
+        movePoints = yieldVal; // Фактическое значение в рублях/пунктах
+    }
+
+    // 3. Считаем Цену Выхода
+    const priceOut = (direction === 'long') ? (priceIn + movePoints) : (priceIn - movePoints);
+
+    // 4. Расчет доходности (Твоя логика)
+    // Фактический профит в % относительно входа
+    const factYieldPerc = (movePoints / priceIn) * 100;
     
-    // 4. Годовая доходность (Дневная * 365)
+    // Дневная доходность = Факт / Дни
+    const dailyYield = factYieldPerc / days;
+    
+    // Годовая доходность = Дневная * 365
     const annualYield = dailyYield * 365;
 
-    // Вывод результатов
+    // 5. Вывод результатов
+    document.getElementById('res-price-out').innerText = priceOut.toLocaleString('ru-RU', {maximumFractionDigits: 4});
     document.getElementById('res-yield-daily').innerText = dailyYield.toFixed(3) + " %";
     document.getElementById('res-yield-annual').innerText = annualYield.toFixed(2) + " %";
     
-    // Фактическая в процентах (можно добавить отдельную строку или заменить текущую)
-    console.log("Фактическая доходность сделки:", factYield.toFixed(2) + "%");
+    // Обновляем вероятность (берем ADR из локальной переменной)
+    updateProbability(movePoints);
 }
 
-
-
-
-
-
-    
-// function calculateTrade() {
-//     const assetType = document.getElementById('calc-asset-type').value;
-//     const priceIn = parseFloat(document.getElementById('calc-price-in').value) || 0;
-//     const movePoints = parseFloat(document.getElementById('calc-yield-val').value) || 0; // На сколько пунктов/рублей идем
-//     const direction = document.getElementById('calc-direction').value;
-    
-//     const brokerFeePerc = parseFloat(document.getElementById('calc-fee').value) || 0.03;
-//     const taxPerc = parseFloat(document.getElementById('calc-tax').value) || 13;
-
-//     if (priceIn <= 0) return;
-
-//     // --- РАСЧЕТ КОМИССИИ БИРЖИ ---
-//     let exchangeFee = 0;
-//     if (assetType === 'forts') {
-//         // Сюда вставим твою сетку. Пока пример: 2 руб за контракт
-//         exchangeFee = 2.0; 
-//     } else {
-//         // Для акций 0.03% от оборота
-//         exchangeFee = priceIn * 0.0003; 
-//     }
-
-//     const brokerFee = priceIn * (brokerFeePerc / 100);
-//     const totalEntryCost = brokerFee + exchangeFee;
-
-//     // --- ЦЕНА ВЫХОДА ---
-//     // Если yieldType === 'daily' и т.д., добавь логику пересчета movePoints здесь
-//     const priceOut = (direction === 'long') ? (priceIn + movePoints) : (priceIn - movePoints);
-
-//     // --- ПРИБЫЛЬ И НАЛОГ ---
-//     const grossProfit = movePoints - (totalEntryCost * 2); // Комиссия на вход и на выход
-//     const taxAmount = grossProfit > 0 ? (grossProfit * (taxPerc / 100)) : 0;
-//     const netProfit = grossProfit - taxAmount;
-
-//     // --- ВЫВОД ---
-//     document.getElementById('res-price-out').innerText = priceOut.toLocaleString('ru-RU');
-//     document.getElementById('res-yield-daily').innerText = ((netProfit / priceIn) * 100).toFixed(3) + " %";
-    
-//     // Обновляем вероятность (берем ADR из загруженных данных)
-//     updateProbability(movePoints);
-// }
 
 
     function updateProbability(targetPoints) {
