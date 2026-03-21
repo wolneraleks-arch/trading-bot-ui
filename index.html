@@ -2255,133 +2255,120 @@ function updateCalcTickers() {
 
 
     
-// async function syncCalcTicker() {
-//     const ticker = document.getElementById('calc-name-select').value;
-//     if (!ticker) return;
-
-//     document.getElementById('calc-ticker').value = ticker;
-
-//     // 1. Ставим дату "Сегодня"
-//     const today = new Date().toISOString().split('T')[0];
-//     document.getElementById('calc-date-in').value = today;
-
-//     try {
-//         const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
-//         const res = await response.json();
-        
-//         if (res.status === "success" && res.data) {
-//             window.currentCalcData = res.data; // Сохраняем ADR и Цену
-            
-//             // 2. Подставляем текущую цену (Last) в поле "Цена входа"
-//             if (res.data.currentLast > 0) {
-//                 document.getElementById('calc-price-in').value = res.data.currentLast;
-//             }
-            
-//             console.log(`✅ Данные загружены. ADR: ${res.data.avgADR}, Цена: ${res.data.currentLast}`);
-//             calculateTrade(); // Первый авто-расчет
-//         }
-//     } catch (e) { console.error(e); }
-// }
-
-    async function syncCalcTicker() {
+    
+    
+    function syncCalcTicker() {
     const select = document.getElementById('calc-name-select');
     const ticker = select.value;
     if (!ticker) return;
 
-    document.getElementById('calc-ticker').value = ticker;
-
-    // 1. Устанавливаем дату "Сегодня" корректно
-    const now = new Date();
-    const today = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
-    document.getElementById('calc-date-in').value = today;
-
-    try {
-        // 2. Запрос к серверу
-        const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
-        const res = await response.json();
+    // Ищем тикер в уже загруженном массиве
+    const data = globalTickers.find(t => t.ticker === ticker);
+    
+    if (data) {
+        document.getElementById('calc-ticker').value = ticker;
+        // Мгновенно ставим цену и ADR
+        document.getElementById('calc-price-in').value = data.price || 0;
+        window.lastLoadedADR = data.adr || 0; 
         
-        if (res.status === "success" && res.data) {
-            const d = res.data;
-            window.currentCalcData = d; // Сохраняем ADR для вероятности
-
-            // 3. Подставляем цену (пробуем разные варианты ключей из GAS)
-            const livePrice = d.currentLast || d.last || 0;
-            
-            if (livePrice > 0) {
-                document.getElementById('calc-price-in').value = livePrice;
-                console.log(`✅ Цена для ${ticker} подставлена: ${livePrice}`);
-            } else {
-                console.warn("⚠️ Цена от сервера пришла 0");
-            }
-            
-            calculateTrade(); // Сразу считаем
-        }
-    } catch (e) {
-        console.error("Ошибка в syncCalcTicker:", e);
+        // Ставим дату "сегодня"
+        const now = new Date();
+        document.getElementById('calc-date-in').value = now.toISOString().split('T')[0];
+        
+        console.log(`🚀 Мгновенно подгружено: ${ticker}, Цена: ${data.price}, ADR: ${data.adr}`);
+        calculateTrade(); // Считаем сразу
     }
 }
 
+    
+    
+    
+    
+    
+    
+    
+    
+//     async function syncCalcTicker() {
+//     const select = document.getElementById('calc-name-select');
+//     const ticker = select.value;
+//     if (!ticker) return;
+
+//     document.getElementById('calc-ticker').value = ticker;
+
+//     // 1. Устанавливаем дату "Сегодня" корректно
+//     const now = new Date();
+//     const today = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+//     document.getElementById('calc-date-in').value = today;
+
+//     try {
+//         // 2. Запрос к серверу
+//         const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
+//         const res = await response.json();
+        
+//         if (res.status === "success" && res.data) {
+//             const d = res.data;
+//             window.currentCalcData = d; // Сохраняем ADR для вероятности
+
+//             // 3. Подставляем цену (пробуем разные варианты ключей из GAS)
+//             const livePrice = d.currentLast || d.last || 0;
+            
+//             if (livePrice > 0) {
+//                 document.getElementById('calc-price-in').value = livePrice;
+//                 console.log(`✅ Цена для ${ticker} подставлена: ${livePrice}`);
+//             } else {
+//                 console.warn("⚠️ Цена от сервера пришла 0");
+//             }
+            
+//             calculateTrade(); // Сразу считаем
+//         }
+//     } catch (e) {
+//         console.error("Ошибка в syncCalcTicker:", e);
+//     }
+// }
 
 
 
 function calculateTrade() {
+    const assetType = document.getElementById('calc-asset-type').value;
     const priceIn = parseFloat(document.getElementById('calc-price-in').value) || 0;
-    const yieldVal = parseFloat(document.getElementById('calc-yield-val').value) || 0;
-    const yieldType = document.getElementById('calc-yield-type').value;
+    const movePoints = parseFloat(document.getElementById('calc-yield-val').value) || 0; // На сколько пунктов/рублей идем
     const direction = document.getElementById('calc-direction').value;
     
-    const taxPerc = parseFloat(document.getElementById('calc-tax').value) || 0;
     const brokerFeePerc = parseFloat(document.getElementById('calc-fee').value) || 0.03;
-    
-    // Комиссия биржи для акций (0.03%), для фьючей потом заменим на твою сетку
-    const isForts = document.getElementById('calc-asset-type').value === 'forts';
-    const exchangeFeePerc = isForts ? 0.01 : 0.03; 
+    const taxPerc = parseFloat(document.getElementById('calc-tax').value) || 13;
 
     if (priceIn <= 0) return;
 
-    // 1. Считаем Цель (Ход цены)
-    let movePoints = 0;
-    if (yieldType === 'daily') movePoints = priceIn * (yieldVal / 100);
-    else if (yieldType === 'annual') movePoints = priceIn * ((yieldVal / 365) / 100);
-    else movePoints = yieldVal;
+    // --- РАСЧЕТ КОМИССИИ БИРЖИ ---
+    let exchangeFee = 0;
+    if (assetType === 'forts') {
+        // Сюда вставим твою сетку. Пока пример: 2 руб за контракт
+        exchangeFee = 2.0; 
+    } else {
+        // Для акций 0.03% от оборота
+        exchangeFee = priceIn * 0.0003; 
+    }
 
-    // 2. Считаем Цену Выхода
+    const brokerFee = priceIn * (brokerFeePerc / 100);
+    const totalEntryCost = brokerFee + exchangeFee;
+
+    // --- ЦЕНА ВЫХОДА ---
+    // Если yieldType === 'daily' и т.д., добавь логику пересчета movePoints здесь
     const priceOut = (direction === 'long') ? (priceIn + movePoints) : (priceIn - movePoints);
 
-    // 3. Расчет расходов (Комиссия на вход + на выход)
-    const totalFees = (priceIn + priceOut) * ((brokerFeePerc + exchangeFeePerc) / 100);
-    
-    // Прибыль до налогов
-    const grossProfit = movePoints - totalFees;
-    
-    // Налог (только с прибыли, если она есть)
+    // --- ПРИБЫЛЬ И НАЛОГ ---
+    const grossProfit = movePoints - (totalEntryCost * 2); // Комиссия на вход и на выход
     const taxAmount = grossProfit > 0 ? (grossProfit * (taxPerc / 100)) : 0;
     const netProfit = grossProfit - taxAmount;
 
-    // 4. ВЕРОЯТНОСТЬ (Основана на отношении Хода к ADR)
-    const adr = (window.currentCalcData && window.currentCalcData.avgADR) ? parseFloat(window.currentCalcData.avgADR) : 0;
-    const probEl = document.getElementById('res-prob');
-
-    if (adr > 0) {
-        // Отношение хода (movePoints) к среднему дневному диапазону
-        const ratio = movePoints / adr;
-        
-        // Если ход = 20% от ADR -> вероятность ~90%
-        // Если ход = 100% от ADR (весь дневной запас) -> вероятность ~40%
-        let probability = 100 - (ratio * 60); 
-        
-        if (probability > 98) probability = 98;
-        if (probability < 2) probability = 2;
-
-        probEl.innerText = Math.round(probability) + " %";
-        probEl.style.color = probability > 65 ? "#4bb34b" : (probability > 40 ? "#f0b33e" : "#e64646");
-    }
-
-    // Вывод итогов
-    document.getElementById('res-price-out').innerText = priceOut.toLocaleString('ru-RU', {maximumFractionDigits: 4});
+    // --- ВЫВОД ---
+    document.getElementById('res-price-out').innerText = priceOut.toLocaleString('ru-RU');
     document.getElementById('res-yield-daily').innerText = ((netProfit / priceIn) * 100).toFixed(3) + " %";
-    document.getElementById('res-yield-annual').innerText = ((netProfit / priceIn) * 365 * 100).toFixed(2) + " %";
+    
+    // Обновляем вероятность (берем ADR из загруженных данных)
+    updateProbability(movePoints);
 }
+
 
     function updateProbability(targetPoints) {
     const probEl = document.getElementById('res-prob');
