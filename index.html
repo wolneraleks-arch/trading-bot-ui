@@ -1931,6 +1931,7 @@ async function loadTickerStats() {
         // Вызываем функцию отрисовки (которую мы обсуждали ранее)
         // drawOIHistoryChart(d.oi.history);
          drawSimpleOIChart(d.oi.history);
+         drawSimpleOIChartShort(d.oi.history);
     }
    } else {
     document.getElementById('forts-details-card').style.display = 'none';
@@ -2088,8 +2089,13 @@ function setAssetType(type) {
 
 
 
+
+    
 function drawSimpleOIChart(history) {
-    const ctx = document.getElementById('oiHistoryChart').getContext('2d');
+    const canvas = document.getElementById('oiHistoryChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
     if (window.oiChart) window.oiChart.destroy();
 
     window.oiChart = new Chart(ctx, {
@@ -2097,115 +2103,85 @@ function drawSimpleOIChart(history) {
         data: {
             labels: history.map(d => d.date),
             datasets: [
-                // ЮРИДИЧЕСКИЕ ЛИЦА (Яркие)
                 {
-                    label: 'Юр. Long',
-                    data: history.map(d => d.jurL),
-                    borderColor: '#4bb34b', // Зеленый
+                    label: 'Юрлица (Long)',
+                    data: history.map(d => d.jurLong),
+                    borderColor: '#0077ff', // Синий
+                    backgroundColor: 'transparent',
                     borderWidth: 2,
-                    pointRadius: 0,
-                    tension: 0.3
+                    tension: 0.3,
+                    pointRadius: 2
                 },
                 {
-                    label: 'Юр. Short',
-                    data: history.map(d => d.jurS),
-                    borderColor: '#e64646', // Красный
-                    borderDash: [5, 5],     // Пунктир
+                    label: 'Физлица (Long)',
+                    data: history.map(d => d.fizLong),
+                    borderColor: '#ff9500', // Оранжевый
+                    backgroundColor: 'transparent',
                     borderWidth: 2,
-                    pointRadius: 0,
-                    tension: 0.3
-                },
-                // ФИЗИЧЕСКИЕ ЛИЦА (Бледные)
-                {
-                    label: 'Физ. Long',
-                    data: history.map(d => d.fizL),
-                    borderColor: '#4bb34b',
-                    borderWidth: 1,
-                    pointRadius: 0,
-                    alpha: 0.3, // Прозрачность
-                    borderColor: 'rgba(75, 179, 75, 0.3)', 
-                    tension: 0.3
-                },
-                {
-                    label: 'Физ. Short',
-                    data: history.map(d => d.fizS),
-                    borderColor: 'rgba(230, 70, 70, 0.3)',
-                    borderDash: [3, 3],
-                    borderWidth: 1,
-                    pointRadius: 0,
-                    tension: 0.3
+                    tension: 0.3,
+                    pointRadius: 2
                 }
             ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { 
-                legend: { 
-                    display: true, 
-                    position: 'top',
-                    labels: { boxWidth: 12, font: { size: 10 } } 
-                } 
+            plugins: {
+                legend: { display: true, position: 'top', labels: { size: 10 } }
             },
             scales: {
                 x: { grid: { display: false }, ticks: { font: { size: 9 } } },
-                y: { display: false } // Скрываем шкалу, важна только динамика
+                y: { ticks: { font: { size: 9 } } }
             }
         }
     });
 }
 
-
-
-
-
-
+    function drawSimpleOIChartShort(history) {
+    const canvas = document.getElementById('oiHistoryChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
     
-// function drawSimpleOIChart(history) {
-//     const canvas = document.getElementById('oiHistoryChart');
-//     if (!canvas) return;
-//     const ctx = canvas.getContext('2d');
-    
-//     if (window.oiChart) window.oiChart.destroy();
+    if (window.oiChart) window.oiChart.destroy();
 
-//     window.oiChart = new Chart(ctx, {
-//         type: 'line',
-//         data: {
-//             labels: history.map(d => d.date),
-//             datasets: [
-//                 {
-//                     label: 'Юрлица (Long)',
-//                     data: history.map(d => d.jurLong),
-//                     borderColor: '#0077ff', // Синий
-//                     backgroundColor: 'transparent',
-//                     borderWidth: 2,
-//                     tension: 0.3,
-//                     pointRadius: 2
-//                 },
-//                 {
-//                     label: 'Физлица (Long)',
-//                     data: history.map(d => d.fizLong),
-//                     borderColor: '#ff9500', // Оранжевый
-//                     backgroundColor: 'transparent',
-//                     borderWidth: 2,
-//                     tension: 0.3,
-//                     pointRadius: 2
-//                 }
-//             ]
-//         },
-//         options: {
-//             responsive: true,
-//             maintainAspectRatio: false,
-//             plugins: {
-//                 legend: { display: true, position: 'top', labels: { size: 10 } }
-//             },
-//             scales: {
-//                 x: { grid: { display: false }, ticks: { font: { size: 9 } } },
-//                 y: { ticks: { font: { size: 9 } } }
-//             }
-//         }
-//     });
-// }
+    window.oiChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: history.map(d => d.date),
+            datasets: [
+                {
+                    label: 'Юрлица (Long)',
+                    data: history.map(d => d.jurShort),
+                    borderColor: '#0077ff', // Синий
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    pointRadius: 2
+                },
+                {
+                    label: 'Физлица (Long)',
+                    data: history.map(d => d.fizShort),
+                    borderColor: '#ff9500', // Оранжевый
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    pointRadius: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: true, position: 'top', labels: { size: 10 } }
+            },
+            scales: {
+                x: { grid: { display: false }, ticks: { font: { size: 9 } } },
+                y: { ticks: { font: { size: 9 } } }
+            }
+        }
+    });
+}
 
 
 
