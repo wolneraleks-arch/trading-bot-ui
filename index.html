@@ -1804,16 +1804,13 @@ function updateOIBars(prefix, long, short) {
     }
 }
 
-
-    
-
 async function loadTickerStats() {
     const ticker = document.getElementById('stats_ticker_select').value.trim().toUpperCase();
-
+    console.log("🔍 Выбран тикер для загрузки:", ticker);
+    
     // const ticker = document.getElementById('stats_ticker_select').value;
     const container = document.getElementById('stats-container');
     const chartCard = document.getElementById('chart-card');
-    
     const chartInfo = document.getElementById('chart-info');
     const chartContainer = document.getElementById('chart-container');
     const statusText = document.getElementById('chart-status-text');
@@ -1822,9 +1819,9 @@ async function loadTickerStats() {
     
     if (!ticker) {
         container.style.display = 'none';
+        fortsCard.style.display = 'none'; 
         return;
     }
-
    // 1. Сначала определяем тип актива (isForts)
     //const selectedTickerObj = globalTickers.find(t => t.ticker === ticker);
     const selectedTickerObj = globalTickers.find(t => t.ticker.trim().toUpperCase() === ticker.trim().toUpperCase());
@@ -1832,6 +1829,7 @@ async function loadTickerStats() {
     const isBonds = selectedTickerObj ? selectedTickerObj.type === 'bonds' : false;
     const iscorpBonds = selectedTickerObj ? selectedTickerObj.type === 'corpbonds' : false;
 
+    console.log("🛠 Тип актива:", { isForts, isBonds, iscorpBonds });
     
  // 2. Теперь меняем подпись (так как isForts уже существует)
     const cupValEl = document.getElementById('curr-cup-val');
@@ -2390,51 +2388,6 @@ console.log(globalTickers)
 
 //______________________________________________________________________________________________________
 
-
-// function updateCalcTickers() {
-//     const typeSelect = document.getElementById('calc-asset-type');
-//     const nameSelect = document.getElementById('calc-name-select');
-    
-//     // Проверка: видит ли скрипт эти элементы?
-//     if (!typeSelect || !nameSelect) {
-//         console.error("❌ Элементы калькулятора не найдены в DOM!");
-//         return;
-//     }
-
-//     const selectedType = typeSelect.value.trim().toLowerCase();
-//     //console.log("🔍 Фильтруем тикеры для типа:", selectedType);
-
-//     nameSelect.innerHTML = '<option value="">-- Выберите актив --</option>';
-
-//     if (!globalTickers || globalTickers.length === 0) {
-//         nameSelect.innerHTML = '<option value="">⏳ Загрузка базы...</option>';
-//         return;
-//     }
-
-//     / Группа для вывода
-//     const groupAll = document.createElement('optgroup');
-//     groupAll.label = window.isPremium ? "📈 Доступные активы" : "🔒 Демо-доступ";
-
-//     const filtered = globalTickers.filter(t => 
-//         String(t.type || "").trim().toLowerCase() === selectedType
-//     );
-
-//     console.log("✅ Найдено подходящих тикеров:", filtered.length);
-
-//     if (filtered.length === 0) {
-//         nameSelect.innerHTML = '<option value="">-- Ничего не найдено --</option>';
-//     }
-
-//     filtered.forEach(item => {
-//         const opt = document.createElement('option');
-//         opt.value = item.ticker;
-//         opt.textContent = item.name;
-//         nameSelect.appendChild(opt);
-//     });
-// }
-
-
-
     function updateCalcTickers() {
     const typeSelect = document.getElementById('calc-asset-type');
     const nameSelect = document.getElementById('calc-name-select');
@@ -2503,25 +2456,19 @@ console.log(globalTickers)
                     displayName = `${item.name} (${desc})`;
                 }
             }
-
             opt.textContent = displayName;
             // opt.textContent = item.name;
             groupAll.appendChild(opt);
             count++;
         }
     });
-
     if (count > 0) {
         nameSelect.appendChild(groupAll);
     } else if (!window.isPremium) {
         nameSelect.innerHTML = '<option value="">🔒 Доступно в полной версии</option>';
     }
 }
-
-
-    
-    
-    
+   
     function syncCalcTicker() {
     const select = document.getElementById('calc-name-select');
     const ticker = select.value;
@@ -2545,136 +2492,7 @@ console.log(globalTickers)
     }
 }
 
-
-// норм но без налога и комиссий
-// function calculateTrade() {
-//     const priceIn = parseFloat(document.getElementById('calc-price-in').value) || 0;
-//     const yieldVal = parseFloat(document.getElementById('calc-yield-val').value) || 0;
-//     const yieldType = document.getElementById('calc-yield-type').value;
-//     const direction = document.getElementById('calc-direction').value;
-//     const dateInVal = document.getElementById('calc-date-in').value;
-
-//     if (priceIn <= 0 || !dateInVal) return;
-
-//     // 1. Считаем ДНИ (разница дат)
-//     const dateIn = new Date(dateInVal);
-//     const today = new Date();
-//     today.setHours(0,0,0,0);
-//     dateIn.setHours(0,0,0,0);
-//     let days = Math.ceil((today - dateIn) / (1000 * 60 * 60 * 24));
-//     if (days <= 0) days = 1;
-//     document.getElementById('res-days').innerText = days;
-
-//     // 2. Считаем ЦЕЛЬ (MovePoints) в РУБЛЯХ/ПУНКТАХ
-//     let movePoints = 0;
     
-//     if (yieldType === 'daily') {
-//         // yieldVal тут — это желаемый % в день
-//         movePoints = priceIn * (yieldVal / 100);
-//     } else if (yieldType === 'annual') {
-//         // yieldVal тут — желаемый % в год. 
-//         // Цель в деньгах = (Цена * %годовых / 365) * кол-во дней сделки
-//         movePoints = (priceIn * (yieldVal / 100) / 365) * days;
-//     } else if (yieldType === 'fact') {
-//         // В режиме "Фактическая" yieldVal — это просто пункты (твои 20 руб из примера)
-//         // Если хочешь тут тоже %, надо изменить формулу на: movePoints = priceIn * (yieldVal / 100);
-//         movePoints = priceIn * (yieldVal / 100);
-//     }
-
-//     // 3. ЦЕНА ВЫХОДА
-//     const taxFactor = 1 - (taxPerc / 100); // например, 0.87
-// const feeFactor = (brokerFeePerc + exchangeFeePerc) / 100; // например, 0.0006 (0.06%)
-
-// // Чтобы получить NetProfit чистыми, грязное движение должно быть:
-// let requiredGross = targetNetProfit / taxFactor; 
-// movePoints = requiredGross + (priceIn * feeFactor * 2); 
-
-//     const priceOut = (direction === 'long') ? (priceIn + movePoints) : (priceIn - movePoints);
-
-//     // 4. РАСЧЕТ ИТОГОВОЙ ДОХОДНОСТИ (Твоя логика)
-//     // Факт профит в % относительно входа (чистое движение цены)
-//     const factYieldPerc = (movePoints / priceIn) * 100;
-    
-//     // Дневная доходность = Общий % / Количество дней
-//     const dailyResult = factYieldPerc / days;
-    
-//     // Годовая доходность = Дневная * 365
-//     const annualResult = dailyResult * 365;
-
-//     // 5. ВЫВОД
-//     document.getElementById('res-price-out').innerText = priceOut.toLocaleString('ru-RU', {maximumFractionDigits: 4});
-//     document.getElementById('res-yield-daily').innerText = dailyResult.toFixed(3) + " %";
-//     document.getElementById('res-yield-annual').innerText = annualResult.toFixed(2) + " %";
-    
-//     updateProbability(movePoints);
-// }
-
-
-
-
-
-    // норм но по фьючам беда
-// function calculateTrade() {
-//     const priceIn = parseFloat(document.getElementById('calc-price-in').value) || 0;
-//     const yieldVal = parseFloat(document.getElementById('calc-yield-val').value) || 0;
-//     const yieldType = document.getElementById('calc-yield-type').value;
-//     const direction = document.getElementById('calc-direction').value;
-//     const dateInVal = document.getElementById('calc-date-in').value;
-//     const assetType = document.getElementById('calc-asset-type').value; // 'stocks' или 'forts'
-
-//     // Получаем проценты из инпутов
-//     const taxPerc = parseFloat(document.getElementById('calc-tax').value) || 0;
-//     const brokerFeePerc = parseFloat(document.getElementById('calc-fee').value) || 0;
-//     // Пока сетки нет: для акций 0.03%, для фьючерсов поставим заглушку 0.01%
-//     const exchangeFeePerc = (assetType === 'stocks') ? 0.03 : 0.01;
-
-//     if (priceIn <= 0 || !dateInVal) return;
-
-//     // 1. Считаем ДНИ
-//     const dateIn = new Date(dateInVal);
-//     const today = new Date();
-//     today.setHours(0,0,0,0);
-//     dateIn.setHours(0,0,0,0);
-//     let days = Math.ceil((today - dateIn) / (1000 * 60 * 60 * 24));
-//     if (days <= 0) days = 1;
-//     document.getElementById('res-days').innerText = days;
-
-//     // 2. Считаем ЧИСТУЮ ЦЕЛЬ (Profit) в рублях
-//     let targetNetProfit = 0;
-//     if (yieldType === 'daily') {
-//         targetNetProfit = priceIn * (yieldVal / 100);
-//     } else if (yieldType === 'annual') {
-//         targetNetProfit = (priceIn * (yieldVal / 100) / 365) * days;
-//     } else if (yieldType === 'fact') {
-//         targetNetProfit = priceIn * (yieldVal / 100);
-//     }
-
-//     // 3. УЧЕТ НАЛОГА И КОМИССИЙ (Инверсия: считаем, сколько надо пройти "грязными")
-//     const taxFactor = 1 - (taxPerc / 100); 
-//     const feeFactor = (brokerFeePerc + exchangeFeePerc) / 100;
-
-//     // Чтобы получить NetProfit чистыми, нужно перекрыть комиссии и налог
-//     let requiredGross = targetNetProfit / taxFactor; 
-//     let movePoints = requiredGross + (priceIn * feeFactor * 2); 
-
-//     // ЦЕНА ВЫХОДА
-//     const priceOut = (direction === 'long') ? (priceIn + movePoints) : (priceIn - movePoints);
-
-//     // 4. ИТОГОВАЯ ДОХОДНОСТЬ (для вывода)
-//     const factYieldPerc = (movePoints / priceIn) * 100;
-//     const dailyResult = factYieldPerc / days;
-//     const annualResult = dailyResult * 365;
-
-//     // 5. ВЫВОД
-//     document.getElementById('res-price-out').innerText = priceOut.toLocaleString('ru-RU', {maximumFractionDigits: 4});
-//     document.getElementById('res-yield-daily').innerText = dailyResult.toFixed(3) + " %";
-//     document.getElementById('res-yield-annual').innerText = annualResult.toFixed(2) + " %";
-    
-//     updateProbability(movePoints);
-// }
-
-
-
     function calculateTrade() {
     const priceIn = parseFloat(document.getElementById('calc-price-in').value) || 0;
     const yieldVal = parseFloat(document.getElementById('calc-yield-val').value) || 0;
@@ -2759,137 +2577,6 @@ console.log(globalTickers)
         finalYieldDaily = (targetProfitNet / s.go * 100) / days;
         finalYieldAnnual = finalYieldDaily * 365;
     }
-
-
-        
-    //  if (assetType === 'forts') {
-    //     // --- ЛОГИКА ДЛЯ ФЬЮЧЕРСОВ ---
-    //     const ticker = document.getElementById('calc-ticker').value;
-    //     const s = globalTickers.find(t => t.ticker === ticker);
-        
-    //     if (!s || !s.go || !s.stepPrice) {
-    //         document.getElementById('res-price-out').innerText = "Нет данных ГО/Шага";
-    //         return;
-    //     }
-
-    //     // 1. КОМИССИИ
-    //     // Сетка биржи (в процентах от номинала)
-    //     const commMap = {
-    //         "CURRENCY":  { market: 0.00462, limit: 0.00154 },
-    //         "COMMODITY": { market: 0.0132,  limit: 0.00440 },
-    //         "INDEX":     { market: 0.0066,  limit: 0.00220 },
-    //         "STOCK":     { market: 0.0198,  limit: 0.00660 },
-    //         "INTEREST":  { market: 0.01659, limit: 0.00550 }
-    //     };
-    //     const sType = (s.secType || "STOCK").toUpperCase();
-    //     const exchangeFeeRate = (commMap[sType] || commMap["STOCK"])[orderType] / 100;
-        
-    //     // Номинал контракта для биржевого сбора
-    //     const nominal = (priceIn / s.tickSize) * s.stepPrice;
-    //     const exchangeFeeRub = nominal * exchangeFeeRate * 2; // Вход + Выход
-
-    //     // Брокерская комиссия (теперь в РУБЛЯХ за 1 контракт)
-    //     // Берём значение из инпута "Комиссия (%)" как рубли
-    //     const brokerFeeRub = brokerFeePerc * 2; // Вход + Выход
-
-    //     const totalCosts = exchangeFeeRub + brokerFeeRub;
-
-    //     // 2. ЦЕЛЕВАЯ ПРИБЫЛЬ (от ГО)
-    //     let targetProfitNet = 0; // Чистыми на руки
-    //     let rate = yieldVal / 100;
-
-    //     if (yieldType === 'annual') {
-    //         targetProfitNet = (s.go * rate / 365) * days;
-    //     } else if (yieldType === 'daily') {
-    //         targetProfitNet = (s.go * rate) * days;
-    //     } else {
-    //         targetProfitNet = s.go * rate;
-    //     }
-
-    //     // 3. РАСЧЕТ "ГРЯЗНОЙ" ПРИБЫЛИ (с учетом налога и всех комиссий)
-    //     const taxFactor = 1 - (taxPerc / 100);
-    //     // Сначала накручиваем налог на чистую прибыль, затем добавляем расходы
-    //     // const grossProfitNeeded = (targetProfitNet / taxFactor) + totalCosts;
-         
-    //      const grossProfitNeeded = (targetProfitNet / taxFactor)+ exchangeFeeRub + brokerFeeRub
-         
-    //     // 4. ДИСТАНЦИЯ В ЦЕНЕ
-    //     // Сколько пунктов нужно пройти, чтобы заработать grossProfitNeeded рублей
-    //     // const pointsQty = grossProfitNeeded / s.stepPrice;
-    //      const pricePointValue = s.stepPrice / s.tickSize; 
-    //      movePoints = grossProfitNeeded / pricePointValue;
-    //     // movePoints = pointsQty * s.tickSize;
-
-    //     // Статистика для вывода (чистая доходность на ГО)
-    //     finalYieldDaily = (targetProfitNet / s.go * 100) / days;
-    //     finalYieldAnnual = finalYieldDaily * 365;
-
-    // }
-        
-        
-    //     if (assetType === 'forts') {
-    //     // --- ЛОГИКА ДЛЯ ФЬЮЧЕРСОВ ---
-    //     const ticker = document.getElementById('calc-ticker').value;
-    //     const s = globalTickers.find(t => t.ticker === ticker);
-        
-    //     if (!s || !s.go || !s.stepPrice) {
-    //         document.getElementById('res-price-out').innerText = "Нет данных ГО/Шага";
-    //         return;
-    //     }
-
-    //     // Сетка комиссий (твоя)
-    //     const commMap = {
-    //         "CURRENCY":  { market: 0.00462, limit: 0.00154 },
-    //         "COMMODITY": { market: 0.0132,  limit: 0.00440 },
-    //         "INDEX":     { market: 0.0066,  limit: 0.00220 },
-    //         "STOCK":     { market: 0.0198,  limit: 0.00660 },
-    //         "INTEREST":  { market: 0.01659, limit: 0.00550 }
-    //     };
-    //     const sType = (s.secType || "STOCK").toUpperCase();
-    //     const exchangeFee = (commMap[sType] || commMap["STOCK"])[orderType] / 100;
-    //     const brokerFee = brokerFeePerc / 100;
-
-    //     // Номинал контракта для расчета комиссии
-    //     const nominal = (priceIn / s.tickSize) * s.stepPrice;
-    //     const totalCommRub = nominal * (exchangeFee + brokerFee) * 2; // Вход + Выход
-
-    //     // Целевая прибыль в рублях (считаем от ГО)
-
-    //   let targetProfitRub = 0;
-    //    let ratePerDay = yieldVal / 100;
-
-    //    if (yieldType === 'annual') {
-    //    targetProfitRub = (s.go * ratePerDay / 365) * days;
-    //  } else if (yieldType === 'daily') {
-    // // ТЕПЕРЬ УМНОЖАЕМ НА ДНИ:
-    // targetProfitRub = (s.go * ratePerDay) * days;
-    //   } else {
-    // // 'fact' - фиксированная сумма за весь период
-    // targetProfitRub = s.go * ratePerDay;
-    //  }
-
-        
-    //     // let targetProfitRub = 0;
-    //     // if (yieldType === 'annual') {
-    //     //     targetProfitRub = (s.go * (yieldVal / 100) / 365) * days;
-    //     // } else {
-    //     //     // Для 'daily' и 'fact' считаем как % от ГО
-    //     //     targetProfitRub = s.go * (yieldVal / 100);
-    //     // }
-
-    //     // Чистая прибыль должна учитывать налог
-    //     const taxFactor = 1 - (taxPerc / 100);
-    //     const grossProfitNeeded = (targetProfitRub / taxFactor) + totalCommRub;
-
-    //     // Переводим рубли в пункты цены
-    //     const pointsQty = grossProfitNeeded / s.stepPrice;
-    //     movePoints = pointsQty * s.tickSize;
-
-    //     // Для вывода статистики (доходность на ГО)
-    //     finalYieldDaily = (targetProfitRub / s.go * 100) / days;
-    //     finalYieldAnnual = finalYieldDaily * 365;
-
-    // } 
     
     else {
         // --- ЛОГИКА ДЛЯ АКЦИЙ (Твоя старая) ---
@@ -2907,9 +2594,7 @@ console.log(globalTickers)
          } else {
     // 'fact'
     targetNetProfit = priceIn * ratePerDay;
-         }
-
-        
+         }       
         // if (yieldType === 'annual') targetNetProfit = (priceIn * (yieldVal / 100) / 365) * days;
 
         const taxFactor = 1 - (taxPerc / 100); 
@@ -2932,33 +2617,6 @@ console.log(globalTickers)
     
     if (typeof updateProbability === "function") updateProbability(priceOut);
 }
-
-
-
-   //  function updateProbability(targetPoints) {
-   //  const probEl = document.getElementById('res-prob');
-    
-   //  // Берем ADR из того, что прислал сервер в syncCalcTicker
-   //  // (Я сохранил это в window.currentCalcData в предыдущем совете)
-   //  const adr = (window.currentCalcData && window.currentCalcData.avgADR) ? parseFloat(window.currentCalcData.avgADR) : 0;
-
-   //  if (adr <= 0) {
-   //      probEl.innerText = "-- %";
-   //      return;
-   //  }
-
-   //  // Логика: если цель = 1 ADR, вероятность 50%. Если цель 0.2 ADR — вероятность 90%.
-   //  let ratio = targetPoints / adr;
-   //  let probability = 100 - (ratio * 50); 
-    
-   //  if (probability > 98) probability = 98;
-   //  if (probability < 2) probability = 2;
-
-   //  probEl.innerText = Math.round(probability) + " %";
-    
-   //  // Красим в зависимости от шансов
-   //  probEl.style.color = probability > 65 ? "#4bb34b" : (probability > 40 ? "#f0b33e" : "#e64646");
-   // }
 
 //priceOut
 function updateProbability(targetPrice) {
@@ -3016,10 +2674,7 @@ function updateProbability(targetPrice) {
 }
     
     
-    // ___________________________________________________________________________
-
-    
-    
+    // ___________________________________________________________________________________________________________________________
 
 function showToast(message, isError = false) {
     const x = document.getElementById("snackbar");
