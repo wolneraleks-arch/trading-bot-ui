@@ -2196,6 +2196,26 @@ function drawSimpleOIChart(history) {
 
 
 
+const fortsDescriptions = {
+    "MX": "Индекс МосБиржи", "MM": "Индекс МосБиржи (мини)", "RI": "Индекс РТС",
+    "RM": "Индекс РТС (мини)", "VI": "Волатильность", "HO": "Индекс недвижимости",
+    "OG": "Индекс нефти и газа", "MA": "Индекс металлов", "FN": "Индекс финансов",
+    "CS": "Индекс потребсектора", "RB": "Индекс RGBI", "IMOEXF": "Индекс Мосбиржи",
+    "IP": "Индекс Мосбиржи (IPO)", "MY": "Индекс Мосбиржи (CNY)", "AF": "Аэрофлот",
+    "AL": "АЛРОСА", "CH": "Северсталь", "FS": "ФСК ЕЭС", "GZ": "Газпром",
+    "GK": "Норникель", "HY": "РусГидро", "LK": "ЛУКОЙЛ", "MN": "Магнит",
+    "ME": "МосБиржа", "MT": "МТС", "NM": "НЛМК", "NK": "НОВАТЭК",
+    "RN": "Роснефть", "RT": "Ростелеком", "SP": "Сбербанк п.а.", "SR": "Сбербанк",
+    "SG": "Сургутнефтегаз п.а.", "SN": "Сургутнефтегаз", "TT": "Татнефть",
+    "TP": "Татнефть п.а.", "TN": "Транснефть", "VB": "ВТБ", "MG": "ММК",
+    "PZ": "Полюс", "YD": "Яндекс", "AK": "АФК Система", "IR": "Интер РАО",
+    "PO": "Полиметалл", "PI": "ПИК", "SE": "СПБ Биржа", "RL": "РУСАЛ",
+    "PH": "ФосАгро", "SS": "Самолет", "MC": "Мечел", "RE": "Россети",
+    "SO": "Газпром нефть", "TI": "ТКС Холдинг", "FV": "X5 Group", "VK": "ВК",
+    "OZ": "Ozon", "SF": "SPY ETF", "NA": "Nasdaq ETF", "PS": "Группа Позитив",
+    "SX": "Euro Stoxx 50", "HS": "Hang Seng", "DX": "DAX", "N2": "Nikkei 225",
+    "IS": "Артген", "BR": "Нефть Brent", "SI": "Доллар/Рубль", "ED": "Евро/Доллар"
+};
 
 
 
@@ -2429,6 +2449,19 @@ console.log(globalTickers)
         if (window.isPremium || isAllowedInDemo) {
             const opt = document.createElement('option');
             opt.value = item.ticker;
+            
+            let displayName = item.name;
+            if (selectedType === 'forts') {
+                // Берем первые 2 символа тикера (префикс)
+                const prefix = cleanTicker.substring(0, 2);
+                // Если префикс длиннее (например, IMOEXF), ищем полное совпадение или префикс
+                const desc = fortsDescriptions[cleanTicker] || fortsDescriptions[prefix];
+                
+                if (desc) {
+                    displayName = `${item.name} (${desc})`;
+                }
+            }
+
             opt.textContent = item.name;
             groupAll.appendChild(opt);
             count++;
