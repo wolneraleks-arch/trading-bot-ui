@@ -2859,31 +2859,68 @@ console.log(globalTickers)
 
 
 
-    function updateProbability(targetPoints) {
-    const probEl = document.getElementById('res-prob');
+   //  function updateProbability(targetPoints) {
+   //  const probEl = document.getElementById('res-prob');
     
-    // Берем ADR из того, что прислал сервер в syncCalcTicker
-    // (Я сохранил это в window.currentCalcData в предыдущем совете)
-    const adr = (window.currentCalcData && window.currentCalcData.avgADR) ? parseFloat(window.currentCalcData.avgADR) : 0;
+   //  // Берем ADR из того, что прислал сервер в syncCalcTicker
+   //  // (Я сохранил это в window.currentCalcData в предыдущем совете)
+   //  const adr = (window.currentCalcData && window.currentCalcData.avgADR) ? parseFloat(window.currentCalcData.avgADR) : 0;
 
-    if (adr <= 0) {
+   //  if (adr <= 0) {
+   //      probEl.innerText = "-- %";
+   //      return;
+   //  }
+
+   //  // Логика: если цель = 1 ADR, вероятность 50%. Если цель 0.2 ADR — вероятность 90%.
+   //  let ratio = targetPoints / adr;
+   //  let probability = 100 - (ratio * 50); 
+    
+   //  if (probability > 98) probability = 98;
+   //  if (probability < 2) probability = 2;
+
+   //  probEl.innerText = Math.round(probability) + " %";
+    
+   //  // Красим в зависимости от шансов
+   //  probEl.style.color = probability > 65 ? "#4bb34b" : (probability > 40 ? "#f0b33e" : "#e64646");
+   // }
+
+
+function updateProbability(targetPrice) {
+    const probEl = document.getElementById('res-prob');
+    const ticker = document.getElementById('calc-ticker').value;
+    const data = globalTickers.find(t => t.ticker === ticker);
+
+    if (!data || !data.adr || !data.openprice || data.openprice === 0) {
         probEl.innerText = "-- %";
         return;
     }
 
-    // Логика: если цель = 1 ADR, вероятность 50%. Если цель 0.2 ADR — вероятность 90%.
-    let ratio = targetPoints / adr;
-    let probability = 100 - (ratio * 50); 
+    // 1. Считаем необходимый ход в пунктах цены от открытия дня
+    // (Важно считать именно от открытия, а не от входа, т.к. ADR — это лимит дня)
+    const requiredMove = Math.abs(targetPrice - data.openprice);
     
+    // 2. Считаем соотношение хода к среднему диапазону (ADR)
+    const ratio = requiredMove / data.adr;
+
+    // 3. Логика вероятности:
+    // 0% хода от открытия = ~99% (уже там)
+    // 50% ADR = ~75% вероятности
+    // 100% ADR = ~50% вероятности
+    // 150% ADR = ~10% вероятности
+    let probability = 100 * Math.exp(-0.7 * ratio * ratio); 
+
+    // Ограничения
     if (probability > 98) probability = 98;
-    if (probability < 2) probability = 2;
+    if (probability < 1) probability = 1;
 
     probEl.innerText = Math.round(probability) + " %";
     
-    // Красим в зависимости от шансов
-    probEl.style.color = probability > 65 ? "#4bb34b" : (probability > 40 ? "#f0b33e" : "#e64646");
-   }
+    // Цветовая индикация
+    probEl.style.color = probability > 60 ? "#4bb34b" : (probability > 30 ? "#f0b33e" : "#e64646");
+}
 
+
+    
     
     
     // ___________________________________________________________________________
