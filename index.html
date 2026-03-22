@@ -1505,12 +1505,6 @@ function renderTopList(data, total) {
     });
     listCont.innerHTML = html;
 }
-
-
-
-
-
-
     
 let totalPortfolioChart = null;
 
@@ -2190,9 +2184,7 @@ function drawSimpleOIChart(history) {
             }
         }
     });
-}
-
-
+   }
 
 const fortsDescriptions = {
 
@@ -2251,7 +2243,7 @@ const fortsDescriptions = {
     "SQ": "Nasdaq Semiconductor", "TC": "Tencent", "TL": "TLT ETF",
     "XI": "Xiaomi", "AA": "MSCI South Africa", "AG": "MSCI Argentina",
     "BZ": "MSCI Brazil", "CI": "MSCI China", "EA": "ЭН+ГРУП", "SD": "MSCI Saudi Arabia"
-};
+  };
 
     
 function updateStatsTickers() {
@@ -2260,9 +2252,6 @@ function updateStatsTickers() {
 
     const rawUser = document.getElementById('in_tickers_stocks').value || "";
     const userTickersCodes = rawUser.split(',').map(t => t.trim().toUpperCase()).filter(t => t);
-
-    //select.innerHTML = `<option value="">-- Выберите ${currentAssetType === 'stocks' ? 'акцию' : 'фьючерс'} --</option>`;
-   // select.innerHTML = '<option value="">-- Выберите акцию --</option>';
 
     // Определяем текст подписи в зависимости от типа
      const assetNames = {
@@ -2275,7 +2264,7 @@ function updateStatsTickers() {
      select.innerHTML = `<option value="">-- Выберите ${label} --</option>`;
     
     // 1. Группа "Мои тикеры"
-if (userTickersCodes.length > 0) {
+    if (userTickersCodes.length > 0) {
     const groupUser = document.createElement('optgroup');
     groupUser.label = currentAssetType === 'stocks' ? "⭐ Мои тикеры" : "⭐ Мои тикеры";
     
@@ -2283,8 +2272,6 @@ if (userTickersCodes.length > 0) {
     userTickersCodes.forEach(code => {
         // Ищем тикер в глобальном списке, чтобы узнать его тип
         const found = globalTickers.find(item => item.ticker.trim().toUpperCase() === code.trim().toUpperCase());
-        
-        
         // Добавляем в список ТОЛЬКО если тип совпадает с текущей вкладкой
         if (found && found.type === currentAssetType) {
             const opt = document.createElement('option');
@@ -2296,9 +2283,7 @@ if (userTickersCodes.length > 0) {
     });
     
     if (userCount > 0) select.appendChild(groupUser);
-}
-
-
+   }
     // 2. Группа "Весь рынок" с учетом ДЕМО-ОГРАНИЧЕНИЙ
     const groupAll = document.createElement('optgroup');
     groupAll.label = window.isPremium ? "📈 Весь рынок" : "🔒 Весь рынок (Демо)";
@@ -2351,15 +2336,13 @@ if (userTickersCodes.length > 0) {
             }
         }
     });
-console.log(globalTickers)
+   console.log(globalTickers)
     if (count > 0) {
         select.appendChild(groupAll);
     }
-}
+   }
 
-
-
-// ФИЛЬТРАЦИЯ ТИКЕРОВ
+   // ФИЛЬТРАЦИЯ ТИКЕРОВ
     function filterTickers() {
     const searchVal = document.getElementById('ticker_search').value.toLowerCase();
     const select = document.getElementById('stats_ticker_select');
@@ -2523,9 +2506,6 @@ console.log(globalTickers)
     let finalYieldDaily = 0;
     let finalYieldAnnual = 0;
 
-
-
-        
     if (assetType === 'forts') {
         const ticker = document.getElementById('calc-ticker').value;
         const s = globalTickers.find(t => t.ticker === ticker);
