@@ -2885,56 +2885,57 @@ console.log(globalTickers)
    // }
 
 //priceOut
-function updateProbability(priceOut) {
+function updateProbability(targetPrice) {
     const probEl = document.getElementById('res-prob');
     const ticker = document.getElementById('calc-ticker').value;
     const priceIn = parseFloat(document.getElementById('calc-price-in').value) || 0;
     const data = globalTickers.find(t => t.ticker === ticker);
 
-    // Если данных нет или ADR не загружен
     if (!data || !data.adr || data.adr <= 0 || priceIn <= 0) {
         probEl.innerText = "-- %";
         probEl.style.color = "#818c99";
         return;
     }
 
-    // 1. Дистанция, которую нужно пройти (в пунктах цены)
+    // 1. Дистанция хода от ВХОДА до ВЫХОДА (в пунктах цены)
     const requiredMove = Math.abs(targetPrice - priceIn);
     
-    // 2. Приводим ADR к пунктам цены (если он в % или в рублях)
+    // 2. Определяем ADR в пунктах цены
     let adrPoints = data.adr;
-    // Если ADR в базе подозрительно маленький (например, 0.02 для 2%), конвертируем
-    if (data.adr > 0 && data.adr < 0.2) { 
+    
+    // Если ADR в базе подозрительно мал (например 0.02 для 2%), конвертируем в пункты
+    if (data.adr > 0 && data.adr < 0.15) { 
         adrPoints = priceIn * data.adr; 
-    } else if (data.adr >= 0.2 && data.adr < 15 && priceIn > 50) {
-        // Если ADR в базе как "2.5" (проценты), а цена акции "100"
+    } 
+    // Если ADR в процентах (например 2.5), а не в рублях
+    else if (data.adr > 1.5 && data.adr < 10 && priceIn > 50 && data.type === 'stocks') {
+        // Для дорогих акций (Сбер, Лукойл) ADR обычно в рублях > 5. 
+        // Если он мал, значит это проценты.
         adrPoints = priceIn * (data.adr / 100);
     }
 
     // 3. Коэффициент сложности (Ratio)
-    // 0.1 - легко, 1.0 - средний день, 2.0 - экстремальный день
     const ratio = requiredMove / adrPoints;
 
-    // 4. Расчет вероятности по экспоненте (быстрое падение после 1.0 ADR)
-    // Формула: 100 * e^(-0.7 * ratio^2)
+    // 4. Расчет вероятности (экспоненциальное затухание)
+    // 0.2 ADR -> ~97%, 1.0 ADR -> ~50%, 1.5 ADR -> ~20%
     let probability = 100 * Math.exp(-0.7 * Math.pow(ratio, 2));
 
-    // Ограничения для адекватности
     if (probability > 99) probability = 99;
     if (probability < 1) probability = 1;
 
-    // 5. Вывод
+    // 5. Вывод и раскраска
     probEl.innerText = Math.round(probability) + " %";
     
-    // Красим: Зеленый (>65%), Желтый (40-65%), Красный (<40%)
     if (probability > 65) {
-        probEl.style.color = "#4bb34b";
-    } else if (probability > 40) {
-        probEl.style.color = "#f0b33e";
+        probEl.style.color = "#4bb34b"; // Зеленый
+    } else if (probability > 35) {
+        probEl.style.color = "#f0b33e"; // Оранжевый
     } else {
-        probEl.style.color = "#e64646";
+        probEl.style.color = "#e64646"; // Красный
     }
 }
+
 
 
     
