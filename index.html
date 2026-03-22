@@ -2254,30 +2254,7 @@ const fortsDescriptions = {
     "XI": "Xiaomi", "AA": "MSCI South Africa", "AG": "MSCI Argentina",
     "BZ": "MSCI Brazil", "CI": "MSCI China", "EA": "ЭН+ГРУП", "SD": "MSCI Saudi Arabia"
 };
-    
 
-
-function getDisplayName(item, type) {
-    let displayName = item.name;
-    if (type === 'forts') {
-        const cleanTicker = item.ticker.trim().toUpperCase();
-        const prefix2 = cleanTicker.substring(0, 2);
-        const prefix4 = cleanTicker.substring(0, 4);
-        
-        // Ищем в словаре: полное совпадение -> 4 знака -> 2 знака
-        const desc = fortsDescriptions[cleanTicker] || 
-                     fortsDescriptions[prefix4] || 
-                     fortsDescriptions[prefix2];
-        
-        if (desc) {
-            displayName = `${item.name} (${desc})`;
-        }
-    }
-    return displayName;
-}
-
-
-    
     
 function updateStatsTickers() {
     const select = document.getElementById('stats_ticker_select');
@@ -2363,10 +2340,14 @@ if (userTickersCodes.length > 0) {
             if (window.isPremium || isAllowedInDemo) {
                 const opt = document.createElement('option');
                 opt.value = item.ticker;
+
+                let dName = item.name;
+            if (currentAssetType === 'forts') {
+                const desc = fortsDescriptions[tickerUpper] || fortsDescriptions[tickerUpper.substring(0, 4)] || fortsDescriptions[tickerUpper.substring(0, 2)];
+                if (desc) dName = `${item.name} (${desc})`;
+            }
                 
                 // opt.textContent = item.name;
-                opt.textContent = getDisplayName(item, currentAssetType);
-                
                 groupAll.appendChild(opt);
                 count++;
             }
