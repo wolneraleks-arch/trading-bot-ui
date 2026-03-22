@@ -2884,8 +2884,8 @@ console.log(globalTickers)
    //  probEl.style.color = probability > 65 ? "#4bb34b" : (probability > 40 ? "#f0b33e" : "#e64646");
    // }
 
-
-function updateProbability(targetPrice) {
+//priceOut
+function updateProbability(priceOut) {
     const probEl = document.getElementById('res-prob');
     const ticker = document.getElementById('calc-ticker').value;
     const priceIn = parseFloat(document.getElementById('calc-price-in').value) || 0;
