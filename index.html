@@ -2921,8 +2921,11 @@ function updateProbability(targetPrice) {
     // 0.2 ADR -> ~97%, 1.0 ADR -> ~50%, 1.5 ADR -> ~20%
     let probability = 100 * Math.exp(-0.7 * Math.pow(ratio, 2));
 
-    if (probability > 99) probability = 99;
-    if (probability < 1) probability = 1;
+    // if (probability > 99) probability = 99;
+    // if (probability < 1) probability = 1;
+
+    if (probability > 95) probability = 95;
+    if (probability < 5) probability = 5;
 
     // 5. Вывод и раскраска
     probEl.innerText = Math.round(probability) + " %";
