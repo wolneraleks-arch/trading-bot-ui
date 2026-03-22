@@ -2341,13 +2341,13 @@ if (userTickersCodes.length > 0) {
                 const opt = document.createElement('option');
                 opt.value = item.ticker;
 
-                let dName = item.name;
-            if (currentAssetType === 'forts') {
-                const desc = fortsDescriptions[tickerUpper] || fortsDescriptions[tickerUpper.substring(0, 4)] || fortsDescriptions[tickerUpper.substring(0, 2)];
-                if (desc) dName = `${item.name} (${desc})`;
-            }
+            //     let dName = item.name;
+            // if (currentAssetType === 'forts') {
+            //     const desc = fortsDescriptions[tickerUpper] || fortsDescriptions[tickerUpper.substring(0, 4)] || fortsDescriptions[tickerUpper.substring(0, 2)];
+            //     if (desc) dName = `${item.name} (${desc})`;
+            // }
                 
-                // opt.textContent = item.name;
+                 opt.textContent = item.name;
                 groupAll.appendChild(opt);
                 count++;
             }
