@@ -2197,26 +2197,84 @@ function drawSimpleOIChart(history) {
 
 
 const fortsDescriptions = {
+
+    // Индексы и ставки
     "MX": "Индекс МосБиржи", "MM": "Индекс МосБиржи (мини)", "RI": "Индекс РТС",
     "RM": "Индекс РТС (мини)", "VI": "Волатильность", "HO": "Индекс недвижимости",
     "OG": "Индекс нефти и газа", "MA": "Индекс металлов", "FN": "Индекс финансов",
     "CS": "Индекс потребсектора", "RB": "Индекс RGBI", "IMOEXF": "Индекс Мосбиржи",
-    "IP": "Индекс Мосбиржи (IPO)", "MY": "Индекс Мосбиржи (CNY)", "AF": "Аэрофлот",
-    "AL": "АЛРОСА", "CH": "Северсталь", "FS": "ФСК ЕЭС", "GZ": "Газпром",
-    "GK": "Норникель", "HY": "РусГидро", "LK": "ЛУКОЙЛ", "MN": "Магнит",
-    "ME": "МосБиржа", "MT": "МТС", "NM": "НЛМК", "NK": "НОВАТЭК",
-    "RN": "Роснефть", "RT": "Ростелеком", "SP": "Сбербанк п.а.", "SR": "Сбербанк",
+    "IP": "Индекс Мосбиржи (IPO)", "MY": "Индекс Мосбиржи (CNY)", "RR": "ставка RUONIA",
+    "MF": "ставка RUSFAR", "R2": "Russell 2000 ETF", "DJ": "DJ Industrial ETF",
+
+    // Валюты
+    "CR": "CNY/RUB", "Eu": "EUR/RUB", "Si": "USD/RUB", "USDRUBF": "USD/RUB вечный",
+    "EURRUBF": "EUR/RUB вечный", "CNYRUBF": "CNY/RUB вечный", "TY": "TRY/RUB",
+    "HK": "HKD/RUB", "AE": "AED/RUB", "I2": "INR/RUB", "KZ": "KZT/RUB",
+    "AR": "AMD/RUB", "BY": "BYN/RUB", "ED": "EUR/USD", "AU": "AUD/USD",
+    "GU": "GBP/USD", "CA": "USD/CAD", "CF": "USD/CHF", "JP": "USD/JPY",
+    "TR": "USD/TRY", "UC": "USD/CNY", "UT": "USD/KZT", "EC": "EUR/CAD",
+    "EG": "EUR/GBP", "EJ": "EUR/JPY",
+
+    // Сырье (Товары)
+    "BR": "Нефть BRENT", "BM": "Нефть (мини)", "CL": "Нефть Light Sweet",
+    "GD": "Золото", "GL": "Золото (RUB)", "GLDRUBF": "Золото вечное", "GOLD": "Золото",
+    "PD": "Палладий", "PA": "Палладий", "PT": "Платина", "SV": "Серебро",
+    "SL": "Серебро (пост.)", "S1": "Серебро (мини)", "SA": "Сахар-сырец", "Su": "Сахар",
+    "AM": "Алюминий", "AN": "Алюминий", "Co": "Медь", "CE": "Медь",
+    "GO": "Золото (пост.)", "Nl": "Никель", "NC": "Никель", "Zn": "Цинк", "ZC": "Цинк",
+    "NG": "Природный газ", "NR": "Природный газ (микро)", "FF": "Газ Датч ТТФ",
+    "WH": "Пшеница", "W4": "Индекс пшеницы", "KC": "Кофе", "OJ": "Апельсиновый сок", "CC": "Какао",
+
+    // Акции / Компании
+    "AF": "Аэрофлот", "AL": "АЛРОСА", "CH": "Северсталь", "FS": "ФСК ЕЭС",
+    "GZ": "Газпром", "GAZPF": "Газпром вечный", "GK": "Норникель", "HY": "РусГидро",
+    "LK": "ЛУКОЙЛ", "MN": "Магнит", "ME": "МосБиржа", "MT": "МТС",
+    "NM": "НЛМК", "NK": "НОВАТЭК", "RN": "Роснефть", "RT": "Ростелеком",
+    "SP": "Сбербанк п.а.", "SR": "Сбербанк", "SBERF": "Сбербанк вечный",
     "SG": "Сургутнефтегаз п.а.", "SN": "Сургутнефтегаз", "TT": "Татнефть",
     "TP": "Татнефть п.а.", "TN": "Транснефть", "VB": "ВТБ", "MG": "ММК",
-    "PZ": "Полюс", "YD": "Яндекс", "AK": "АФК Система", "IR": "Интер РАО",
-    "PO": "Полиметалл", "PI": "ПИК", "SE": "СПБ Биржа", "RL": "РУСАЛ",
-    "PH": "ФосАгро", "SS": "Самолет", "MC": "Мечел", "RE": "Россети",
-    "SO": "Газпром нефть", "TI": "ТКС Холдинг", "FV": "X5 Group", "VK": "ВК",
-    "OZ": "Ozon", "SF": "SPY ETF", "NA": "Nasdaq ETF", "PS": "Группа Позитив",
-    "SX": "Euro Stoxx 50", "HS": "Hang Seng", "DX": "DAX", "N2": "Nikkei 225",
-    "IS": "Артген", "BR": "Нефть Brent", "SI": "Доллар/Рубль", "ED": "Евро/Доллар"
-};
+    "PZ": "Полюс", "PX": "Полюс (мини)", "YD": "Яндекс", "AK": "АФК Система",
+    "IR": "Интер РАО", "PO": "Полиметалл", "PI": "ПИК", "SE": "СПБ Биржа",
+    "RL": "РУСАЛ", "PH": "ФосАгро", "SS": "Самолет", "MC": "Мечел",
+    "RE": "Россети", "SO": "Газпром нефть", "TI": "ТКС Холдинг", "FV": "X5 Group",
+    "VK": "ВК", "OZ": "Ozon", "PS": "Группа Позитив", "WU": "ВУШ Холдинг",
+    "MV": "М.Видео", "CM": "МКБ", "SZ": "Сегежа", "BE": "НоваБев",
+    "FL": "Совкомфлот", "BS": "БСПБ", "BN": "Башнефть", "KM": "КАМАЗ",
+    "AS": "Группа Астра", "S0": "Софтлайн", "SC": "Совкомбанк", "RA": "Распадская",
+    "FE": "ДВМП", "RU": "РуссНефть", "LE": "Европлан", "NB": "НоваБев",
+    "SH": "ЭсЭфАй", "TB": "Т-техно", "X5": "X5 (ПАО)", "HD": "HeadHunter",
+    "MD": "Мать и дитя", "RD": "Ренессанс", "UN": "Юнипро",
 
+    // Зарубежные ETF и Крипто
+    "SF": "SPY ETF", "NA": "Nasdaq ETF", "SX": "Euro Stoxx 50", "HS": "Hang Seng",
+    "DX": "DAX", "N2": "Nikkei 225", "IS": "Артген", "BB": "Alibaba",
+    "BD": "Baidu", "EM": "MSCI Emerging Markets", "ET": "Ethereum ETF",
+    "EH": "Эфириум", "BT": "Биткоин", "IB": "IBIT ETF", "ND": "MSCI India",
+    "SQ": "Nasdaq Semiconductor", "TC": "Tencent", "TL": "TLT ETF",
+    "XI": "Xiaomi", "AA": "MSCI South Africa", "AG": "MSCI Argentina",
+    "BZ": "MSCI Brazil", "CI": "MSCI China", "EA": "ЭН+ГРУП", "SD": "MSCI Saudi Arabia"
+};
+    
+
+
+function getDisplayName(item, type) {
+    let displayName = item.name;
+    if (type === 'forts') {
+        const cleanTicker = item.ticker.trim().toUpperCase();
+        const prefix2 = cleanTicker.substring(0, 2);
+        const prefix4 = cleanTicker.substring(0, 4);
+        
+        // Ищем в словаре: полное совпадение -> 4 знака -> 2 знака
+        const desc = fortsDescriptions[cleanTicker] || 
+                     fortsDescriptions[prefix4] || 
+                     fortsDescriptions[prefix2];
+        
+        if (desc) {
+            displayName = `${item.name} (${desc})`;
+        }
+    }
+    return displayName;
+}
 
 
     
@@ -2305,7 +2363,10 @@ if (userTickersCodes.length > 0) {
             if (window.isPremium || isAllowedInDemo) {
                 const opt = document.createElement('option');
                 opt.value = item.ticker;
-                opt.textContent = item.name;
+                
+                // opt.textContent = item.name;
+                opt.textContent = getDisplayName(item, currentAssetType);
+                
                 groupAll.appendChild(opt);
                 count++;
             }
