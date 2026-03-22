@@ -2888,35 +2888,52 @@ console.log(globalTickers)
 function updateProbability(targetPrice) {
     const probEl = document.getElementById('res-prob');
     const ticker = document.getElementById('calc-ticker').value;
+    const priceIn = parseFloat(document.getElementById('calc-price-in').value) || 0;
     const data = globalTickers.find(t => t.ticker === ticker);
 
-    if (!data || !data.adr || !data.openprice || data.openprice === 0) {
+    // Если данных нет или ADR не загружен
+    if (!data || !data.adr || data.adr <= 0 || priceIn <= 0) {
         probEl.innerText = "-- %";
+        probEl.style.color = "#818c99";
         return;
     }
 
-    // 1. Считаем необходимый ход в пунктах цены от открытия дня
-    // (Важно считать именно от открытия, а не от входа, т.к. ADR — это лимит дня)
-    const requiredMove = Math.abs(targetPrice - data.openprice);
+    // 1. Дистанция, которую нужно пройти (в пунктах цены)
+    const requiredMove = Math.abs(targetPrice - priceIn);
     
-    // 2. Считаем соотношение хода к среднему диапазону (ADR)
-    const ratio = requiredMove / data.adr;
+    // 2. Приводим ADR к пунктам цены (если он в % или в рублях)
+    let adrPoints = data.adr;
+    // Если ADR в базе подозрительно маленький (например, 0.02 для 2%), конвертируем
+    if (data.adr > 0 && data.adr < 0.2) { 
+        adrPoints = priceIn * data.adr; 
+    } else if (data.adr >= 0.2 && data.adr < 15 && priceIn > 50) {
+        // Если ADR в базе как "2.5" (проценты), а цена акции "100"
+        adrPoints = priceIn * (data.adr / 100);
+    }
 
-    // 3. Логика вероятности:
-    // 0% хода от открытия = ~99% (уже там)
-    // 50% ADR = ~75% вероятности
-    // 100% ADR = ~50% вероятности
-    // 150% ADR = ~10% вероятности
-    let probability = 100 * Math.exp(-0.7 * ratio * ratio); 
+    // 3. Коэффициент сложности (Ratio)
+    // 0.1 - легко, 1.0 - средний день, 2.0 - экстремальный день
+    const ratio = requiredMove / adrPoints;
 
-    // Ограничения
-    if (probability > 98) probability = 98;
+    // 4. Расчет вероятности по экспоненте (быстрое падение после 1.0 ADR)
+    // Формула: 100 * e^(-0.7 * ratio^2)
+    let probability = 100 * Math.exp(-0.7 * Math.pow(ratio, 2));
+
+    // Ограничения для адекватности
+    if (probability > 99) probability = 99;
     if (probability < 1) probability = 1;
 
+    // 5. Вывод
     probEl.innerText = Math.round(probability) + " %";
     
-    // Цветовая индикация
-    probEl.style.color = probability > 60 ? "#4bb34b" : (probability > 30 ? "#f0b33e" : "#e64646");
+    // Красим: Зеленый (>65%), Желтый (40-65%), Красный (<40%)
+    if (probability > 65) {
+        probEl.style.color = "#4bb34b";
+    } else if (probability > 40) {
+        probEl.style.color = "#f0b33e";
+    } else {
+        probEl.style.color = "#e64646";
+    }
 }
 
 
