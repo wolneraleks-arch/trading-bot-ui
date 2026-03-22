@@ -2629,8 +2629,10 @@ console.log(globalTickers)
     let finalYieldDaily = 0;
     let finalYieldAnnual = 0;
 
-     if (assetType === 'forts') {
-        // --- ЛОГИКА ДЛЯ ФЬЮЧЕРСОВ ---
+
+
+        
+    if (assetType === 'forts') {
         const ticker = document.getElementById('calc-ticker').value;
         const s = globalTickers.find(t => t.ticker === ticker);
         
@@ -2639,8 +2641,15 @@ console.log(globalTickers)
             return;
         }
 
+        // --- ФИКС ДАННЫХ ---
+        // Если стоимость шага меньше самого шага (как было в логе), меняем их местами
+        let correctTick = s.tickSize;
+        let correctStep = s.stepPrice;
+        if (correctStep < correctTick) {
+            [correctTick, correctStep] = [correctStep, correctTick];
+        }
+
         // 1. КОМИССИИ
-        // Сетка биржи (в процентах от номинала)
         const commMap = {
             "CURRENCY":  { market: 0.00462, limit: 0.00154 },
             "COMMODITY": { market: 0.0132,  limit: 0.00440 },
@@ -2649,49 +2658,97 @@ console.log(globalTickers)
             "INTEREST":  { market: 0.01659, limit: 0.00550 }
         };
         const sType = (s.secType || "STOCK").toUpperCase();
-        const exchangeFeeRate = (commMap[sType] || commMap["STOCK"])[orderType] / 100;
+        const exchRate = (commMap[sType] || commMap["STOCK"])[orderType] / 100;
         
-        // Номинал контракта для биржевого сбора
-        const nominal = (priceIn / s.tickSize) * s.stepPrice;
-        const exchangeFeeRub = nominal * exchangeFeeRate * 2; // Вход + Выход
+        // Номинал контракта
+        const nominal = (priceIn / correctTick) * correctStep;
+        const exchFeeRub = nominal * exchRate * 2;
+        const brokFeeRub = brokerFeePerc * 2; // Фикс руб из инпута
 
-        // Брокерская комиссия (теперь в РУБЛЯХ за 1 контракт)
-        // Берём значение из инпута "Комиссия (%)" как рубли
-        const brokerFeeRub = brokerFeePerc * 2; // Вход + Выход
-
-        const totalCosts = exchangeFeeRub + brokerFeeRub;
-
-        // 2. ЦЕЛЕВАЯ ПРИБЫЛЬ (от ГО)
-        let targetProfitNet = 0; // Чистыми на руки
+        // 2. ЦЕЛЬ
+        let targetProfitNet = 0;
         let rate = yieldVal / 100;
+        if (yieldType === 'annual') targetProfitNet = (s.go * rate / 365) * days;
+        else if (yieldType === 'daily') targetProfitNet = (s.go * rate) * days;
+        else targetProfitNet = s.go * rate;
 
-        if (yieldType === 'annual') {
-            targetProfitNet = (s.go * rate / 365) * days;
-        } else if (yieldType === 'daily') {
-            targetProfitNet = (s.go * rate) * days;
-        } else {
-            targetProfitNet = s.go * rate;
-        }
-
-        // 3. РАСЧЕТ "ГРЯЗНОЙ" ПРИБЫЛИ (с учетом налога и всех комиссий)
         const taxFactor = 1 - (taxPerc / 100);
-        // Сначала накручиваем налог на чистую прибыль, затем добавляем расходы
-        // const grossProfitNeeded = (targetProfitNet / taxFactor) + totalCosts;
-         
-         const grossProfitNeeded = (targetProfitNet / taxFactor)+ exchangeFeeRub + brokerFeeRub
-         
-        // 4. ДИСТАНЦИЯ В ЦЕНЕ
-        // Сколько пунктов нужно пройти, чтобы заработать grossProfitNeeded рублей
-        // const pointsQty = grossProfitNeeded / s.stepPrice;
-         const pricePointValue = s.stepPrice / s.tickSize; 
-         movePoints = grossProfitNeeded / pricePointValue;
-        // movePoints = pointsQty * s.tickSize;
+        const grossProfitNeeded = (targetProfitNet / taxFactor) + exchFeeRub + brokFeeRub;
 
-        // Статистика для вывода (чистая доходность на ГО)
+        // 3. ПУНКТЫ
+        // Сколько рублей приносит изменение цены на 1.0 (например, с 109 до 110)
+        const pricePointValue = correctStep / correctTick; 
+        movePoints = grossProfitNeeded / pricePointValue;
+
         finalYieldDaily = (targetProfitNet / s.go * 100) / days;
         finalYieldAnnual = finalYieldDaily * 365;
-
     }
+
+
+        
+    //  if (assetType === 'forts') {
+    //     // --- ЛОГИКА ДЛЯ ФЬЮЧЕРСОВ ---
+    //     const ticker = document.getElementById('calc-ticker').value;
+    //     const s = globalTickers.find(t => t.ticker === ticker);
+        
+    //     if (!s || !s.go || !s.stepPrice) {
+    //         document.getElementById('res-price-out').innerText = "Нет данных ГО/Шага";
+    //         return;
+    //     }
+
+    //     // 1. КОМИССИИ
+    //     // Сетка биржи (в процентах от номинала)
+    //     const commMap = {
+    //         "CURRENCY":  { market: 0.00462, limit: 0.00154 },
+    //         "COMMODITY": { market: 0.0132,  limit: 0.00440 },
+    //         "INDEX":     { market: 0.0066,  limit: 0.00220 },
+    //         "STOCK":     { market: 0.0198,  limit: 0.00660 },
+    //         "INTEREST":  { market: 0.01659, limit: 0.00550 }
+    //     };
+    //     const sType = (s.secType || "STOCK").toUpperCase();
+    //     const exchangeFeeRate = (commMap[sType] || commMap["STOCK"])[orderType] / 100;
+        
+    //     // Номинал контракта для биржевого сбора
+    //     const nominal = (priceIn / s.tickSize) * s.stepPrice;
+    //     const exchangeFeeRub = nominal * exchangeFeeRate * 2; // Вход + Выход
+
+    //     // Брокерская комиссия (теперь в РУБЛЯХ за 1 контракт)
+    //     // Берём значение из инпута "Комиссия (%)" как рубли
+    //     const brokerFeeRub = brokerFeePerc * 2; // Вход + Выход
+
+    //     const totalCosts = exchangeFeeRub + brokerFeeRub;
+
+    //     // 2. ЦЕЛЕВАЯ ПРИБЫЛЬ (от ГО)
+    //     let targetProfitNet = 0; // Чистыми на руки
+    //     let rate = yieldVal / 100;
+
+    //     if (yieldType === 'annual') {
+    //         targetProfitNet = (s.go * rate / 365) * days;
+    //     } else if (yieldType === 'daily') {
+    //         targetProfitNet = (s.go * rate) * days;
+    //     } else {
+    //         targetProfitNet = s.go * rate;
+    //     }
+
+    //     // 3. РАСЧЕТ "ГРЯЗНОЙ" ПРИБЫЛИ (с учетом налога и всех комиссий)
+    //     const taxFactor = 1 - (taxPerc / 100);
+    //     // Сначала накручиваем налог на чистую прибыль, затем добавляем расходы
+    //     // const grossProfitNeeded = (targetProfitNet / taxFactor) + totalCosts;
+         
+    //      const grossProfitNeeded = (targetProfitNet / taxFactor)+ exchangeFeeRub + brokerFeeRub
+         
+    //     // 4. ДИСТАНЦИЯ В ЦЕНЕ
+    //     // Сколько пунктов нужно пройти, чтобы заработать grossProfitNeeded рублей
+    //     // const pointsQty = grossProfitNeeded / s.stepPrice;
+    //      const pricePointValue = s.stepPrice / s.tickSize; 
+    //      movePoints = grossProfitNeeded / pricePointValue;
+    //     // movePoints = pointsQty * s.tickSize;
+
+    //     // Статистика для вывода (чистая доходность на ГО)
+    //     finalYieldDaily = (targetProfitNet / s.go * 100) / days;
+    //     finalYieldAnnual = finalYieldDaily * 365;
+
+    // }
         
         
     //     if (assetType === 'forts') {
