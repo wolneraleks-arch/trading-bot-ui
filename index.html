@@ -1821,6 +1821,11 @@ async function loadTickerStats() {
         fortsCard.style.display = 'none'; 
         return;
     }
+    // Сразу гасим старые графики, чтобы не вводить в заблуждение
+    if (window.oiChart) { window.oiChart.destroy(); window.oiChart = null; }
+    if (window.oiChartShort) { window.oiChartShort.destroy(); window.oiChartShort = null; }
+    //if (fortsCard) fortsCard.style.display = 'none'; 
+
    // 1. Сначала определяем тип актива (isForts)
     //const selectedTickerObj = globalTickers.find(t => t.ticker === ticker);
     const selectedTickerObj = globalTickers.find(t => t.ticker.trim().toUpperCase() === ticker.trim().toUpperCase());
@@ -2093,7 +2098,7 @@ function drawSimpleOIChart(history) {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     
-    if (window.oiChart) window.oiChart.destroy();
+    if (window.oiChart) { window.oiChart.destroy();}
 
     window.oiChart = new Chart(ctx, {
         type: 'line',
