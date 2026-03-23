@@ -718,7 +718,7 @@
                 <input type="number" id="calc-tax" class="main-input" value="13" oninput="calculateTrade()">
             </div>
             <div style="flex: 1;">
-                <label class="input-label" id="label-fee">Комиссия (%)</label>
+                <label class="input-label" id="label-fee">Комиссия брокера (%)</label>
                 <input type="number" id="calc-fee" class="main-input" value="0.03" oninput="calculateTrade()">
             </div>
             
@@ -849,12 +849,11 @@
     <!-- О боте -->
     <div class="section-title">О системе</div>
     <div class="card">
-        <p style="margin-bottom: 8px;"><b>WiseInvest Bot</b> - персональный ассистент для поиска аномалий и мониторинга волатильности на фондовом и срочном рынке в режиме реального времени.</p>
-        <a href="https://dzen.ru" style="color: #2D81E0; text-decoration: none; font-size: 13px;">Как работает система и стратегии (ADR, RSI, Объемы) →</a>
-    </div>
-
+        <p style="margin-bottom: 8px;"><b>Wise Invest</b> - персональный ассистент для поиска аномалий, сбора статистики, анализа данных, мониторинга волатильности и активности на фондовом и срочном рынке в режиме реального времени.</p>
+        <a href="https://dzen.ru" style="color: #2D81E0; text-decoration: none; font-size: 13px;">Как работает бот и стратегии (ADR, RSI, Объемы) →</a>
+       </div>
     <!-- Инструкция по формату -->
-    <div class="section-title">О настройке уведомлений</div>
+    <div class="section-title">Настройка уведомлений</div>
     <div class="card" style="font-size: 14px; line-height: 1.5;">
         <div style="margin-bottom: 12px;">
             <b>Валюта и числа:</b><br>
@@ -878,28 +877,36 @@
         </ul>
     </div>
 
-
-    
-    <!-- О инфе в приложении -->
-    <div class="section-title">О статистике</div>
-   <div class="card" style="font-size: 14px; line-height: 1.5;">
-        <div style="margin-bottom: 12px;">
-            <b>Капитализация:</b><br>
-            По акциям отражается текущая капитализация. По облигациям отражается текущая капитализация без учета НКД (помогает оценить рыночную стоимость самого тела долга). По фьючерсам учитывает общее кол-во открытых позиций, шаг цены и его стоимость при расчете открытого интереса (в скобках указывается кол-во открытых позиций).    
-            <!-- <span style="color: #4bb34b;">1.5K</span> (тысячи), <span style="color: #4bb34b;">2.1M</span> (миллионы), <span style="color: #4bb34b;">8.5B</span> (миллиарды), <span style="color: #4bb34b;">23.5Т</span> (триллионы). -->
-        </div>
-       <div style="margin-bottom: 12px;">
-            <b>Баланс акций по сделкам</b><br>
-            По акциям показываются текущее соотношение сделок в покупку и продажу. 
-        </div>
-       </div>
-    
-
-       
     <!-- Совет по фьючерсам -->
     <div class="card" style="background-color: #f5f7fa; border-left: 4px solid #5181b8;">
         <small>💡 <b>Совет:</b> Для фьючерсов используйте краткие коды текущего контракта. Обновляйте список раз в квартал при экспирации.</small>
     </div>
+
+
+    
+    <!-- О инфе в приложении -->
+    <div class="section-title">Статистика и анализ</div>
+   <div class="card" style="font-size: 14px; line-height: 1.5;">
+        <div style="margin-bottom: 12px;">
+            <b>Капитализация:</b><br>
+            По акциям отражается текущая капитализация. По облигациям отражается текущая капитализация без учета НКД (помогает оценить рыночную стоимость самого тела долга). По фьючерсам учитывает общее кол-во открытых позиций, шаг цены и его стоимость при расчете открытого интереса в детализации (в скобках указывается кол-во открытых позиций).    
+            <!-- <span style="color: #4bb34b;">1.5K</span> (тысячи), <span style="color: #4bb34b;">2.1M</span> (миллионы), <span style="color: #4bb34b;">8.5B</span> (миллиарды), <span style="color: #4bb34b;">23.5Т</span> (триллионы). -->
+        </div>
+       <div style="margin-bottom: 12px;">
+            <b>Баланс акций по сделкам</b><br>
+            Показывается текущее соотношение сделок в покупку и продажу по выбранному тикеру или в общей статистике по всему рынку акций . 
+        </div>
+       <div style="margin-bottom: 12px;">
+            <b>Детализация</b><br>
+            Показывает текущие значения по инструментам за выбранный период (в расчете учитываются только рабочие дни биржи в периоде). 
+        </div>
+       <div style="margin-bottom: 12px;">
+            <b>Открытые позиции</b><br>
+            Доступно только для фьючерсов. Показывает динамику открытого интереса в направлениях лонг или шорт, а также учет открытых позиций юридических и физических лиц (данные обновляются за период: текущая дата - 15 дн). 
+        </div>
+       
+       </div>
+    
 
 
 
@@ -2322,13 +2329,13 @@ function updateStatsTickers() {
                 const opt = document.createElement('option');
                 opt.value = item.ticker;
 
-            //     let dName = item.name;
-            // if (currentAssetType === 'forts') {
-            //     const desc = fortsDescriptions[tickerUpper] || fortsDescriptions[tickerUpper.substring(0, 4)] || fortsDescriptions[tickerUpper.substring(0, 2)];
-            //     if (desc) dName = `${item.name} (${desc})`;
-            // }
+                let dName = item.name;
+            if (currentAssetType === 'forts') {
+                const desc = fortsDescriptions[tickerUpper] || fortsDescriptions[tickerUpper.substring(0, 4)] || fortsDescriptions[tickerUpper.substring(0, 2)];
+                if (desc) dName = `${item.name} (${desc})`;
+            }
                 
-                 opt.textContent = item.name;
+                 opt.textContent = dName; //item.name;
                 groupAll.appendChild(opt);
                 count++;
             }
@@ -2391,7 +2398,7 @@ function updateStatsTickers() {
         if (inputFee.value == "0.03") inputFee.value = "0.45"; 
     } 
         else {
-        labelFee.innerText = "Комиссия (%)";
+        labelFee.innerText = "Комиссия брокера (%)";
         if (inputFee.value == "0.45") inputFee.value = "0.03";
     }
 
@@ -2639,6 +2646,16 @@ function updateProbability(targetPrice) {
     if (probability > 95) probability = 95;
     if (probability < 5) probability = 5;
 
+
+     const days = parseInt(document.getElementById('res-days').innerText) || 1;
+
+    if (days > 1) {
+        probEl.innerText = "—"; // Прочерк, если больше 1 дня
+        probEl.style.color = "#818c99"; // Серый цвет
+        return; // Выходим, чтобы не красить в цвета вероятности
+    }
+
+    
     // 5. Вывод и раскраска
     probEl.innerText = Math.round(probability) + " %";
     
