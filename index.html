@@ -582,10 +582,10 @@
 <div id="forts-details-card" style="display: none; margin-bottom: 20px;">
     <div class="section-title">👥 Открытые Позиции </div>
 
-    <div id="oi-history-container" style="height: 180px; width: 100%; margin-bottom: 20px;">
+    <div id="oi-history-container-long" style="height: 180px; width: 100%; margin-bottom: 20px;">
         <canvas id="oiHistoryChart"></canvas>
     </div>
-    <div id="oi-history-container" style="height: 180px; width: 100%; margin-bottom: 20px;">
+    <div id="oi-history-container-short" style="height: 180px; width: 100%; margin-bottom: 20px;">
         <canvas id="oiHistoryChartShort"></canvas>
     </div>
     
@@ -1913,8 +1913,28 @@ async function loadTickerStats() {
      if (d.oi.history && d.oi.history.length > 0) {
         // Вызываем функцию отрисовки (которую мы обсуждали ранее)
         // drawOIHistoryChart(d.oi.history);
-         drawSimpleOIChart(d.oi.history);
-         drawSimpleOIChartShort(d.oi.history);
+         
+         // drawSimpleOIChart(d.oi.history);
+         // drawSimpleOIChartShort(d.oi.history);
+
+   // --- КРИТИЧЕСКИЙ УЧАСТОК: Сброс канвасов ---
+    const resetCanvas = (containerId, canvasId) => {
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.innerHTML = `<canvas id="${canvasId}"></canvas>`;
+        }
+    };
+
+    resetCanvas('oi-history-container-long', 'oiHistoryChart');
+    resetCanvas('oi-history-container-short', 'oiHistoryChartShort');
+    // ------------------------------------------
+
+    // Теперь вызываем отрисовку
+    drawSimpleOIChart(d.oi.history);
+    drawSimpleOIChartShort(d.oi.history);
+    }
+
+         
     }
    } else {
     document.getElementById('forts-details-card').style.display = 'none';
