@@ -2139,7 +2139,11 @@ function drawSimpleOIChart(history) {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-        if (window.oiChartShort) window.oiChartShort.destroy();
+    if (window.oiChartShort) {
+        window.oiChartShort.destroy();
+    }
+        
+       // if (window.oiChartShort) window.oiChartShort.destroy();
     // if (window.oiChart) window.oiChart.destroy();
 
     window.oiChart = new Chart(ctx, {
