@@ -2151,7 +2151,7 @@ function drawSimpleOIChart(history) {
        // if (window.oiChartShort) window.oiChartShort.destroy();
     // if (window.oiChart) window.oiChart.destroy();
 
-    window.oiChart = new Chart(ctx, {
+    window.oiChartShort = new Chart(ctx, {
         type: 'line',
         data: {
             labels: history.map(d => d.date),
