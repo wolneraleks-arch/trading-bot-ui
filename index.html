@@ -1808,7 +1808,6 @@ function updateOIBars(prefix, long, short) {
 async function loadTickerStats() {
     const ticker = document.getElementById('stats_ticker_select').value.trim().toUpperCase();
     console.log("🔍 Выбран тикер для загрузки:", ticker);
-    
     // const ticker = document.getElementById('stats_ticker_select').value;
     const container = document.getElementById('stats-container');
     const chartCard = document.getElementById('chart-card');
@@ -1817,7 +1816,6 @@ async function loadTickerStats() {
     const statusText = document.getElementById('chart-status-text');
     const statusIcon = document.getElementById('chart-status-icon');
      const fortsCard = document.getElementById('forts-details-card');
-    
     if (!ticker) {
         container.style.display = 'none';
         fortsCard.style.display = 'none'; 
@@ -1831,7 +1829,6 @@ async function loadTickerStats() {
     const iscorpBonds = selectedTickerObj ? selectedTickerObj.type === 'corpbonds' : false;
 
     console.log("🛠 Тип актива:", { isForts, isBonds, iscorpBonds });
-    
  // 2. Теперь меняем подпись (так как isForts уже существует)
     const cupValEl = document.getElementById('curr-cup-val');
     if (cupValEl) {
@@ -1839,7 +1836,6 @@ async function loadTickerStats() {
         const label = cupValEl.previousElementSibling; 
         if (label) label.innerText = isForts ? "Открытый интерес :" : "Капитализация (₽):";
     }
-    
     container.style.display = 'block';
      chartCard.style.display = 'block';
     
@@ -1848,40 +1844,24 @@ async function loadTickerStats() {
     chartContainer.style.display = 'none';
     statusIcon.innerText = "⏳";
     statusText.innerText = "Загрузка...";
-    
     // Градусники тоже в режим ожидания
     document.getElementById('adr-perc-val').innerText = "⏳";
     document.getElementById('vol-perc-val').innerText = "⏳";
-
     document.getElementById('avg-vol-val').innerText = "⏳";
    document.getElementById('max-vol-val').innerText = "⏳";
    document.getElementById('curr-vol-val').innerText = "⏳";
     document.getElementById('curr-cup-val').innerText = "⏳";
-
     try {
         // Получаем все параметры после знака ? в URL приложения
-         // const launchParams = window.location.search; 
-          // const separator = launchParams ? '&' : '?';
-
-       // const url = `${GAS_URL}${launchParams}${separator}action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&isBonds=${isBonds}&vk_id=${currentVkId}`;
-
-        
-        const response = await fetch(`${GAS_URL}?&action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&isBonds=${isBonds}&iscorpBonds=${iscorpBonds}&vk_id=${currentVkId}`);
-
-          // const response = await fetch(url);
-        
-        //const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&vk_id=${currentVkId}`);
+        const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&isBonds=${isBonds}&iscorpBonds=${iscorpBonds}&vk_id=${currentVkId}`);
         const res = await response.json();
-
        console.log("Полный ответ от сервера:", res.data);
-  
         if (res.status === "success") {
             const d = res.data;
 
             // Обновляем градусники
             updateThermometer('adr-bar', 'adr-perc-val', d.adrPercent);
             updateThermometer('vol-bar', 'vol-perc-val', d.volPercent);
-
             // Функция для красивого форматирования чисел (1000000 -> 1 000 000)
           //const fmt = (num) => Number(num).toLocaleString('ru-RU');
 
@@ -1895,7 +1875,6 @@ async function loadTickerStats() {
     // Форматируем красиво с пробелами
     return new Intl.NumberFormat('ru-RU').format(num);
    };
-
            // Проверяем наличие элементов перед записью
         if (document.getElementById('avg-vol-val')) {
             document.getElementById('avg-vol-val').innerText = fmt(d.avgVol);
@@ -1910,13 +1889,9 @@ async function loadTickerStats() {
     document.getElementById('curr-cup-val').innerText = fmt(d.currentCup);
    }
             // document.getElementById('curr-cup-val').innerText = fmt(d.currentCup);
-            
             document.getElementById('avg-adr-val').innerText = d.avgADR;
-
             document.getElementById('avg-up-val').innerText = "+" + d.avgUp;
             document.getElementById('avg-down-val').innerText = "-" + d.avgDown;
-
-
            if (isForts && d.oi) {
     document.getElementById('forts-details-card').style.display = 'block';
     
@@ -1932,7 +1907,6 @@ async function loadTickerStats() {
     document.getElementById('oi-jur-ln').innerText = d.oi.jurAccL + ' счетов';
     document.getElementById('oi-jur-sn').innerText = d.oi.jurAccS + ' счетов';
                
-
      updateOIBars('fiz', d.oi.fizL, d.oi.fizS);
     updateOIBars('jur', d.oi.jurL, d.oi.jurS);
                
@@ -1945,8 +1919,6 @@ async function loadTickerStats() {
    } else {
     document.getElementById('forts-details-card').style.display = 'none';
    }
-
-
               let current = parseFloat(String(d.currentVol).replace(/[^0-9,.-]/g, '').replace(',', '.'));
               let avg = parseFloat(String(d.avgVol).replace(/[^0-9,.-]/g, '').replace(',', '.'));
         }       
@@ -1956,12 +1928,10 @@ async function loadTickerStats() {
                
                 chartInfo.style.display = 'none'; // Скрываем загрузку
                 chartContainer.style.display = 'block'; // Показываем график
-                
                 let symbol = "₽";
                 if (d.currencyLabel.includes("USD") || d.currencyLabel.includes("Доллар")) symbol = "$";
                 else if (d.currencyLabel.includes("EUR") || d.currencyLabel.includes("Евро")) symbol = "€";
                 else if (d.currencyLabel.includes("Юань")) symbol = "¥";
-
                 drawPieChart(d.buy, d.sell, symbol);
             } else {
                 // ДАННЫХ НЕТ
