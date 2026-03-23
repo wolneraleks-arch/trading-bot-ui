@@ -1853,7 +1853,7 @@ async function loadTickerStats() {
     document.getElementById('curr-cup-val').innerText = "⏳";
     try {
         // Получаем все параметры после знака ? в URL приложения
-        const response = await fetch(`${GAS_URL}action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&isBonds=${isBonds}&iscorpBonds=${iscorpBonds}&vk_id=${currentVkId}`);
+        const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&isBonds=${isBonds}&iscorpBonds=${iscorpBonds}&vk_id=${currentVkId}`);
         const res = await response.json();
        console.log("Полный ответ от сервера:", res.data);
         if (res.status === "success") {
