@@ -460,7 +460,10 @@
     </select>
     
     <div style="height: 300px; position: relative;">
+        <div id="chart-container">
         <canvas id="corrComparisonBar"></canvas>
+      </div>
+        <!-- <canvas id="corrComparisonBar"></canvas> -->
     </div>
    </div>
 
@@ -2202,20 +2205,61 @@ function fillMarketFxSelector() {
     });
 }
 
+
+
+
 async function loadMarketCorrelations() {
     const fxTicker = document.getElementById('market-fx-selector').value;
-    const url = `${GAS_URL}?action=get_market_correlations&fx_ticker=${fxTicker}&vk_id=${currentVkId}`;
     
+    // Включаем лоадер (используем ваш статус-текст из графиков)
+    const statusText = document.getElementById('chart-status-text');
+    const statusIcon = document.getElementById('chart-status-icon');
+    if (statusText) {
+        statusIcon.innerText = "⏳";
+        statusText.innerText = "Обновление ТОПов...";
+        document.getElementById('chart-info').style.display = 'flex'; // Показываем слой загрузки
+        document.getElementById('chart-container').style.display = 'none'; // Скрываем старый график
+    }
+
     try {
-        const response = await fetch(url);
+        const response = await fetch(`${GAS_URL}?action=get_market_correlations&fx_ticker=${fxTicker}&vk_id=${currentVkId}`);
         const res = await response.json();
         
         if (res.status === "success") {
             marketCorrData = res.data;
-            updateMarketCorrChart(); // Отрисовываем
+            
+            // Выключаем лоадер
+            document.getElementById('chart-info').style.display = 'none';
+            document.getElementById('chart-container').style.display = 'block';
+            
+            updateMarketCorrChart();
         }
-    } catch (e) { console.error("Ошибка загрузки корреляций рынка:", e); }
-  }
+    } catch (e) { 
+        console.error(e);
+        statusIcon.innerText = "❌";
+        statusText.innerText = "Ошибка сети";
+    }
+}
+
+
+
+
+
+    // старая версия
+// async function loadMarketCorrelations() {
+//     const fxTicker = document.getElementById('market-fx-selector').value;
+//     const url = `${GAS_URL}?action=get_market_correlations&fx_ticker=${fxTicker}&vk_id=${currentVkId}`;
+    
+//     try {
+//         const response = await fetch(url);
+//         const res = await response.json();
+        
+//         if (res.status === "success") {
+//             marketCorrData = res.data;
+//             updateMarketCorrChart(); // Отрисовываем
+//         }
+//     } catch (e) { console.error("Ошибка загрузки корреляций рынка:", e); }
+//   }
 
 
     function switchCorrChart(direction) {
