@@ -575,19 +575,27 @@
         <span style="color: #818c99;">Ср. отклонение в падение:</span>
         <span id="avg-down-val" style="font-weight: 700; color: #e64646;">--</span>
     </div>
-    <div style="display: flex; justify-content: space-between; margin-top: 8px;">
-        <div style="display: flex; justify-content: space-between; margin-top: 12px; margin-bottom: 8px;">
-    <span style="color: #818c99;">Сравнить с:</span>
-    <select id="fx-selector" onchange="updateCorrelationUI()" style="border: none; background: #f0f2f5; border-radius: 4px; font-size: 12px; padding: 2px 4px;">
-        <!-- Опции подгрузятся динамически -->
-    </select>
-     </div>
-        <span style="color: #818c99;">Тек. коэффицент корреляции:</span>
-        <span id="coaf-cor-val" style="font-weight: 700; color: #e64646;">--</span>
-    </div>
-    <div style="display: flex; justify-content: space-between; margin-top: 8px;">
-        <span style="color: #818c99;">Тек. коэффицент Бета:</span>
-        <span id="coaf-beta-val" style="font-weight: 700; color: #e64646;">--</span>
+    <!-- БЛОК КОРРЕЛЯЦИИ -->
+    <div id="correlation-block" style="border-top: 1px solid #f0f2f5; margin-top: 12px; padding-top: 12px;">
+        <!-- Выбор инструмента -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="color: #818c99;">Сравнить с:</span>
+            <select id="fx-selector" onchange="updateCorrelationUI()" style="border: 1px solid #dce1e6; background: #ffffff; border-radius: 6px; font-size: 13px; padding: 4px 8px; cursor: pointer; outline: none; color: #2c2d2e;">
+                <!-- Опции подгрузятся динамически -->
+            </select>
+        </div>
+        
+        <!-- Значение Корреляции -->
+        <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+            <span style="color: #818c99;">Коэффицент корреляции:</span>
+            <span id="coaf-cor-val" style="font-weight: 700;">--</span>
+        </div>
+        
+        <!-- Значение Беты -->
+        <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+            <span style="color: #818c99;">Коэффицент Бета:</span>
+            <span id="coaf-beta-val" style="font-weight: 700;">--</span>
+        </div>
     </div>
     
 
