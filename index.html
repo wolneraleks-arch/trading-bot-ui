@@ -2226,7 +2226,7 @@ async function loadMarketCorrelations() {
     const statusIcon = document.getElementById('chart-status-icon');
     if (statusText) {
         statusIcon.innerText = "⏳";
-        statusText.innerText = "Обновление ТОПов...";
+        statusText.innerText = "Загрузка ...";
         document.getElementById('chart-info').style.display = 'flex'; // Показываем слой загрузки
         document.getElementById('chart-container').style.display = 'none'; // Скрываем старый график
     }
