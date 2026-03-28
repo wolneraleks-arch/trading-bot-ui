@@ -468,7 +468,7 @@
     </div>
 
         
-     <div id="chart-container" style="height: 100%; width: 100%;">
+     <div id="chart-container2" style="height: 100%; width: 100%;">
         <canvas id="corrComparisonBar"></canvas>
     </div>
         <!-- <canvas id="corrComparisonBar"></canvas> -->
@@ -2239,7 +2239,7 @@ async function loadMarketCorrelations() {
         statusIcon.innerText = "⏳";
         statusText.innerText = "Загрузка ...";
         document.getElementById('chart-info2').style.display = 'flex'; // Показываем слой загрузки
-        document.getElementById('chart-container').style.display = 'none'; // Скрываем старый график
+        document.getElementById('chart-container2').style.display = 'none'; // Скрываем старый график
     }
 
     try {
@@ -2250,8 +2250,8 @@ async function loadMarketCorrelations() {
             marketCorrData = res.data;
             
             // Выключаем лоадер
-            document.getElementById('chart-info').style.display = 'none';
-            document.getElementById('chart-container').style.display = 'block';
+            document.getElementById('chart-info2').style.display = 'none';
+            document.getElementById('chart-container2').style.display = 'block';
             
             updateMarketCorrChart();
         }
