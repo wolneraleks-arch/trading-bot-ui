@@ -2192,6 +2192,13 @@ function fillMarketFxSelector() {
     if (!selector) return;
     
     // Очищаем и добавляем основные индексы для сравнения всего рынка
+    const mainIndices = [
+    "IMOEX", "IMOEX2", "RGBI", // Основные бенчмарки
+    "SBER", "GAZP", "LKOH", "GMKN", "PHOR",                  // Крупнейшие акции
+    "MOEXOG", "MOEXFN", "MOEXMM", "MOEXCN", "MOEXEU",       // Отраслевые индексы
+    "MOEXTL", "MOEXCH", "MOEXTN", "MOEXINN", "MRBC"         // Доп. индексы
+    ];
+
     const mainIndices = ["IMOEX", "USD", "CNY", "RGBI", "MOEXOG", "MOEXFN", "MOEXMM"];
     selector.innerHTML = "";
     
@@ -2216,7 +2223,7 @@ async function loadMarketCorrelations() {
             updateMarketCorrChart(); // Отрисовываем
         }
     } catch (e) { console.error("Ошибка загрузки корреляций рынка:", e); }
-}
+  }
 
 
     function switchCorrChart(direction) {
@@ -2224,7 +2231,7 @@ async function loadMarketCorrelations() {
     const titleEl = document.getElementById('corr-chart-title');
     titleEl.innerText = currentCorrMode === 'corr' ? "Корреляция (Топ +/-)" : "Бета (Топ +/-)";
     updateMarketCorrChart();
-}
+   }
 
 function updateMarketCorrChart() {
     if (!marketCorrData) return;
@@ -2295,18 +2302,6 @@ function updateMarketCorrChart() {
     });
   }
 
-    
-
-
-
-
-
-
-
-
-    
-
-
 
  let globalTickers = []; 
 
@@ -2359,12 +2354,7 @@ function setAssetType(type) {
     // Очищаем поиск и перерисовываем список
     document.getElementById('ticker_search').value = "";
     updateStatsTickers(); 
-}
-
-
-
-
-
+  }
     
 function drawSimpleOIChart(history) {
     const canvas = document.getElementById('oiHistoryChart');
