@@ -575,6 +575,21 @@
         <span style="color: #818c99;">Ср. отклонение в падение:</span>
         <span id="avg-down-val" style="font-weight: 700; color: #e64646;">--</span>
     </div>
+    <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+        <div style="display: flex; justify-content: space-between; margin-top: 12px; margin-bottom: 8px;">
+    <span style="color: #818c99;">Сравнить с:</span>
+    <select id="fx-selector" onchange="updateCorrelationUI()" style="border: none; background: #f0f2f5; border-radius: 4px; font-size: 12px; padding: 2px 4px;">
+        <!-- Опции подгрузятся динамически -->
+    </select>
+     </div>
+        <span style="color: #818c99;">Тек. коэффицент корреляции:</span>
+        <span id="coaf-cor-val" style="font-weight: 700; color: #e64646;">--</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+        <span style="color: #818c99;">Тек. коэффицент Бета:</span>
+        <span id="coaf-beta-val" style="font-weight: 700; color: #e64646;">--</span>
+    </div>
+    
 
 </div>
 
@@ -1805,6 +1820,77 @@ function updateOIBars(prefix, long, short) {
     }
 }
 
+
+
+
+
+
+// Глобальная переменная для хранения текущих пар
+let currentCorrelations = {};
+
+async function loadTickerStats() {
+    // ... ваш существующий код до fetch ...
+
+    try {
+        const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&isBonds=${isBonds}&iscorpBonds=${iscorpBonds}&vk_id=${currentVkId}`);
+        const res = await response.json();
+        
+        if (res.status === "success") {
+            const d = res.data;
+            
+            // 1. Сохраняем пришедший объект корреляций
+            currentCorrelations = d.correlations || {}; 
+
+            // 2. Обновляем выпадающий список (FX-селектор)
+            const fxSelect = document.getElementById('fx-selector');
+            if (fxSelect) {
+                fxSelect.innerHTML = ""; // Очищаем
+                Object.keys(currentCorrelations).forEach(key => {
+                    let opt = document.createElement('option');
+                    opt.value = key;
+                    opt.innerText = key;
+                    // Делаем IMOEX выбранным по умолчанию
+                    if (key === "IMOEX") opt.selected = true; 
+                    fxSelect.appendChild(opt);
+                });
+            }
+
+            // 3. Вызываем функцию отрисовки значений
+            updateCorrelationUI();
+
+            // ... остальной ваш код (fmt, объемы и т.д.) ...
+        }
+    } catch (e) { console.error(e); }
+}
+
+// Новая функция для обновления цифр корреляции без перезагрузки всей страницы
+function updateCorrelationUI() {
+    const fxid = document.getElementById('fx-selector').value;
+    const pair = currentCorrelations[fxid] || { corr: "--", beta: "--" };
+    
+    const corrEl = document.getElementById('coaf-cor-val');
+    const betaEl = document.getElementById('coaf-beta-val');
+
+    if (corrEl) {
+        corrEl.innerText = pair.corr;
+        // Красим: зеленый > 0.7, красный < 0
+        const cNum = parseFloat(pair.corr);
+        corrEl.style.color = cNum > 0.7 ? "#4bb34b" : (cNum < 0 ? "#e64646" : "#2c2d2e");
+    }
+    
+    if (betaEl) {
+        betaEl.innerText = pair.beta;
+        betaEl.style.color = "#5181b8"; // Синий для беты
+    }
+}
+
+
+
+
+
+
+    
+
 async function loadTickerStats() {
     const ticker = document.getElementById('stats_ticker_select').value.trim().toUpperCase();
     console.log("🔍 Выбран тикер для загрузки:", ticker);
@@ -1863,6 +1949,30 @@ async function loadTickerStats() {
        console.log("Полный ответ от сервера:", res.data);
         if (res.status === "success") {
             const d = res.data;
+
+
+
+         // 1. Сохраняем пришедший объект корреляций
+            currentCorrelations = d.correlations || {}; 
+
+            // 2. Обновляем выпадающий список (FX-селектор)
+            const fxSelect = document.getElementById('fx-selector');
+            if (fxSelect) {
+                fxSelect.innerHTML = ""; // Очищаем
+                Object.keys(currentCorrelations).forEach(key => {
+                    let opt = document.createElement('option');
+                    opt.value = key;
+                    opt.innerText = key;
+                    // Делаем IMOEX выбранным по умолчанию
+                    if (key === "IMOEX") opt.selected = true; 
+                    fxSelect.appendChild(opt);
+                });
+            }
+
+            // 3. Вызываем функцию отрисовки значений
+            updateCorrelationUI();
+
+            
 
             // Обновляем градусники
             updateThermometer('adr-bar', 'adr-perc-val', d.adrPercent);
