@@ -446,6 +446,26 @@
 </div>
 
 
+    <div class="card" style="margin-bottom: 16px; text-align: center; padding: 16px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+        <button class="arrow-btn" onclick="switchCorrChart(-1)">❮</button>
+        <div id="corr-chart-title" style="font-size: 14px; font-weight: 700; color: #2c2d2e;">Корреляция (Топ +/-)</div>
+        <button class="arrow-btn" onclick="switchCorrChart(1)">❯</button>
+    </div>
+
+    <!-- Селектор индекса прямо в шапке графика -->
+    <select id="market-fx-selector" onchange="loadMarketCorrelations()" style="width: 100%; margin-bottom: 12px; border: 1px solid #dce1e6; border-radius: 6px; padding: 4px; font-size: 12px;">
+        <option value="IMOEX">Относительно Индекса МосБиржи</option>
+        <option value="USD">Относительно Доллара</option>
+    </select>
+    
+    <div style="height: 300px; position: relative;">
+        <canvas id="corrComparisonBar"></canvas>
+    </div>
+   </div>
+
+
+
     
     <div class="section-title">Аналитика по тикерам</div>
     <div class="card">
@@ -2157,8 +2177,116 @@ function drawPieChart(buy, sell, symbol) {
             }
         }
     });
+    }
+
+
+let currentCorrMode = 'corr'; // 'corr' или 'beta'
+let marketCorrData = null; // Сюда сохраним ответ от сервера
+
+// Функция для наполнения селектора в Главном обзоре
+function fillMarketFxSelector() {
+    const selector = document.getElementById('market-fx-selector');
+    if (!selector) return;
+    
+    // Очищаем и добавляем основные индексы для сравнения всего рынка
+    const mainIndices = ["IMOEX", "USD", "CNY", "RGBI", "MOEXOG", "MOEXFN", "MOEXMM"];
+    selector.innerHTML = "";
+    
+    mainIndices.forEach(ticker => {
+        let opt = document.createElement('option');
+        opt.value = ticker;
+        opt.innerText = `${ticker} (${TICKER_NAMES[ticker] || 'Индекс'})`;
+        selector.appendChild(opt);
+    });
 }
 
+async function loadMarketCorrelations() {
+    const fxTicker = document.getElementById('market-fx-selector').value;
+    const url = `${GAS_URL}?action=get_market_correlations&fx_ticker=${fxTicker}&vk_id=${currentVkId}`;
+    
+    try {
+        const response = await fetch(url);
+        const res = await response.json();
+        
+        if (res.status === "success") {
+            marketCorrData = res.data;
+            updateMarketCorrChart(); // Отрисовываем
+        }
+    } catch (e) { console.error("Ошибка загрузки корреляций рынка:", e); }
+}
+
+
+    function switchCorrChart(direction) {
+    currentCorrMode = (currentCorrMode === 'corr') ? 'beta' : 'corr';
+    const titleEl = document.getElementById('corr-chart-title');
+    titleEl.innerText = currentCorrMode === 'corr' ? "Корреляция (Топ +/-)" : "Бета (Топ +/-)";
+    updateMarketCorrChart();
+}
+
+function updateMarketCorrChart() {
+    if (!marketCorrData) return;
+
+    const ctx = document.getElementById('corrComparisonBar').getContext('2d');
+    if (window.marketCorrChart) window.marketCorrChart.destroy();
+
+    // Выбираем данные в зависимости от режима
+    const currentSet = currentCorrMode === 'corr' ? marketCorrData.corr : marketCorrData.beta;
+    
+    // Формируем массивы для Bi-directional графика
+    // Сначала отрицательные (слева), потом положительные (справа)
+    const labels = [...currentSet.minus.map(d => d.label).reverse(), ...currentSet.plus.map(d => d.label)];
+    const values = [...currentSet.minus.map(d => currentCorrMode === 'corr' ? d.corr : d.beta).reverse(), 
+                    ...currentSet.plus.map(d => currentCorrMode === 'corr' ? d.corr : d.beta)];
+    
+    const colors = values.map(v => v >= 0 ? '#4bb34b' : '#e64646');
+
+    window.marketCorrChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: colors,
+                borderRadius: 4,
+                barThickness: 20
+            }]
+        },
+        options: {
+            indexAxis: 'y', // Горизонтальный вид
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => ` ${currentCorrMode.toUpperCase()}: ${ctx.raw.toFixed(3)}`
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: '#f0f2f5' },
+                    ticks: { font: { size: 10 } }
+                },
+                y: {
+                    grid: { display: false },
+                    ticks: { font: { size: 11, weight: 'bold' } }
+                }
+            }
+        }
+    });
+  }
+
+    
+
+
+
+
+
+
+
+
+    
 
 
 
