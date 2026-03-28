@@ -463,8 +463,8 @@
 
    <!-- Блок загрузки (центрирован абсолютно внутри родителя) -->
     <div id="chart-info2" style="display: none; position: absolute; top:0; left:0; width:100%; height:100%; display: flex; align-items:center; justify-content:center; flex-direction:column; background: rgba(255,255,255,0.8); z-index: 5;">
-        <div id="chart-status-icon" style="font-size: 24px; margin-bottom: 8px;">⏳</div>
-        <div id="chart-status-text" style="font-size: 13px; color: #818c99;">Обновление...</div>
+        <div id="chart-status-icon2" style="font-size: 24px; margin-bottom: 8px;">⏳</div>
+        <div id="chart-status-text2" style="font-size: 13px; color: #818c99;">Обновление...</div>
     </div>
 
         
@@ -2233,8 +2233,8 @@ async function loadMarketCorrelations() {
     const fxTicker = document.getElementById('market-fx-selector').value;
     
     // Включаем лоадер (используем ваш статус-текст из графиков)
-    const statusText = document.getElementById('chart-status-text');
-    const statusIcon = document.getElementById('chart-status-icon');
+    const statusText = document.getElementById('chart-status-text2');
+    const statusIcon = document.getElementById('chart-status-icon2');
     if (statusText) {
         statusIcon.innerText = "⏳";
         statusText.innerText = "Загрузка ...";
@@ -2292,13 +2292,10 @@ async function loadMarketCorrelations() {
 
 function updateMarketCorrChart() {
     if (!marketCorrData) return;
-
-
     const ctx = document.getElementById('corrComparisonBar').getContext('2d');
     if (window.marketCorrChart) {
     window.marketCorrChart.destroy();
-  }
-    // if (window.marketCorrChart) window.marketCorrChart.destroy();
+     }
 
     // Выбираем данные в зависимости от режима
     const currentSet = currentCorrMode === 'corr' ? marketCorrData.corr : marketCorrData.beta;
