@@ -462,7 +462,7 @@
     <div style="height: 300px; position: relative;">
 
    <!-- Блок загрузки (центрирован абсолютно внутри родителя) -->
-    <div id="chart-info" style="display: none; position: absolute; top:0; left:0; width:100%; height:100%; display: flex; align-items:center; justify-content:center; flex-direction:column; background: rgba(255,255,255,0.8); z-index: 5;">
+    <div id="chart-info2" style="display: none; position: absolute; top:0; left:0; width:100%; height:100%; display: flex; align-items:center; justify-content:center; flex-direction:column; background: rgba(255,255,255,0.8); z-index: 5;">
         <div id="chart-status-icon" style="font-size: 24px; margin-bottom: 8px;">⏳</div>
         <div id="chart-status-text" style="font-size: 13px; color: #818c99;">Обновление...</div>
     </div>
@@ -2238,7 +2238,7 @@ async function loadMarketCorrelations() {
     if (statusText) {
         statusIcon.innerText = "⏳";
         statusText.innerText = "Загрузка ...";
-        document.getElementById('chart-info').style.display = 'flex'; // Показываем слой загрузки
+        document.getElementById('chart-info2').style.display = 'flex'; // Показываем слой загрузки
         document.getElementById('chart-container').style.display = 'none'; // Скрываем старый график
     }
 
