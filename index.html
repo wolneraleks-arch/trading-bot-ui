@@ -1865,61 +1865,11 @@ function updateOIBars(prefix, long, short) {
 // Глобальная переменная для хранения текущих пар
 let currentCorrelations = {};
 
-async function loadTickerStats() {
-    // ... ваш существующий код до fetch ...
-
-    try {
-        const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&isBonds=${isBonds}&iscorpBonds=${iscorpBonds}&vk_id=${currentVkId}`);
-        const res = await response.json();
-        
-        if (res.status === "success") {
-            const d = res.data;
-            
-            // 1. Сохраняем пришедший объект корреляций
-            currentCorrelations = d.correlations || {}; 
-
-            // 2. Обновляем выпадающий список (FX-селектор)
-            // const fxSelect = document.getElementById('fx-selector');
-            // if (fxSelect) {
-            //     fxSelect.innerHTML = ""; // Очищаем
-            //     Object.keys(currentCorrelations).forEach(key => {
-            //         let opt = document.createElement('option');
-            //         opt.value = key;
-            //         opt.innerText = key;
-            //         // Делаем IMOEX выбранным по умолчанию
-            //         if (key === "IMOEX") opt.selected = true; 
-            //         fxSelect.appendChild(opt);
-            //     });
-            // }
-
-
-            const fxSelect = document.getElementById('fx-selector');
-      if (fxSelect) {
-    fxSelect.innerHTML = ""; 
-    Object.keys(currentCorrelations).forEach(key => {
-        let opt = document.createElement('option');
-        opt.value = key;
-        
-        // Берем имя из словаря или оставляем тикер, если его там нет
-        const fullName = TICKER_NAMES[key] || key;
-        opt.innerText = `${key} (${fullName})`; 
-        
-        if (key === "IMOEX") opt.selected = true; 
-        fxSelect.appendChild(opt);
-    });
-   }
-
-            // 3. Вызываем функцию отрисовки значений
-            updateCorrelationUI();
-
-            // ... остальной ваш код (fmt, объемы и т.д.) ...
-        }
-    } catch (e) { console.error(e); }
-}
 
 // Новая функция для обновления цифр корреляции без перезагрузки всей страницы
 function updateCorrelationUI() {
     const fxid = document.getElementById('fx-selector').value;
+    const fullName = TICKER_NAMES[fxid] || fxid;
     const pair = currentCorrelations[fxid] || { corr: "--", beta: "--" };
     
     const corrEl = document.getElementById('coaf-cor-val');
@@ -2009,24 +1959,37 @@ async function loadTickerStats() {
          // 1. Сохраняем пришедший объект корреляций
             currentCorrelations = d.correlations || {}; 
 
-            // 2. Обновляем выпадающий список (FX-селектор)
-            const fxSelect = document.getElementById('fx-selector');
-            if (fxSelect) {
-                fxSelect.innerHTML = ""; // Очищаем
-                Object.keys(currentCorrelations).forEach(key => {
-                    let opt = document.createElement('option');
-                    opt.value = key;
-                    opt.innerText = key;
-                    // Делаем IMOEX выбранным по умолчанию
-                    if (key === "IMOEX") opt.selected = true; 
-                    fxSelect.appendChild(opt);
-                });
-            }
+            // // 2. Обновляем выпадающий список (FX-селектор)
+            // const fxSelect = document.getElementById('fx-selector');
+            // if (fxSelect) {
+            //     fxSelect.innerHTML = ""; // Очищаем
+            //     Object.keys(currentCorrelations).forEach(key => {
+            //         let opt = document.createElement('option');
+            //         opt.value = key;
+            //         opt.innerText = key;
+            //         // Делаем IMOEX выбранным по умолчанию
+            //         if (key === "IMOEX") opt.selected = true; 
+            //         fxSelect.appendChild(opt);
+            //     });
+            // }
 
+                  const fxSelect = document.getElementById('fx-selector');
+      if (fxSelect) {
+    fxSelect.innerHTML = ""; 
+    Object.keys(currentCorrelations).forEach(key => {
+        let opt = document.createElement('option');
+        opt.value = key;
+        
+        // Берем имя из словаря или оставляем тикер, если его там нет
+        const fullName = TICKER_NAMES[key] || key;
+        opt.innerText = `${key} (${fullName})`; 
+        
+        if (key === "IMOEX") opt.selected = true; 
+        fxSelect.appendChild(opt);
+      });
+      }
             // 3. Вызываем функцию отрисовки значений
             updateCorrelationUI();
-
-            
 
             // Обновляем градусники
             updateThermometer('adr-bar', 'adr-perc-val', d.adrPercent);
