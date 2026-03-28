@@ -1882,9 +1882,6 @@ function updateOIBars(prefix, long, short) {
 
 
 
-
-
-
 // Глобальная переменная для хранения текущих пар
 let currentCorrelations = {};
 
@@ -1910,11 +1907,6 @@ function updateCorrelationUI() {
         betaEl.style.color = "#5181b8"; // Синий для беты
     }
 }
-
-
-
-
-
 
     
 
@@ -2199,7 +2191,7 @@ function fillMarketFxSelector() {
     "MOEXTL", "MOEXCH", "MOEXTN", "MOEXINN", "MRBC"         // Доп. индексы
     ];
 
-    const mainIndices = ["IMOEX", "USD", "CNY", "RGBI", "MOEXOG", "MOEXFN", "MOEXMM"];
+    // const mainIndices = ["IMOEX", "USD", "CNY", "RGBI", "MOEXOG", "MOEXFN", "MOEXMM"];
     selector.innerHTML = "";
     
     mainIndices.forEach(ticker => {
