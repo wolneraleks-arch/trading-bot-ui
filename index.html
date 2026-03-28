@@ -449,7 +449,7 @@
     <div class="card" style="margin-bottom: 16px; text-align: center; padding: 16px;">
     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
         <button class="arrow-btn" onclick="switchCorrChart(-1)">❮</button>
-        <div id="corr-chart-title" style="font-size: 14px; font-weight: 700; color: #2c2d2e;">Корреляция (Топ +/-)</div>
+        <div id="corr-chart-title" style="font-size: 14px; font-weight: 700; color: #2c2d2e;">Коэффициент Корреляция (Топ +/-)</div>
         <button class="arrow-btn" onclick="switchCorrChart(1)">❯</button>
     </div>
 
@@ -2275,7 +2275,7 @@ async function loadMarketCorrelations() {
     function switchCorrChart(direction) {
     currentCorrMode = (currentCorrMode === 'corr') ? 'beta' : 'corr';
     const titleEl = document.getElementById('corr-chart-title');
-    titleEl.innerText = currentCorrMode === 'corr' ? "Корреляция (Топ +/-)" : "Бета (Топ +/-)";
+    titleEl.innerText = currentCorrMode === 'corr' ? "Коэффициент Корреляции (Топ +/-)" : "Коэффициент Бета (Топ +/-)";
     updateMarketCorrChart();
    }
 
