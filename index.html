@@ -1073,6 +1073,35 @@
     'Другие': '#d1d4d7' // Светло-серый
 };
 
+    const TICKER_NAMES = {
+    "GAZP": "Газпром",
+    "GMKN": "Норникель",
+    "LKOH": "Лукойл",
+    "SBER": "Сбербанк",
+    "PHOR": "Фосагро",
+    "IMOEX": "Индекс МосБиржи",
+    "IMOEX2": "Индекс МосБиржи (весь день)",
+    "RTSI": "Индекс РТС",
+    "MOEX10": "Индекс МосБиржи 10",
+    "MOEXBC": "Индекс голубых фишек",
+    "MOEXBMI": "Индекс широкого рынка",
+    "MOEXOG": "Индекс нефти и газа",
+    "MOEXFN": "Индекс финансов",
+    "MOEXMM": "Индекс металлов и добычи",
+    "MOEXEU": "Индекс электроэнергетики",
+    "MOEXCN": "Индекс потреб. сектора",
+    "MOEXTL": "Индекс телекоммуникаций",
+    "MOEXCH": "Индекс химии",
+    "MOEXTN": "Индекс транспорта",
+    "MOEXINN": "Индекс инноваций",
+    "MRBC": "Индекс акций средней/малой кап.",
+    "RTSCH": "Индекс химии (РТС)",
+    "RTSEU": "Индекс электроэнергетики (РТС)",
+    "RTSMM": "Индекс металлов (РТС)",
+    "RTSTN": "Индекс транспорта (РТС)"
+};
+
+
   // Функция-помощник: если тикера нет в списке, даст случайный или дефолтный цвет
   //const getColorForTicker = (ticker) => TICKER_COLORS[ticker] || '#9c27b0'; 
 
@@ -1850,18 +1879,35 @@ async function loadTickerStats() {
             currentCorrelations = d.correlations || {}; 
 
             // 2. Обновляем выпадающий список (FX-селектор)
+            // const fxSelect = document.getElementById('fx-selector');
+            // if (fxSelect) {
+            //     fxSelect.innerHTML = ""; // Очищаем
+            //     Object.keys(currentCorrelations).forEach(key => {
+            //         let opt = document.createElement('option');
+            //         opt.value = key;
+            //         opt.innerText = key;
+            //         // Делаем IMOEX выбранным по умолчанию
+            //         if (key === "IMOEX") opt.selected = true; 
+            //         fxSelect.appendChild(opt);
+            //     });
+            // }
+
+
             const fxSelect = document.getElementById('fx-selector');
-            if (fxSelect) {
-                fxSelect.innerHTML = ""; // Очищаем
-                Object.keys(currentCorrelations).forEach(key => {
-                    let opt = document.createElement('option');
-                    opt.value = key;
-                    opt.innerText = key;
-                    // Делаем IMOEX выбранным по умолчанию
-                    if (key === "IMOEX") opt.selected = true; 
-                    fxSelect.appendChild(opt);
-                });
-            }
+      if (fxSelect) {
+    fxSelect.innerHTML = ""; 
+    Object.keys(currentCorrelations).forEach(key => {
+        let opt = document.createElement('option');
+        opt.value = key;
+        
+        // Берем имя из словаря или оставляем тикер, если его там нет
+        const fullName = TICKER_NAMES[key] || key;
+        opt.innerText = `${key} (${fullName})`; 
+        
+        if (key === "IMOEX") opt.selected = true; 
+        fxSelect.appendChild(opt);
+    });
+   }
 
             // 3. Вызываем функцию отрисовки значений
             updateCorrelationUI();
