@@ -1470,6 +1470,9 @@ async function init() {
         if (typeof loadMarketStats === "function") {
            loadMarketStats();
         loadMarketOverview();
+            
+            fillMarketFxSelector();
+                loadMarketCorrelations();
         }
         
         const levelEl = document.getElementById('user-level');
