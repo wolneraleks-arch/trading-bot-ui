@@ -1093,6 +1093,9 @@
     let currentVkId = "";
     let initialData = {}; // Объект для хранения исходных данных из БД
 
+
+    // ПЕРЕМЕННЫЕ
+    // ______________________________________________________________________________________________________________________________
     const TICKER_COLORS = {
     'GAZP': '#5181b8', // Синий
     'SBER': '#4bb34b', // Зеленый
@@ -1135,9 +1138,21 @@
 };
 
 
-  // Функция-помощник: если тикера нет в списке, даст случайный или дефолтный цвет
-  //const getColorForTicker = (ticker) => TICKER_COLORS[ticker] || '#9c27b0'; 
+let totalPortfolioChart = null;
 
+const CAP_VIEWS = ['stocks', 'bonds', 'corp', 'fut']; // Массив состояний
+let currentMarketType = 'stocks'; // Глобальная переменная
+let marketDataGlobal = null;
+
+
+
+
+
+
+
+    
+// ______________________________________________________________________________________________________________________________
+  
     // Обновите функцию получения цвета
 
 const getColorForTicker = (ticker) => {
@@ -1324,10 +1339,6 @@ function updateThermometer(barId, textId, percentInput) {
         tip.classList.remove("show");
     }, 3000);
 }
-
-
-
-
 
 async function loadMarketStats() {
     try {
@@ -1601,11 +1612,11 @@ function renderTopList(data, total) {
     listCont.innerHTML = html;
 }
     
-let totalPortfolioChart = null;
+// let totalPortfolioChart = null;
 
-const CAP_VIEWS = ['stocks', 'bonds', 'corp', 'fut']; // Массив состояний
-let currentMarketType = 'stocks'; // Глобальная переменная
-let marketDataGlobal = null;
+// const CAP_VIEWS = ['stocks', 'bonds', 'corp', 'fut']; // Массив состояний
+// let currentMarketType = 'stocks'; // Глобальная переменная
+// let marketDataGlobal = null;
 
 async function loadMarketOverview() {
     try {
