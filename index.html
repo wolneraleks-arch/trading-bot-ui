@@ -2229,8 +2229,12 @@ async function loadMarketCorrelations() {
 function updateMarketCorrChart() {
     if (!marketCorrData) return;
 
+
     const ctx = document.getElementById('corrComparisonBar').getContext('2d');
-    if (window.marketCorrChart) window.marketCorrChart.destroy();
+    if (window.marketCorrChart) {
+    window.marketCorrChart.destroy();
+  }
+    // if (window.marketCorrChart) window.marketCorrChart.destroy();
 
     // Выбираем данные в зависимости от режима
     const currentSet = currentCorrMode === 'corr' ? marketCorrData.corr : marketCorrData.beta;
