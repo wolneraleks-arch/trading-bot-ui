@@ -2017,7 +2017,7 @@ async function loadTickerStats() {
     const isPif = selectedTickerObj ? selectedTickerObj.type === 'pif' : false; 
     const iszPif = selectedTickerObj ? selectedTickerObj.type === 'zpif' : false;
 
-    console.log("🛠 Тип актива:", { isForts, isBonds, iscorpBonds });
+    console.log("🛠 Тип актива:", { isForts, isBonds, iscorpBonds, isPif, iszPif });
  // 2. Теперь меняем подпись (так как isForts уже существует)
     const cupValEl = document.getElementById('curr-cup-val');
     if (cupValEl) {
