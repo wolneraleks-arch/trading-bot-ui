@@ -514,7 +514,15 @@
         </div>
         
         <input type="text" id="ticker_search" placeholder="🔍 Поиск..." ... >
-        <select id="stats_ticker_select" ... > ... </select>
+        <!-- <select id="stats_ticker_select" ... > ... </select> -->
+
+         <select id="stats_ticker_select" 
+                style="width: 100%; padding: 12px; border-radius: 0 0 8px 8px; border: 1px solid #dce1e6; background: #f5f5f5;" 
+                onchange="loadTickerStats()">
+            <option value="">-- Загрузка... --</option>
+        </select>
+
+        
     </label>
 </div>
 
@@ -549,7 +557,6 @@
 
     <!-- Место для графика (позже подключим библиотеку) -->
     <div id="stats-container" style="display: none; padding-bottom: 80px;">
-
     
     <!-- 1. ВСТАВЛЯЕМ СЮДА: СЕКЦИЯ С ГРАДУСНИКАМИ -->
     <div class="section-title">Индикаторы активности (Live)</div>
