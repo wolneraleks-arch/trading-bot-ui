@@ -2438,6 +2438,9 @@ async function fetchGlobalTickers() {
 const demoTickers = ["ALRS","MGNT","MSNG","GAZP","MOEX","FEES","HYDR","CHMF","SNGS","GMKN","TATN","PLZL","KMAZ","YDEX","UNAC","VSMO"];
 const demoBonds = ["SU26238RMFS4", "SU26219RMFS4"];
     const democorpBonds = ["BYM000001925", "RU000A0JWTL6","RU000A0ZYLU6","RU000A0ZYLG5"];
+
+    const demopif = ["AKMB", "AMNR","EQMX","SBBC"];
+    const demozpif = ["RU000A1034U7", "RU000A105328","RU000A10D7W9","XXXXXX"];
     
 
 let currentAssetType = 'stocks'; // Глобальная переменная состояния
@@ -2452,6 +2455,8 @@ function setAssetType(type) {
     document.getElementById('btn-forts').classList.toggle('active', type === 'forts');
     document.getElementById('btn-bonds').classList.toggle('active', type === 'bonds');
     document.getElementById('btn-corpbonds').classList.toggle('active', type === 'corpbonds');
+     document.getElementById('btn-pif').classList.toggle('active', type === 'pif');
+    document.getElementById('btn-zpif').classList.toggle('active', type === 'zpif');
     
     // Очищаем поиск и перерисовываем список
     document.getElementById('ticker_search').value = "";
@@ -2627,7 +2632,10 @@ function updateStatsTickers() {
     'stocks': 'акцию',
     'forts': 'фьючерс',
     'bonds': 'облигацию',
-         'corpbonds': 'корп. облигацию' 
+         'corpbonds': 'корп. облигацию',
+         'pif': 'ETF',
+         'zpif': 'Закр. Паи'
+         
       };
      const label = assetNames[currentAssetType] || 'актив';
      select.innerHTML = `<option value="">-- Выберите ${label} --</option>`;
@@ -2686,6 +2694,13 @@ function updateStatsTickers() {
             // Проверка на существование массива demoBonds, чтобы не было ошибки
             isAllowedInDemo = (typeof democorpBonds !== 'undefined') && democorpBonds.includes(cleanTicker);
          
+        }
+         else if (currentAssetType === 'pif') {
+            // ПРОВЕРКА ДЛЯ ПИФ
+            isAllowedInDemo = (typeof demopif !== 'undefined') && demopif.includes(tickerUpper);
+        }else if (currentAssetType === 'zpif') {
+            // ПРОВЕРКА ДЛЯ ПИФ
+            isAllowedInDemo = (typeof demozpif !== 'undefined') && demozpif.includes(tickerUpper);
         }
         
         if (!isUserTicker) {
@@ -2790,6 +2805,12 @@ function updateStatsTickers() {
             isAllowedInDemo = (typeof demoBonds !== 'undefined') && demoBonds.includes(cleanTicker);
         } else if (selectedType === 'corpbonds') {
             isAllowedInDemo = (typeof democorpBonds !== 'undefined') && democorpBonds.includes(cleanTicker);
+        }
+        else if (selectedType === 'pif') {
+            isAllowedInDemo = (typeof demopif !== 'undefined') && demopif.includes(cleanTicker);
+        }
+        else if (selectedType === 'zpif') {
+            isAllowedInDemo = (typeof demozpif !== 'undefined') && demozpif.includes(cleanTicker);
         }
 
         // 3. Добавляем, если Премиум или входит в Демо
