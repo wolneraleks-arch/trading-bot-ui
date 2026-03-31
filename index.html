@@ -345,6 +345,25 @@
     display: block !important; /* Показываем только активную */
 }
 
+        /* Добавьте это в секцию стилей */
+.card {
+    overflow: hidden; /* Обрезает всё, что вылетает */
+    box-sizing: border-box;
+}
+
+#stats-container {
+    max-width: 100vw; /* Ограничиваем шириной экрана */
+    overflow-x: hidden;
+}
+
+/* Чтобы плашки внутри индикаторов адаптировались */
+.thermometer-track {
+    width: 100%;
+    position: relative;
+    box-sizing: border-box;
+}
+
+
 
 
     </style>
@@ -483,27 +502,47 @@
     <div class="section-title">Аналитика по тикерам</div>
     <div class="card">
     <label style="flex-direction: column; align-items: flex-start; position: relative;">
+        <!-- Добавили flex-wrap: wrap, чтобы кнопки переносились на вторую строку -->
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+            <button id="btn-stocks" class="tab-btn active" onclick="setAssetType('stocks')">Акции</button>
+            <button id="btn-forts" class="tab-btn" onclick="setAssetType('forts')">Фьючерсы</button>
+            <button id="btn-bonds" class="tab-btn" onclick="setAssetType('bonds')">Гос Облигации</button>
+            <button id="btn-corpbonds" class="tab-btn" onclick="setAssetType('corpbonds')">Корп Облигации</button>          
+            <!-- НОВАЯ КНОПКА -->
+            <button id="btn-pif" class="tab-btn" onclick="setAssetType('pif')">ПИФ/ETF</button>
+        </div>
+        
+        <input type="text" id="ticker_search" placeholder="🔍 Поиск..." ... >
+        <select id="stats_ticker_select" ... > ... </select>
+    </label>
+</div>
+
+    
+    
+    <!--старая версия  -->
+    <!-- <div class="card">
+    <label style="flex-direction: column; align-items: flex-start; position: relative;"> -->
         <!-- Выберите тикер для анализа -->
 
-        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+        <!-- <div style="display: flex; gap: 8px; margin-bottom: 12px;">
     <button id="btn-stocks" class="tab-btn active" onclick="setAssetType('stocks')">Акции</button>
     <button id="btn-forts" class="tab-btn" onclick="setAssetType('forts')">Фьючерсы</button>
     <button id="btn-bonds" class="tab-btn" onclick="setAssetType('bonds')">Гос Облигации</button>
     <button id="btn-corpbonds" class="tab-btn" onclick="setAssetType('corpbonds')">Корп Облигации</button>          
-      </div>
+      </div> -->
         <!-- ПОЛЕ ПОИСКА -->
-        <input type="text" id="ticker_search" placeholder="🔍 Поиск по названию или тикеру..." 
+        <!-- <input type="text" id="ticker_search" placeholder="🔍 Поиск по названию или тикеру..." 
                style="width: 100%; padding: 10px; border-radius: 8px 8px 0 0; border: 1px solid #dce1e6; border-bottom: none; margin-top: 8px; outline: none;"
-               oninput="filterTickers()">
+               oninput="filterTickers()"> -->
         
         <!-- ВАШ СЕЛЕКТ (немного подправлен стиль верхней границы) -->
-        <select id="stats_ticker_select" 
+        <!-- <select id="stats_ticker_select" 
                 style="width: 100%; padding: 12px; border-radius: 0 0 8px 8px; border: 1px solid #dce1e6; background: #f5f5f5;" 
                 onchange="loadTickerStats()">
             <option value="">-- Загрузка... --</option>
         </select>
     </label>
-</div>
+</div> -->
 
 
 
@@ -1967,6 +2006,8 @@ async function loadTickerStats() {
     const isForts = selectedTickerObj ? selectedTickerObj.type === 'forts' : false;
     const isBonds = selectedTickerObj ? selectedTickerObj.type === 'bonds' : false;
     const iscorpBonds = selectedTickerObj ? selectedTickerObj.type === 'corpbonds' : false;
+    const isPif = selectedTickerObj ? selectedTickerObj.type === 'pif' : false; 
+    const iszPif = selectedTickerObj ? selectedTickerObj.type === 'zpif' : false;
 
     console.log("🛠 Тип актива:", { isForts, isBonds, iscorpBonds });
  // 2. Теперь меняем подпись (так как isForts уже существует)
@@ -1993,7 +2034,7 @@ async function loadTickerStats() {
     document.getElementById('curr-cup-val').innerText = "⏳";
     try {
         // Получаем все параметры после знака ? в URL приложения
-        const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&isBonds=${isBonds}&iscorpBonds=${iscorpBonds}&vk_id=${currentVkId}`);
+        const response = await fetch(`${GAS_URL}?action=get_ticker_indicators&ticker=${ticker}&isForts=${isForts}&isBonds=${isBonds}&iscorpBonds=${iscorpBonds}&isPif=${isPif}&iszPif=${iszPif}&vk_id=${currentVkId}`);
         const res = await response.json();
        console.log("Полный ответ от сервера:", res.data);
         if (res.status === "success") {
